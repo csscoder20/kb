@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('email_settings', function (Blueprint $table) {
             $table->id();
+            $table->enum('driver', ['mailgun', 'mail', 'log', 'smtp'])->default('mailgun');
             $table->string('email');
             $table->text('secret_key');
             $table->string('domain');

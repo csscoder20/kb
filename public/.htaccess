@@ -23,3 +23,7 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# <FilesMatch "\.(pdf)$">
+#     Header set Access-Control-Allow-Origin "*"
+# </FilesMatch>
