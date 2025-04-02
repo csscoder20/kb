@@ -25,50 +25,66 @@ class BasicResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Section::make('Forum Identity')
+                    ->description('Set your forum title and description in the field bellow. Enter a short sentence or two that describes your community. This will appear in the meta tag and show up in search engines.')
+                    ->schema([
+                        Forms\Components\TextInput::make('title')
+                            ->required()
+                            ->columnSpanFull()
+                            ->maxLength(255),
 
-                Forms\Components\Textarea::make('description')
-                    ->required()
-                    ->columnSpanFull(),
+                        Forms\Components\Textarea::make('description')
+                            ->required()
+                            ->columnSpanFull(),
+                    ])->columns(2),
 
-                Forms\Components\TextInput::make('banner')
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Section::make('Welcom Banner')
+                    ->description('Configure the text that displays in the banner on the All Discussions page. Use this to welcome guests to your forum.')
+                    ->schema([
+                        Forms\Components\TextInput::make('banner')
+                            ->required()
+                            ->label('Banner Title')
+                            ->maxLength(255),
 
-                Forms\Components\Textarea::make('banner_description')
-                    ->required()
-                    ->columnSpanFull(),
+                        Forms\Components\Textarea::make('banner_description')
+                            ->required()
+                            ->columnSpanFull(),
 
-                Forms\Components\Select::make('homepage')
-                    ->options([
-                        'all_discussions' => 'All Discussions',
-                        'tags' => 'Tags',
-                    ])
-                    ->default('tags')
-                    ->required(),
+                    ])->columns(2),
 
-                Forms\Components\ColorPicker::make('color')
-                    ->required()
-                    ->default('#ecf0f6')
-                    ->live(),
+                Forms\Components\Section::make('Forum Settings')
+                    ->description("Customize your forum's colors, logos, and other variables.")
+                    ->schema([
+                        Forms\Components\Select::make('homepage')
+                            ->options([
+                                'all_discussions' => 'All Discussions',
+                                'tags' => 'Tags',
+                            ])
+                            ->default('tags')
+                            ->required(),
 
-                Forms\Components\Select::make('is_darkmode_active')
-                    ->options([
-                        'yes' => 'Yes',
-                        'no' => 'No',
-                    ])
-                    ->default('no')
-                    ->required(),
+                        Forms\Components\ColorPicker::make('color')
+                            ->required()
+                            ->default('#ecf0f6')
+                            ->live(),
 
-                Forms\Components\FileUpload::make('logo')
-                    ->image()
-                    ->nullable(),
+                        Forms\Components\Select::make('is_darkmode_active')
+                            ->options([
+                                'yes' => 'Yes',
+                                'no' => 'No',
+                            ])
+                            ->default('no')
+                            ->required(),
 
-                Forms\Components\FileUpload::make('favicon')
-                    ->image()
-                    ->nullable(),
+                        Forms\Components\FileUpload::make('logo')
+                            ->image()
+                            ->nullable(),
+
+                        Forms\Components\FileUpload::make('favicon')
+                            ->image()
+                            ->nullable(),
+
+                    ])->columns(3),
             ]);
     }
 

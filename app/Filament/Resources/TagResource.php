@@ -12,6 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\ColorPicker;
 use App\Filament\Resources\TagResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TagResource\RelationManagers;
@@ -20,9 +21,9 @@ class TagResource extends Resource
 {
     protected static ?string $model = Tag::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-tag';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $modelLabel = 'Tags';
-    protected static ?string $navigationGroup = 'MoP Management';
+    protected static ?string $navigationGroup = 'Report Management';
 
     public static function getNavigationBadge(): ?string
     {
@@ -56,14 +57,14 @@ class TagResource extends Resource
                 TextInput::make('description')
                     ->maxLength(255),
 
-                TextInput::make('color')
+                ColorPicker::make('color')
                     ->required()
-                    ->maxLength(7)
-                    ->default('#ecf0f6'),
+                    ->live()
+                    ->default('#ff1f00'),
 
                 TextInput::make('icon')
                     ->required()
-                    ->maxLength(10)
+                    ->maxLength(25)
                     ->default('bi bi-tag'),
 
                 Select::make('is_hide')
@@ -75,7 +76,8 @@ class TagResource extends Resource
                     ->required(),
 
                 Forms\Components\Toggle::make('status')
-                    ->required(),
+                    ->required()
+                    ->default(true),
             ]);
     }
 
@@ -88,7 +90,8 @@ class TagResource extends Resource
                 Tables\Columns\TextColumn::make('slug')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('color')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('icon')

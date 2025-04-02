@@ -14,14 +14,15 @@ use App\Filament\Resources\ReportResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ReportResource\RelationManagers;
 use Joaopaulolndev\FilamentPdfViewer\Infolists\Components\PdfViewerEntry;
+use Filament\Forms\Components\RichEditor;
 
 class ReportResource extends Resource
 {
     protected static ?string $model = Report::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
-    protected static ?string $modelLabel = 'Report';
-    protected static ?string $navigationGroup = 'MoP Management';
+    protected static ?string $modelLabel = 'Posts';
+    protected static ?string $navigationGroup = 'Report Management';
 
     public static function getNavigationBadge(): ?string
     {
@@ -39,31 +40,35 @@ class ReportResource extends Resource
                 Forms\Components\TextInput::make('title')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Textarea::make('description')
+                Forms\Components\Select::make('tags') // Tambahkan dropdown tags
+                    ->label('Tags')
+                    ->relationship('tags', 'name')
+                    ->multiple()
+                    ->maxItems(2)
+                    ->preload()
+                    ->searchable()
+                    ->default(false)
+                    ->required(),
+                Forms\Components\RichEditor::make('description')
                     ->columnSpanFull(),
                 Forms\Components\FileUpload::make('file')
                     ->directory('reports')
+                    ->required()
                     ->acceptedFileTypes([
-                        'application/pdf', // PDF
-                        'image/*', // Semua jenis gambar
-                        'application/msword', // DOC
-                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' // DOCX
+                        'application/pdf',
+                        'image/*',
+                        'application/msword',
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
                     ])
                     ->previewable(true),
-                Forms\Components\Select::make('tags') // Tambahkan dropdown tags
-                    ->label('Tags')
-                    ->relationship('tags', 'name') // Menghubungkan dengan model Tag
-                    ->multiple()
-                    ->preload()
-                    ->searchable()
-                    ->required(),
-                Forms\Components\Select::make('status') // Bisa jadi dropdown juga
+                Forms\Components\Select::make('status')
                     ->options([
                         'pending' => 'Pending',
                         'approved' => 'Approved',
                         'rejected' => 'Rejected',
                     ])
-                    ->required(),
+                    ->required()
+                    ->default('pending'),
             ]);
     }
 
@@ -72,13 +77,23 @@ class ReportResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('file')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('status'),
+                    ->searchable()
+                    ->limit(80)
+                    ->tooltip(fn($record) => $record->title),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->colors([
+                        'warning' => 'pending',
+                        'info' => 'reviewed',
+                        'success' => 'approved',
+                        'danger' => 'rejected',
+                    ]),
+                Tables\Columns\TextColumn::make('tags.name')
+                    ->badge(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
+                    ->label('Published at')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()

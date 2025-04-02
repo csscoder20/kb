@@ -20,4 +20,9 @@ class Basic extends Model
         'logo',
         'favicon'
     ];
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index'); // Mengarahkan ke halaman list
+    }
 }

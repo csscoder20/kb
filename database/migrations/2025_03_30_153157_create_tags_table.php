@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->string('description')->nullable();
             $table->string('color', 7)->default('#ecf0f6');
-            $table->string('icon', 10)->default('bi bi-tag');
+            $table->string('icon', 25)->default('bi bi-tag');
             $table->enum('is_hide', ['yes', 'no'])->default('no');
             $table->boolean('status')->default(true);
             $table->timestamps();

@@ -67,11 +67,6 @@ class EmailSettingResource extends Resource
                     ->maxLength(255)
                     ->visible(fn($get) => $get('driver') === 'smtp'),
 
-                Forms\Components\TextInput::make('port')
-                    ->required()
-                    ->numeric()
-                    ->visible(fn($get) => $get('driver') === 'smtp'),
-
                 Forms\Components\Select::make('encryption')
                     ->options([
                         'ssl' => 'SSL',
@@ -80,6 +75,11 @@ class EmailSettingResource extends Resource
                     ])
                     ->default('tls')
                     ->required()
+                    ->visible(fn($get) => $get('driver') === 'smtp'),
+
+                Forms\Components\TextInput::make('port')
+                    ->required()
+                    ->numeric()
                     ->visible(fn($get) => $get('driver') === 'smtp'),
 
                 Forms\Components\TextInput::make('username')

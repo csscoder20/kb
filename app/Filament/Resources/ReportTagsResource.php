@@ -18,8 +18,13 @@ class ReportTagsResource extends Resource
     protected static ?string $model = ReportTags::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-swatch';
-    protected static ?string $modelLabel = 'Report Tags';
-    protected static ?string $navigationGroup = 'MoP Management';
+    protected static ?string $modelLabel = 'Posts Tags';
+    protected static ?string $navigationGroup = 'Report Management';
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 
     public static function getNavigationBadge(): ?string
     {
