@@ -39,11 +39,13 @@ class AdminPanelProvider extends PanelProvider
                 'success' => Color::Emerald,
                 'warning' => Color::Orange,
             ])
-            // ->font('Segoe UI')
-            ->font('Inter')
+            ->font('Segoe UI')
+            // ->font('Inter')
             ->navigationGroups([
                 'Students Management',
                 'System Management',
+                'Report Management',
+                'Settings',
                 'User Management'
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')

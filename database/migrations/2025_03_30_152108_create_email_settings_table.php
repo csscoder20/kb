@@ -13,20 +13,22 @@ return new class extends Migration
     {
         Schema::create('email_settings', function (Blueprint $table) {
             $table->id();
-            $table->enum('driver', ['mailgun', 'mail', 'log', 'smtp'])->default('mailgun');
+            $table->string('name');
             $table->string('email');
-            $table->text('secret_key');
-            $table->string('domain');
-            $table->enum('region', ['US', 'EU', 'Asia', 'AU'])->default('US');
-            $table->string('host');
-            $table->integer('port');
-            $table->enum('encryption', ['ssl', 'tls', 'none'])->default('tls');
-            $table->string('username');
-            $table->text('password');
+            $table->enum('driver', ['mailgun', 'smtp'])->default('mailgun');
+            $table->string('secret_key')->nullable(); // Bisa kosong jika SMTP dipilih
+            $table->string('domain')->nullable();
+            $table->enum('region', ['US', 'EU', 'Asia', 'AU'])->nullable();
+            $table->string('host')->nullable(); // Bisa kosong jika Mailgun dipilih
+            $table->unsignedSmallInteger('port')->nullable();
+            $table->enum('encryption', ['ssl', 'tls', 'none'])->nullable();
+            $table->string('username')->nullable();
+            $table->string('password')->nullable();
             $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.

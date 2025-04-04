@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use Log;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Report;
@@ -9,12 +10,12 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\RichEditor;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\ReportResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ReportResource\RelationManagers;
 use Joaopaulolndev\FilamentPdfViewer\Infolists\Components\PdfViewerEntry;
-use Filament\Forms\Components\RichEditor;
 
 class ReportResource extends Resource
 {
@@ -33,6 +34,7 @@ class ReportResource extends Resource
     {
         return static::getModel()::count() > 5 ? 'warning' : 'success';
     }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -40,14 +42,13 @@ class ReportResource extends Resource
                 Forms\Components\TextInput::make('title')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Select::make('tags') // Tambahkan dropdown tags
+                Forms\Components\Select::make('tags')
                     ->label('Tags')
                     ->relationship('tags', 'name')
                     ->multiple()
                     ->maxItems(2)
                     ->preload()
                     ->searchable()
-                    ->default(false)
                     ->required(),
                 Forms\Components\RichEditor::make('description')
                     ->columnSpanFull(),
@@ -55,12 +56,18 @@ class ReportResource extends Resource
                     ->directory('reports')
                     ->required()
                     ->acceptedFileTypes([
-                        'application/pdf',
-                        'image/*',
-                        'application/msword',
                         'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
                     ])
-                    ->previewable(true),
+                    ->afterStateUpdated(function ($state, $set) {
+                        if (str_ends_with($state, '.docx')) {
+                            $pdfPath = Report::convertDocxToPdf($state);
+                            if ($pdfPath) {
+                                $set('pdf_file', $pdfPath);
+                            } else {
+                            }
+                        }
+                    }),
+                Forms\Components\Hidden::make('pdf_file'),
                 Forms\Components\Select::make('status')
                     ->options([
                         'pending' => 'Pending',
@@ -78,10 +85,13 @@ class ReportResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('title')
                     ->searchable()
+                    ->disableClick()
                     ->limit(80)
+                    ->copyable()
                     ->tooltip(fn($record) => $record->title),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
+                    ->disableClick()
                     ->colors([
                         'warning' => 'pending',
                         'info' => 'reviewed',
@@ -89,14 +99,17 @@ class ReportResource extends Resource
                         'danger' => 'rejected',
                     ]),
                 Tables\Columns\TextColumn::make('tags.name')
-                    ->badge(),
+                    ->badge()
+                    ->disableClick(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
+                    ->disableClick()
                     ->sortable()
                     ->label('Published at')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
+                    ->disableClick()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -119,8 +132,8 @@ class ReportResource extends Resource
     {
         return $infolist
             ->schema([
-                PdfViewerEntry::make('file')
-                    ->label('View the PDF')
+                PdfViewerEntry::make('pdf_file')
+                    ->label('Preview PDF')
                     ->minHeight('100vh')
                     ->columnSpanFull()
             ]);

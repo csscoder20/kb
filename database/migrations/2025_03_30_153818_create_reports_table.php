@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->string('file')->nullable();
+            $table->string('file')->nullable(); // Path file DOCX
+            $table->string('pdf_file')->nullable(); // Path file PDF hasil konversi
             $table->enum('status', ['pending', 'reviewed', 'approved', 'rejected'])->default('pending');
             $table->timestamps();
         });

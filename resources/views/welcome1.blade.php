@@ -5,13 +5,6 @@
     <meta charset="utf-8">
     <title>MoP GPT | Your MoP Report Partner</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="{{ asset('assets/img/cropped-Artboard-1-copy-2-32x32.png') }}" sizes="32x32">
-    <link rel="icon" href="{{ asset('assets/img/cropped-Artboard-1-copy-2-192x192.png') }}" sizes="192x192">
-    <link rel="apple-touch-icon" href="{{ asset('assets/img/cropped-Artboard-1-copy-2-180x180.png') }}">
-    <meta name="msapplication-TileImage" content="{{ asset('assets/img/cropped-Artboard-1-copy-2-270x270.png') }}">
-
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=download" />
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
@@ -155,6 +148,7 @@
         }
 
         .chat .chat-details p {
+            white-space: pre-wrap;
             font-size: 1rem;
             padding: 0 50px 0 25px;
             color: var(--text-color);
@@ -360,172 +354,139 @@
         const chatContainer = document.querySelector(".chat-container");
         const themeButton = document.querySelector("#theme-btn");
         const deleteButton = document.querySelector("#delete-btn");
-
+    
         let userText = null;
-
+    
         const loadDataFromLocalstorage = () => {
             const themeColor = localStorage.getItem("themeColor");
             document.body.classList.toggle("light-mode", themeColor === "light_mode");
             themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
-
+    
             const defaultText = `<div class="default-text">
                 <h1>MoP-GPT</h1>
                 <p>Find, Edit, Publish.<br> Your chat history will be displayed here.</p>
             </div>`;
-
+    
             chatContainer.innerHTML = localStorage.getItem("all-chats") || defaultText;
             chatContainer.scrollTo(0, chatContainer.scrollHeight);
-        };
-
+        }
+    
         const createChatElement = (content, className) => {
             const chatDiv = document.createElement("div");
             chatDiv.classList.add("chat", className);
             chatDiv.innerHTML = content;
             return chatDiv;
-        };
-
-        
+        }
+    
         const getChatResponse = async (incomingChatDiv) => {
         const API_URL = "/search"; // Endpoint Laravel
         try {
         const response = await fetch(`${API_URL}?keyword=${userText}`);
         const data = await response.json();
         
-        const chatDetails = incomingChatDiv.querySelector(".chat-details");
-        
         if (data && data.length > 0) {
-        const { title, file, pdf_file } = data[0];
+        const { title, description, file, pdf_file } = data[0];
         
-        // ✅ Tambahkan gambar dengan src default
-        chatDetails.innerHTML = `
-        <img id="theme-img" src="{{ asset('assets/img/head_diamond_compnet.svg') }}" alt="chatbot-img">
-        <p>
-            <span style="text-align:left;">${title}</span>
-            ${pdf_file ? `<iframe src="/storage/${pdf_file}#toolbar=0&view=FitH;"></iframe>` : ""}
-        </p>
-        ${file ? `<a href="/storage/${file}" download><span class="material-symbols-outlined">download</span></a>` : ""}
-        `;
+        const chatDetails = incomingChatDiv.querySelector(".chat-details");
+        const pElement = document.createElement("p");
+        pElement.innerHTML = `<span>${title}</span>`;
+        chatDetails.appendChild(pElement);
         
+        // Jika file adalah PDF, tampilkan di iframe
+        if (pdf_file) {
+        const fileUrl = `/storage/${pdf_file}#toolbar=0&view=FitH;`;
+        const pdfPreview = document.createElement("iframe");
+        pdfPreview.src = fileUrl;
+        pdfPreview.style.width = "100%";
+        pdfPreview.style.height = "100vh";
+        pdfPreview.style.border = "none";
+        pElement.appendChild(pdfPreview);
+        }
         } else {
-        chatDetails.innerHTML = `
-        <img id="theme-img" src="{{ asset('assets/img/head_diamond_compnet.svg') }}" alt="chatbot-img">
-        <p>Tidak ada hasil yang ditemukan.</p>
-        `;
+        const errorText = document.createElement("p");
+        errorText.textContent = "Tidak ada hasil yang ditemukan.";
+        incomingChatDiv.querySelector(".chat-details").appendChild(errorText);
         }
-        
-        // ✅ Pastikan gambar diperbarui setelah elemen ada
-        setTimeout(updateThemeImage, 0);
-        
         } catch (error) {
-        console.error("Error fetching data:", error);
-        chatDetails.innerHTML = `
-        <img id="theme-img" src="{{ asset('assets/img/head_diamond_compnet.svg') }}" alt="chatbot-img">
-        <p>Oops! Terjadi kesalahan saat mengambil data.</p>
-        `;
-        
-        setTimeout(updateThemeImage, 0);
+        const errorText = document.createElement("p");
+        errorText.textContent = "Oops! Terjadi kesalahan saat mengambil data.";
+        incomingChatDiv.querySelector(".chat-details").appendChild(errorText);
         }
         
-        // ✅ Perbaiki: Hapus elemen loading hanya jika ada
-        const typingAnimation = incomingChatDiv.querySelector(".typing-animation");
-        if (typingAnimation) typingAnimation.remove();
-        
+        incomingChatDiv.querySelector(".typing-animation").remove();
         chatContainer.scrollTo(0, chatContainer.scrollHeight);
         };
-
+        
         const showTypingAnimation = () => {
             const html = `<div class="chat-content">
                 <div class="chat-details">
-                    <img id="theme-img" src="{{ asset('assets/img/head_diamond_compnet.svg') }}" alt="chatbot-img">
+                    <img src="https://www.barcodescanner.de/media/38/be/04/1686304229/blogbeitragbildchatgpt.png" alt="chatbot-img">
                     <div class="typing-animation">
                         <div class="typing-dot" style="--delay: 0.2s"></div>
                         <div class="typing-dot" style="--delay: 0.3s"></div>
                         <div class="typing-dot" style="--delay: 0.4s"></div>
                     </div>
                 </div>
+                <span onclick="copyResponse(this)" class="material-symbols-rounded">content_copy</span>
             </div>`;
-
+    
             const incomingChatDiv = createChatElement(html, "incoming");
             chatContainer.appendChild(incomingChatDiv);
             chatContainer.scrollTo(0, chatContainer.scrollHeight);
             getChatResponse(incomingChatDiv);
-        };
-
+        }
+    
         const handleOutgoingChat = () => {
             userText = chatInput.value.trim();
             if (!userText) return;
-
+    
             chatInput.value = "";
             chatInput.style.height = `${initialInputHeight}px`;
-
+    
             const html = `<div class="chat-content">
                 <div class="chat-details">
                     <img src="https://img.freepik.com/free-vector/chatbot-chat-message-vectorart_78370-4104.jpg" alt="user-img">
                     <p>${userText}</p>
                 </div>
             </div>`;
-
+    
             const outgoingChatDiv = createChatElement(html, "outgoing");
             chatContainer.querySelector(".default-text")?.remove();
             chatContainer.appendChild(outgoingChatDiv);
             chatContainer.scrollTo(0, chatContainer.scrollHeight);
             setTimeout(showTypingAnimation, 500);
-        };
-
+        }
+    
         deleteButton.addEventListener("click", () => {
             if (confirm("Are you sure you want to delete all the chats?")) {
                 localStorage.removeItem("all-chats");
                 loadDataFromLocalstorage();
             }
         });
-
-        // Fungsi untuk mengupdate gambar berdasarkan tema
-        const updateThemeImage = () => {
-        const themeImg = document.querySelector("#theme-img");
-        if (!themeImg) return; // ✅ Pastikan elemen ada sebelum diubah
-        
-        const isLightMode = document.body.classList.contains("light-mode");
-        themeImg.src = isLightMode
-        ? "{{ asset('assets/img/head_diamond_compnet.svg') }}" // Light mode
-        : "{{ asset('assets/img/head_diamond_compnet_dark.svg') }}"; // Dark mode
-        };
-
-        // Saat tombol tema diklik, ubah gambar sesuai mode
+    
         themeButton.addEventListener("click", () => {
             document.body.classList.toggle("light-mode");
-            localStorage.setItem("themeColor", document.body.classList.contains("light-mode") ? "light_mode" : "dark_mode");
+            localStorage.setItem("themeColor", themeButton.innerText);
             themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
-
-            updateThemeImage(); // Panggil fungsi untuk memperbarui gambar
         });
-
-        // Saat halaman dimuat, atur tema dan gambar sesuai preferensi yang tersimpan
-        document.addEventListener("DOMContentLoaded", () => {
-            const themeColor = localStorage.getItem("themeColor");
-            if (themeColor === "light_mode") {
-                document.body.classList.add("light-mode");
-            }
-            updateThemeImage(); // Perbarui gambar sesuai tema saat halaman dimuat
-        });
-
+    
         const initialInputHeight = chatInput.scrollHeight;
-
+    
         chatInput.addEventListener("input", () => {
             chatInput.style.height = `${initialInputHeight}px`;
             chatInput.style.height = `${chatInput.scrollHeight}px`;
         });
-
+    
         chatInput.addEventListener("keydown", (e) => {
             if (e.key === "Enter" && !e.shiftKey && window.innerWidth > 800) {
                 e.preventDefault();
                 handleOutgoingChat();
             }
         });
-
+    
         loadDataFromLocalstorage();
         sendButton.addEventListener("click", handleOutgoingChat);
     </script>
-
     </body>
 
 </html>
