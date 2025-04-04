@@ -43,6 +43,12 @@ class StudentResource extends Resource
     protected static ?string $navigationGroup = 'Students Management';
     protected static ?string $recordTitleAttribute = 'first_name';
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
+
     public static function getGlobalSearchResultTitle(Model $record): string
     {
         return $record->last_name;

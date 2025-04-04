@@ -29,6 +29,12 @@ class DepartmentResource extends Resource
     protected static ?string $navigationGroup = 'System Management';
     protected static ?int $navigationSort = 4;
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
+
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
