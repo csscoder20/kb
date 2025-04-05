@@ -137,12 +137,20 @@ class Basicsetting extends Page
     {
         $data = $this->form->getState();
 
+        // $basic = Basic::first();
+        // if ($basic) {
+        //     $basic->update($data);
+        // } else {
+        //     Basic::create($data);
+        // }
+
         $basic = Basic::first();
         if ($basic) {
-            $basic->update($data);
+            $basic->fill($data)->save(); // ✅ Observer akan terpanggil!
         } else {
-            Basic::create($data);
+            Basic::create($data); // Ini tetap bisa panggil created()
         }
+
 
         Notification::make()
             ->title('Settings Updated')

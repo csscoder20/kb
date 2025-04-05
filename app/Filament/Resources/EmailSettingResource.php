@@ -2,20 +2,20 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\EmailSettingResource\Pages;
-use App\Filament\Resources\EmailSettingResource\RelationManagers;
-use App\Models\EmailSetting;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\EmailSettings;
+use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\EmailSettingResource\Pages;
+use App\Filament\Resources\EmailSettingResource\RelationManagers;
 
 class EmailSettingResource extends Resource
 {
-    protected static ?string $model = EmailSetting::class;
+    protected static ?string $model = EmailSettings::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-envelope';
     protected static ?string $modelLabel = 'Email';

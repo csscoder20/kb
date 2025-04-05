@@ -48,9 +48,9 @@ class UserResource extends Resource
                     ->email()
                     ->required()
                     ->maxLength(255),
-                Forms\Components\DateTimePicker::make('email_verified_at')
-                    ->required()
-                    ->native(false),
+                // Forms\Components\DateTimePicker::make('email_verified_at')
+                //     ->required()
+                //     ->native(false),
                 // ->displayFormat('d/m/Y'),
                 Forms\Components\TextInput::make('password')
                     ->password()
@@ -90,11 +90,11 @@ class UserResource extends Resource
                     ->searchable()
                     ->disableClick()
                     ->copyable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->disableClick(),
+                // Tables\Columns\TextColumn::make('email_verified_at')
+                //     ->dateTime()
+                //     ->sortable()
+                //     ->toggleable(isToggledHiddenByDefault: true)
+                //     ->disableClick(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
