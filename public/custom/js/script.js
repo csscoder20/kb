@@ -5,12 +5,12 @@ const themeButton = document.querySelector("#theme-btn");
 const deleteButton = document.querySelector("#delete-btn");
 
 let userText = null;
-const userName = "User    "; // Ganti dengan nama pengguna yang sesuai
+// const nameToDisplay = window.userName ?? "Guest";
 const themeImgLight = "assets/img/head_diamond_compnet.svg";
 const themeImgDark = "assets/img/head_diamond_compnet_dark.svg";
 
-const userDark = "assets/img/light-user-img.svg";
-const userLight = "assets/img/dark-user-img.svg";
+const userDark = "assets/img/head-robot-white.svg";
+const userLight = "assets/img/head-robot.svg";
 
 const loadDataFromLocalstorage = () => {
     const themeColor = localStorage.getItem("themeColor");
@@ -52,22 +52,32 @@ const getChatResponse = async (incomingChatDiv) => {
         const currentThemeImg = document.body.classList.contains("light-mode") ? themeImgLight : themeImgDark;
 
         if (data && data.length > 0) {
-            const { title, file, pdf_file } = data[0];
+            const {
+                title,
+                file,
+                pdf_file
+            } = data[0];
 
             chatDetails.innerHTML = `
+            <div class="row incomingHeader">
                 <img id="theme-img" src="${currentThemeImg}" alt="chatbot-img">
-                <p>
-                    <span style="text-align:left;">${title}</span>
-                    ${pdf_file ? `<iframe src="/storage/${pdf_file}#toolbar=0&view=FitH;"></iframe>` : ""}
-                </p>
+                <p style="text-align:left;">${title}</p>
                 ${file ? `<a href="/storage/${file}" download><span class="material-symbols-outlined">download</span></a>` : ""}
-            `;
+            </div>
+        ${pdf_file ? `
+                <div class="row incomingBody">
+                    <iframe src="/storage/${pdf_file}#toolbar=0&view=FitH;"></iframe>
+                </div>` : ""}
+        `;
         } else {
             chatDetails.innerHTML = `
+            <div class="row">
                 <img id="theme-img" src="${currentThemeImg}" alt="chatbot-img">
                 <p>Data yang Anda cari belum ada. Silakan coba dengan kata kunci yang lain!</p>
-            `;
+            </div>
+        `;
         }
+
 
         // Simpan chat incoming ke localStorage
         saveChatToLocalStorage(incomingChatDiv.outerHTML);
@@ -114,7 +124,7 @@ const showTypingAnimation = () => {
 const handleOutgoingChat = () => {
     // Tentukan gambar berdasarkan mode
     const currentUserImg = document.body.classList.contains("light-mode") ? userLight : userDark;
-
+    const userName = window.authUser?.name ?? "Guest";
     userText = chatInput.value.trim();
     if (!userText) return;
 
@@ -135,7 +145,7 @@ const handleOutgoingChat = () => {
 
     // Simpan chat ke localStorage
     saveChatToLocalStorage(outgoingChatDiv.outerHTML);
-    
+
     setTimeout(showTypingAnimation, 500);
 };
 

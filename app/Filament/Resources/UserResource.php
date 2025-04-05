@@ -16,6 +16,7 @@ use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\UserResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\UserResource\RelationManagers;
+use Filament\Infolists\Components\ImageEntry;
 
 class UserResource extends Resource
 {
@@ -55,6 +56,21 @@ class UserResource extends Resource
                     ->password()
                     ->required()
                     ->maxLength(255),
+                Forms\Components\FileUpload::make('profile_picture')
+                    ->image()
+                    ->directory('profile-pictures')
+                    ->imageEditor()
+                    ->previewable()
+                    ->maxSize(2048),
+
+                Forms\Components\Select::make('role')
+                    ->options([
+                        'superadmin' => 'Super Admin',
+                        'admin' => 'Admin',
+                        'guest' => 'Guest',
+                    ])
+                    ->required()
+                    ->default('guest'),
             ]);
     }
 
@@ -62,8 +78,13 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('profile_picture')
+                    ->circular()
+                    ->disableClick()
+                    ->defaultImageUrl(url('/default-avatar.png')),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
+                    ->label('Nama Lengkap')
                     ->disableClick(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable()
@@ -72,6 +93,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->disableClick(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -83,6 +105,14 @@ class UserResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->disableClick(),
+                Tables\Columns\TextColumn::make('role')
+                    ->badge()
+                    ->disableClick()
+                    ->color(fn(string $state): string => match ($state) {
+                        'superadmin' => 'danger',
+                        'admin' => 'warning',
+                        'guest' => 'gray',
+                    }),
             ])->emptyStateDescription('Once you write your first post, it will appear here.')
             ->filters([
                 //
@@ -111,8 +141,20 @@ class UserResource extends Resource
             ->schema([
                 Section::make('User Details')
                     ->schema([
+                        ImageEntry::make('profile_picture')
+                            ->label('Profile Picture')
+                            ->circular()
+                            ->hiddenLabel(), // optional
                         TextEntry::make('name'),
                         TextEntry::make('email'),
+                        TextEntry::make('role')
+                            ->badge()
+                            ->color(fn(string $state): string => match ($state) {
+                                'superadmin' => 'danger',
+                                'admin' => 'warning',
+                                'guest' => 'gray',
+                                default => 'gray',
+                            }),
                         TextEntry::make('email_verified_at'),
                         TextEntry::make('password')->columnSpanFull(),
                     ])->columns(3)

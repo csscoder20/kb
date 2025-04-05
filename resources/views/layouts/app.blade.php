@@ -25,12 +25,9 @@
     @include('partials.footer')
 
     <script src="{{ asset('custom/js/script.js') }}"></script>
-    {{-- <script>
-        const userName = @json(auth()->user()->name ?? 'Guest');
-        const themeImgSrc = @json(asset('assets/img/head_diamond_compnet.svg'));
-        const themeImgLight = @json(asset('assets/img/head_diamond_compnet.svg'));
-        const themeImgDark = @json(asset('assets/img/head_diamond_compnet_dark.svg'));
-    </script> --}}
+    <script>
+        window.authUser = @json(auth()->user());
+    </script>
 
     @stack('scripts')
 </body>
