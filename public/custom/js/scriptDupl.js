@@ -5,43 +5,32 @@ const themeButton = document.querySelector("#theme-btn");
 const deleteButton = document.querySelector("#delete-btn");
 
 let userText = null;
-
+// const nameToDisplay = window.userName ?? "Guest";
 const themeImgLight = "assets/img/head_diamond_compnet.svg";
 const themeImgDark = "assets/img/head_diamond_compnet_dark.svg";
+
 const userDark = "assets/img/head-robot-white.svg";
 const userLight = "assets/img/head-robot.svg";
 
-const initialInputHeight = chatInput.scrollHeight;
-
-const toggleControls = (isChatStarted) => {
-    if (isChatStarted) {
-        themeButton.classList.add("d-none");
-        deleteButton.classList.remove("d-none");
-    } else {
-        themeButton.classList.remove("d-none");
-        deleteButton.classList.add("d-none");
-    }
-};
-
-const loadDataFromSessionStorage = () => {
+const loadDataFromLocalstorage = () => {
     const themeColor = localStorage.getItem("themeColor");
     document.body.classList.toggle("light-mode", themeColor === "light_mode");
     themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
 
     const defaultText = `<div class="default-text">
-        <h1>MoP-GPT</h1>
-        <p class="text-muted">Find, Edit, Publish.<br><span class="text-danger">All your chat history will be lost after the browser is closed.</span></p>
-    </div>`;
+                <h1>MoP-GPT</h1>
+                <p>Find, Edit, Publish.<br><span>All your chat history will be lost after the page is reloaded.</span></p>
+            </div>`;
 
-    const allChats = sessionStorage.getItem("all-chats") || defaultText;
+    // Ambil semua chat dari localStorage
+    const allChats = localStorage.getItem("all-chats") || defaultText;
 
+    // Ganti gambar pengguna sesuai tema
     const currentUserImg = document.body.classList.contains("light-mode") ? userLight : userDark;
     const updatedChats = allChats.replace(/src="assets\/img\/user_(dark|white)\.jpg"/g, `src="${currentUserImg}"`);
 
     chatContainer.innerHTML = updatedChats;
     chatContainer.scrollTo(0, chatContainer.scrollHeight);
-
-    toggleControls(allChats !== defaultText);
 };
 
 const createChatElement = (content, className) => {
@@ -52,44 +41,68 @@ const createChatElement = (content, className) => {
 };
 
 const getChatResponse = async (incomingChatDiv) => {
-    const API_URL = "/search";
+    const API_URL = "/search"; // Endpoint Laravel
     try {
         const response = await fetch(`${API_URL}?keyword=${userText}`);
         const data = await response.json();
 
         const chatDetails = incomingChatDiv.querySelector(".chat-details");
 
+        // Tentukan gambar berdasarkan mode
+        const currentThemeImg = document.body.classList.contains("light-mode") ? themeImgLight : themeImgDark;
+
         if (data && data.length > 0) {
-            const { title, file, pdf_file } = data[0];
+            const {
+                title,
+                file,
+                pdf_file
+            } = data[0];
+
+        //     chatDetails.innerHTML = `
+        //     <div class="row incomingHeader">
+        //         <img id="theme-img" src="${currentThemeImg}" alt="chatbot-img">
+        //         <p>MoP-GPT</p>
+        //         <p style="text-align:left;">${title}</p>
+        //         ${file ? `<a href="/storage/${file}" download><span class="material-symbols-outlined">download</span></a>` : ""}
+        //     </div>
+        // ${pdf_file ? `
+
             chatDetails.innerHTML = `
-                <div class="incomingHeader">
-                    <p>${title}</p>
-                    ${file ? `<a href="/storage/${file}" download><span class="material-symbols-outlined">download</span></a>` : ""}
-                </div>
-                ${pdf_file ? `
-                    <div class="row incomingBody">
-                        <iframe src="/storage/${pdf_file}#toolbar=0&view=FitH;"></iframe>
-                    </div>` : ""}
-            `;
+            <div class="row incomingHeader">
+                <p style="text-align:left;">${title}</p>
+                ${file ? `<a href="/storage/${file}" download><span class="material-symbols-outlined">download</span></a>` : ""}
+            </div>
+        ${pdf_file ? `
+                <div class="row incomingBody">
+                    <iframe src="/storage/${pdf_file}#toolbar=0&view=FitH;"></iframe>
+                </div>` : ""}
+        `;
         } else {
             chatDetails.innerHTML = `
-                <div class="row">
-                    <p>Data yang Anda cari belum ada. Silakan coba dengan kata kunci yang lain!</p>
-                </div>
-            `;
+            <div class="row">
+                <img id="theme-img" src="${currentThemeImg}" alt="chatbot-img">
+                <p>MoP-GPT</p>
+                <p>Data yang Anda cari belum ada. Silakan coba dengan kata kunci yang lain!</p>
+            </div>
+        `;
         }
 
-        saveChatToSessionStorage(incomingChatDiv.outerHTML);
+
+        // Simpan chat incoming ke localStorage
+        saveChatToLocalStorage(incomingChatDiv.outerHTML);
+
         setTimeout(updateThemeImage, 0);
     } catch (error) {
         console.error("Error fetching data:", error);
-        const chatDetails = incomingChatDiv.querySelector(".chat-details");
+        const currentThemeImg = document.body.classList.contains("light-mode") ? themeImgLight : themeImgDark;
         chatDetails.innerHTML = `
-            <img id="theme-img" src="${themeImgDark}" alt="chatbot-img">
+            <img id="theme-img" src="${currentThemeImg}" alt="chatbot-img">
             <p>Oops! Terjadi kesalahan saat mengambil data.</p>
         `;
 
-        saveChatToSessionStorage(incomingChatDiv.outerHTML);
+        // Simpan chat incoming ke localStorage meskipun terjadi kesalahan
+        saveChatToLocalStorage(incomingChatDiv.outerHTML);
+
         setTimeout(updateThemeImage, 0);
     }
 
@@ -118,12 +131,21 @@ const showTypingAnimation = () => {
 };
 
 const handleOutgoingChat = () => {
+    // Tentukan gambar berdasarkan mode
     const currentUserImg = document.body.classList.contains("light-mode") ? userLight : userDark;
+    const userName = window.authUser?.name ?? "Guest";
     userText = chatInput.value.trim();
     if (!userText) return;
 
     chatInput.value = "";
     chatInput.style.height = `${initialInputHeight}px`;
+
+    // const html = `<div class="chat-content">
+    //     <div class="chat-details">
+    //         <img src="${currentUserImg}" alt="user-img">
+    //         <p><strong>${userName}</strong><br> <span>${userText}</span></p>
+    //     </div>
+    // </div>`;
 
     const html = `<div class="chat-content">
         <div class="chat-details">
@@ -136,24 +158,16 @@ const handleOutgoingChat = () => {
     chatContainer.appendChild(outgoingChatDiv);
     chatContainer.scrollTo(0, chatContainer.scrollHeight);
 
-    saveChatToSessionStorage(outgoingChatDiv.outerHTML);
-
-    // Tampilkan tombol delete, sembunyikan tombol tema
-    toggleControls(true);
+    // Simpan chat ke localStorage
+    saveChatToLocalStorage(outgoingChatDiv.outerHTML);
 
     setTimeout(showTypingAnimation, 500);
 };
 
-const saveChatToSessionStorage = (chatHTML) => {
-    let allChats = sessionStorage.getItem("all-chats") || "";
-    allChats += chatHTML;
-    sessionStorage.setItem("all-chats", allChats);
-};
-
-const updateThemeImage = () => {
-    const themeImg = document.querySelector("#theme-img");
-    if (!themeImg) return;
-    themeImg.src = document.body.classList.contains("light-mode") ? themeImgLight : themeImgDark;
+const saveChatToLocalStorage = (chatHTML) => {
+    let allChats = localStorage.getItem("all-chats") || "";
+    allChats += chatHTML; // Tambahkan chat baru
+    localStorage.setItem("all-chats", allChats); // Simpan kembali ke localStorage
 };
 
 const updateAllChatImages = () => {
@@ -162,11 +176,27 @@ const updateAllChatImages = () => {
 
     chatImages.forEach((img) => {
         if (img.id === "theme-img") {
-            img.src = document.body.classList.contains("light-mode") ? themeImgLight : themeImgDark;
+            const currentThemeImg = document.body.classList.contains("light-mode") ? themeImgLight : themeImgDark;
+            img.src = currentThemeImg; // Perbarui src gambar chatbot sesuai tema
         } else {
-            img.src = currentUserImg;
+            img.src = currentUserImg; // Perbarui src gambar pengguna sesuai tema
         }
     });
+};
+
+deleteButton.addEventListener("click", () => {
+    if (confirm("Are you sure you want to delete all the chats?")) {
+        localStorage.removeItem("all-chats");
+        loadDataFromLocalstorage();
+    }
+});
+
+const updateThemeImage = () => {
+    const themeImg = document.querySelector("#theme-img");
+    if (!themeImg) return;
+
+    const isLightMode = document.body.classList.contains("light-mode");
+    themeImg.src = isLightMode ? themeImgLight : themeImgDark;
 };
 
 themeButton.addEventListener("click", () => {
@@ -174,17 +204,8 @@ themeButton.addEventListener("click", () => {
     localStorage.setItem("themeColor", document.body.classList.contains("light-mode") ? "light_mode" : "dark_mode");
     themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
 
-    updateThemeImage();
-    updateAllChatImages();
-});
-
-deleteButton.addEventListener("click", () => {
-    if (confirm("Are you sure you want to delete all the chats?")) {
-        localStorage.removeItem("all-chats");
-        sessionStorage.removeItem("all-chats");
-        loadDataFromSessionStorage();
-        toggleControls(false);
-    }
+    updateThemeImage(); // Panggil fungsi untuk memperbarui gambar
+    updateAllChatImages(); // Perbarui semua gambar chat sesuai tema
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -192,10 +213,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (themeColor === "light_mode") {
         document.body.classList.add("light-mode");
     }
-
-    updateThemeImage();
-    loadDataFromSessionStorage();
+    updateThemeImage(); // Perbarui gambar sesuai tema saat halaman dimuat
+    loadDataFromLocalstorage(); // Load data dari localStorage saat halaman dimuat
 });
+
+const initialInputHeight = chatInput.scrollHeight;
 
 chatInput.addEventListener("input", () => {
     chatInput.style.height = `${initialInputHeight}px`;

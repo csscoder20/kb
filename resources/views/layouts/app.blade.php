@@ -12,6 +12,7 @@
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded&display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('custom/css/style.css') }}">
 
     @stack('styles')
@@ -20,15 +21,36 @@
 <body>
     @include('partials.header')
 
-    @yield('content')
+    <div class="container-lg">
+        @yield('content')
+    </div>
 
     @include('partials.footer')
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js">
+    </script>
     <script src="{{ asset('custom/js/script.js') }}"></script>
     <script>
         window.authUser = @json(auth()->user());
     </script>
-
+    <script>
+        function scrollToBottom() {
+    const chatContainer = document.querySelector('.chat-container');
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+    
+    scrollToBottom();
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    tooltipTriggerList.forEach(function (el) {
+    new bootstrap.Tooltip(el, {
+    trigger: 'hover' // Hanya muncul saat hover
+    });
+    });
+    });
+    </script>
     @stack('scripts')
 </body>
 
