@@ -8,19 +8,31 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 #[ObservedBy([BasicObserver::class])]
+
 class Basic extends Model
 {
-    use HasFactory;
+    protected $table = 'basics';
+    protected $fillable = ['key', 'value'];
 
-    protected $fillable = [
-        'title',
-        'description',
-        'banner',
-        'banner_description',
-        'homepage',
-        'color',
-        'is_darkmode_active',
-        'logo',
-        'favicon'
-    ];
+    public static function getValue(string $key, mixed $default = null): mixed
+    {
+        return static::where('key', $key)->value('value') ?? $default;
+    }
+
+    public static function setValue(string $key, mixed $value): void
+    {
+        static::updateOrCreate(['key' => $key], ['value' => $value]);
+    }
+
+    public static function getAllAsArray(): array
+    {
+        return static::all()->pluck('value', 'key')->toArray();
+    }
+
+    public static function setBulk(array $data): void
+    {
+        foreach ($data as $key => $value) {
+            static::setValue($key, $value);
+        }
+    }
 }

@@ -22,38 +22,38 @@ class EmailSettingsObserver
     public function updated(EmailSettings $emailSettings): void
     {
         $recepient = Auth::user();
-        $changes = $emailSettings->getChanges();
-        $original = $emailSettings->getOriginal();
 
-        $fieldsToCheck = [
-            'name'  => 'Sender Name',
-            'email'  => 'Email Address',
-            'driver'  => 'Driver',
+        $old = $emailSettings->getOriginal('value');
+        $new = $emailSettings->value;
+        $key = $emailSettings->key;
+
+        // Daftar label lebih ramah pengguna
+        $labels = [
+            'name'        => 'Sender Name',
+            'email'       => 'Email Address',
+            'driver'      => 'Mail Driver',
             'secret_key'  => 'Secret Key',
-            'domain'  => 'Domain',
-            'region'  => 'Region',
-            'host'  => 'Host',
-            'port'  => 'Port',
+            'domain'      => 'Domain',
+            'region'      => 'Region',
+            'host'        => 'Mail Host',
+            'port'        => 'Mail Port',
             'encryption'  => 'Encryption',
-            'username'  => 'Username',
-            'password'  => 'Password',
-
+            'username'    => 'Username',
+            'password'    => 'Password',
         ];
 
-        $messages = [];
+        // Field yang bersifat sensitif
+        $sensitiveFields = ['password', 'secret_key'];
 
-        foreach ($fieldsToCheck as $field => $label) {
-            if (array_key_exists($field, $changes)) {
-                $old = $original[$field] ?? '(kosong)';
-                $new = $changes[$field] ?? '(kosong)';
-                $messages[] = "{$label} has updated from \"{$old}\" to \"{$new}\"";
-            }
-        }
+        $label = $labels[$key] ?? $key;
 
-        if (!empty($messages)) {
+        if ($old !== $new) {
+            $oldDisplay = in_array($key, $sensitiveFields) ? '***' : $old;
+            $newDisplay = in_array($key, $sensitiveFields) ? '***' : $new;
+
             Notification::make()
-                ->title("Email Setting '{$emailSettings->title}' Updated")
-                ->body(implode("\n", $messages))
+                ->title("Email Setting Updated")
+                ->body("Email Setting {$label} has changed from \"{$oldDisplay}\" to \"{$newDisplay}\".")
                 ->sendToDatabase($recepient);
         }
     }

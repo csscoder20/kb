@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,22 +12,11 @@ return new class extends Migration
     {
         Schema::create('email_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email');
-            $table->enum('driver', ['mailgun', 'smtp'])->default('mailgun');
-            $table->string('secret_key')->nullable(); // Bisa kosong jika SMTP dipilih
-            $table->string('domain')->nullable();
-            $table->enum('region', ['US', 'EU', 'Asia', 'AU'])->nullable();
-            $table->string('host')->nullable(); // Bisa kosong jika Mailgun dipilih
-            $table->unsignedSmallInteger('port')->nullable();
-            $table->enum('encryption', ['ssl', 'tls', 'none'])->nullable();
-            $table->string('username')->nullable();
-            $table->string('password')->nullable();
-            $table->boolean('status')->default(true);
+            $table->string('key')->unique();   // misalnya: name, email, driver, etc
+            $table->text('value')->nullable(); // bisa simpan string, angka, dll
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.

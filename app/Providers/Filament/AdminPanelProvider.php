@@ -17,6 +17,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Models\Basic;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -27,10 +28,12 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->brandName('KB')
-            ->brandLogo(asset('assets/img/logo-white-ctc.png'))
+            ->brandName(Basic::getValue('title'))
+            ->darkModeBrandLogo(asset('storage/' . Basic::getValue('logo_dark')))
+            ->brandLogo(asset('storage/' . Basic::getValue('logo_light')))
             ->brandLogoHeight('3rem')
-            ->favicon(asset('assets/img/LOGO-COMPNET-CTC01.png'))
+            ->favicon(asset('storage/' . Basic::getValue('favicon')))
+
             ->colors([
                 'danger' => Color::Red,
                 'gray' => Color::Slate,
@@ -53,6 +56,8 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
+                \App\Filament\Pages\Emailsetting::class,
+                \App\Filament\Pages\Basicsetting::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([

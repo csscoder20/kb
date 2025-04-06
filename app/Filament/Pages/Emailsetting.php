@@ -2,39 +2,35 @@
 
 namespace App\Filament\Pages;
 
-use App\Models\EmailSettings;
 use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Pages\Page;
+use App\Models\EmailSettings;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Concerns\InteractsWithForms;
 
 class Emailsetting extends Page
 {
     use InteractsWithForms;
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
+    protected static ?string $navigationIcon = 'heroicon-o-envelope';
     protected static string $view = 'filament.pages.emailsetting';
-    protected static ?string $navigationLabel = 'Email Setting';
-    protected static ?string $modelLabel = 'Email Settings';
+    protected static ?string $navigationLabel = 'Email';
+    protected static ?string $modelLabel = 'Email';
     protected static ?string $navigationGroup = 'Settings';
-    protected static ?string $title = 'Email Setting';
+    protected static ?string $title = 'Email';
 
     public ?array $data = [];
 
     public function mount()
     {
-        $this->form->fill(
-            EmailSettings::first()?->toArray() ?? [] // Ambil data dari tabel email_settings
-        );
+        $this->form->fill(EmailSettings::getAllAsArray());
     }
+
 
     public function form(Form $form): Form
     {
@@ -134,17 +130,11 @@ class Emailsetting extends Page
     public function save()
     {
         $data = $this->form->getState();
-
-        $emailSetting = EmailSettings::first(); // Gunakan EmailSetting, bukan Basic
-        if ($emailSetting) {
-            $emailSetting->update($data);
-        } else {
-            EmailSettings::create($data);
-        }
+        EmailSettings::setBulk($data);
 
         Notification::make()
             ->title('Settings Updated')
-            ->body('Email setting has been successfully updated.')
+            ->body('Email settings have been successfully updated.')
             ->success()
             ->send();
     }

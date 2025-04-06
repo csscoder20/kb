@@ -25,6 +25,7 @@
             </div>
         </div>
     </div>
-    <p class="text-muted text-center mb-0 text-small">&copy; {{ date('Y') }} MoP-GPT. All rights reserved.</p>
+    <p class="text-muted text-center mb-0 text-small">&copy; {{ date('Y') }} MoP-GPT. All rights reserved. | Made
+        with <span class="text-danger"> &#10084;</span> by <strong>CSP Engineer</strong></p>
 </div>
 @endsection

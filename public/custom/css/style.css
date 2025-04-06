@@ -32,12 +32,8 @@ body {
     background: var(--outgoing-chat-bg);
 }
 
-
 /* Chats container styling */
-
 .chat-container {
-    /* overflow-y: auto;
-    max-height: 100vh; */
     padding-bottom: 150px;
 }
 
@@ -102,35 +98,17 @@ textarea)::-webkit-scrollbar-thumb {
     }
 
 .chat-container .chat.outgoing .chat-details {
-        /* text-align: right;
-        width: 60%;
-        justify-content: end;
-        align-items: end;
-        margin-left: 40%;
-        background-color: #f9f9f9;
-        padding: 15px;
-        border-radius: 10px;
-        border: 2px solid #f2f0f0; */   
         text-align: right;
         justify-content: end;
         align-items: end;
-        /* background-color: #0f172a; */
         padding: 15px;
         border-radius: 10px;
-        /* border: 2px solid #0f172a; */
     }
 }
 
-/* .chat-container .chat.outgoing .chat-details {
-    text-align: right;
-    justify-content: end;
-    align-items: end;
-    background-color: #f9f9f9;
-    padding: 15px;
-    border-radius: 10px;
-    border: 2px solid #f2f0f0;
-} */
-
+.incomingItem span.badge {
+    font-size: 9px;
+}
 
 .chat-container .chat.incoming .chat-content {
     border-radius: 10px;
@@ -346,13 +324,6 @@ body {
     align-items: center;
     height: 100vh;
 }
-/* 
-.chat-container {
-    overflow-y: auto;
-    max-height: 100vh;
-    padding-bottom: 0;
-} */
-
 
 .default-text {
     display: flex;
@@ -385,19 +356,6 @@ body {
     background: var(--incoming-chat-bg);
     border-radius: 30px;
 }
-/* 
-.chat-container {
-    padding: 25px 0;
-} */
-
-/* footer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    bottom: 0 !important;
-    height: 45px !important;
-} */
 
 body.dark-mode .material-symbols-outlined {
     color: white;
@@ -406,11 +364,6 @@ body.dark-mode .material-symbols-outlined {
 footer p {
     font-size: 12px;
     text-align: center;
-}
-
-.chat.incoming span.material-symbols-outlined {
-    background-color: #f7f7f8 !important;
-    border-radius: 5px;
 }
 
 .default-text span {
@@ -431,7 +384,6 @@ footer p {
     display: flex;
     align-items: center;
 }
-
 
 .fixed-bottom {
     height: 150px;
@@ -471,7 +423,6 @@ footer p {
     margin: 0;
     padding-right: 15px;
 }
-
 
 .typing-container.fixed-bottom p {
     font-size: .75rem;

@@ -5,37 +5,59 @@ const themeButton = document.querySelector("#theme-btn");
 const deleteButton = document.querySelector("#delete-btn");
 
 let userText = null;
+let config = null;
 
-const themeImgLight = "assets/img/head_diamond_compnet.svg";
-const themeImgDark = "assets/img/head_diamond_compnet_dark.svg";
-const userDark = "assets/img/head-robot-white.svg";
-const userLight = "assets/img/head-robot.svg";
+let themeImgLight, themeImgDark, userLight, userDark, logoLight, logoDark;
 
 const initialInputHeight = chatInput.scrollHeight;
 
 const toggleControls = (isChatStarted) => {
-    if (isChatStarted) {
-        themeButton.classList.add("d-none");
-        deleteButton.classList.remove("d-none");
-    } else {
-        themeButton.classList.remove("d-none");
-        deleteButton.classList.add("d-none");
+    themeButton.classList.toggle("d-none", isChatStarted);
+    deleteButton.classList.toggle("d-none", !isChatStarted);
+};
+
+const updateLogoImage = () => {
+    const logo = document.querySelector("#logo-img");
+    if (logo) {
+        logo.src = document.body.classList.contains("light-mode") ? logoLight : logoDark;
     }
 };
 
-const loadDataFromSessionStorage = () => {
+const loadDataFromSessionStorage = async () => {
     const themeColor = localStorage.getItem("themeColor");
-    document.body.classList.toggle("light-mode", themeColor === "light_mode");
-    themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
+    const isLightMode = themeColor === "light_mode";
+    document.body.classList.toggle("light-mode", isLightMode);
+    themeButton.innerText = isLightMode ? "dark_mode" : "light_mode";
+
+    // Fetch data basic dari backend
+    try {
+        const response = await fetch("/config");
+        config = await response.json();
+        // Set nilai gambar berdasarkan config
+        themeImgLight = config.logo_light;
+        themeImgDark = config.logo_dark;
+        logoLight = config.logo_light;
+        logoDark = config.logo_dark;
+
+    } catch (error) {
+        console.error("Failed to fetch config:", error);
+    }
+
+    // Set default fallback jika data kosong
+    const forumTitle = config?.title;
+    const forumDesc = config?.description;
+    const textAlert = config?.alert;
 
     const defaultText = `<div class="default-text">
-        <h1>MoP-GPT</h1>
-        <p class="text-muted">Find, Edit, Publish.<br><span class="text-danger">All your chat history will be lost after the browser is closed.</span></p>
+        <img id="logo-img" src="${document.body.classList.contains("light-mode") ? logoLight : logoDark}" alt="Logo">
+        <h1>${forumTitle}</h1>
+        <p class="text-muted">${forumDesc}<br><span class='text-warning text-small'>${textAlert}</span></p>
     </div>`;
 
     const allChats = sessionStorage.getItem("all-chats") || defaultText;
 
-    const currentUserImg = document.body.classList.contains("light-mode") ? userLight : userDark;
+    // Ganti user avatar tergantung tema
+    const currentUserImg = isLightMode ? userLight : userDark;
     const updatedChats = allChats.replace(/src="assets\/img\/user_(dark|white)\.jpg"/g, `src="${currentUserImg}"`);
 
     chatContainer.innerHTML = updatedChats;
@@ -43,6 +65,7 @@ const loadDataFromSessionStorage = () => {
 
     toggleControls(allChats !== defaultText);
 };
+
 
 const createChatElement = (content, className) => {
     const chatDiv = document.createElement("div");
@@ -52,31 +75,78 @@ const createChatElement = (content, className) => {
 };
 
 const getChatResponse = async (incomingChatDiv) => {
+    try {
+        const response = await fetch("/config");
+        config = await response.json();
+    } catch (error) {
+        console.error("Failed to fetch config:", error);
+    }
+
+    // Set default fallback jika data kosong
+    const textAvailableData = config?.text_available;
+    const textPDF = config?.pdf_unavailable;
+    const textUnavailableData = config?.text_unavailable;
+
     const API_URL = "/search";
     try {
         const response = await fetch(`${API_URL}?keyword=${userText}`);
         const data = await response.json();
-
         const chatDetails = incomingChatDiv.querySelector(".chat-details");
 
         if (data && data.length > 0) {
-            const { title, file, pdf_file } = data[0];
-            chatDetails.innerHTML = `
-                <div class="incomingHeader">
-                    <p>${title}</p>
-                    ${file ? `<a href="/storage/${file}" download><span class="material-symbols-outlined">download</span></a>` : ""}
-                </div>
-                ${pdf_file ? `
-                    <div class="row incomingBody">
-                        <iframe src="/storage/${pdf_file}#toolbar=0&view=FitH;"></iframe>
-                    </div>` : ""}
-            `;
+            let resultHTML = `<div class="incomingHeader mb-2"><p> ${data.length} ${textAvailableData}</p></div>`;
+
+            data.forEach((item, index) => {
+                const { title, file, pdf_file, tags } = item;
+                const badges = tags && tags.length
+                    ? tags.map(tag => `<span class="badge me-1" style="background-color: ${tag.color}; color: #fff;">${tag.name}</span>`).join(" ")
+                    : `<span class="badge bg-secondary">Uncategorized</span>`;
+
+                const previewHTML = pdf_file
+                    ? `<iframe src="/storage/${pdf_file}#toolbar=0&view=FitH;" width="100%" height="400px" style="border:1px solid #ccc; border-radius:6px;"></iframe>`
+                    : '<p class="text-muted">${textPDF}</p>';
+
+                if (data.length === 1) {
+                    resultHTML += `
+                        <div class="incomingItem mb-3">
+                            <div class="mb-1 d-flex justify-content-between align-items-center">
+                                <span>${title} ${badges}</span>
+                                <a href="/storage/${file}" download title="Download file">
+                                    <span class="material-symbols-outlined">download</span>
+                                </a>
+                            </div>
+                            <div class="pdf-preview">${previewHTML}</div>
+                        </div>
+                    `;
+                } else {
+                    resultHTML += `
+                        <div class="incomingItem mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="#" class="toggle-preview text-decoration-none mb-1" data-index="${index}">${title} ${badges}</a>
+                                <a href="/storage/${file}" download title="Download file">
+                                    <span class="material-symbols-outlined">download</span>
+                                </a>
+                            </div>
+                            <div class="pdf-preview" id="pdf-preview-${index}" style="display:none;">${previewHTML}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            chatDetails.innerHTML = resultHTML;
+
+            if (data.length > 1) {
+                chatDetails.querySelectorAll(".toggle-preview").forEach(anchor => {
+                    anchor.addEventListener("click", (e) => {
+                        e.preventDefault();
+                        const index = anchor.getAttribute("data-index");
+                        const preview = chatDetails.querySelector(`#pdf-preview-${index}`);
+                        preview.style.display = preview.style.display === "none" ? "block" : "none";
+                    });
+                });
+            }
         } else {
-            chatDetails.innerHTML = `
-                <div class="row">
-                    <p>Data yang Anda cari belum ada. Silakan coba dengan kata kunci yang lain!</p>
-                </div>
-            `;
+            chatDetails.innerHTML = `<div class="row"><p>${textUnavailableData}</p></div>`;
         }
 
         saveChatToSessionStorage(incomingChatDiv.outerHTML);
@@ -88,7 +158,6 @@ const getChatResponse = async (incomingChatDiv) => {
             <img id="theme-img" src="${themeImgDark}" alt="chatbot-img">
             <p>Oops! Terjadi kesalahan saat mengambil data.</p>
         `;
-
         saveChatToSessionStorage(incomingChatDiv.outerHTML);
         setTimeout(updateThemeImage, 0);
     }
@@ -100,9 +169,12 @@ const getChatResponse = async (incomingChatDiv) => {
 };
 
 const showTypingAnimation = () => {
+    const isLightMode = document.body.classList.contains("light-mode");
+    const currentThemeImg = isLightMode ? themeImgLight : themeImgDark;
+
     const html = `<div class="chat-content">
         <div class="chat-details">
-            <img id="theme-img" src="${themeImgDark}" alt="chatbot-img">
+            <img id="theme-img" src="${currentThemeImg}" alt="chatbot-img">
             <div class="typing-animation">
                 <div class="typing-dot" style="--delay: 0.2s"></div>
                 <div class="typing-dot" style="--delay: 0.3s"></div>
@@ -110,7 +182,7 @@ const showTypingAnimation = () => {
             </div>
         </div>
     </div>`;
-
+    
     const incomingChatDiv = createChatElement(html, "incoming");
     chatContainer.appendChild(incomingChatDiv);
     chatContainer.scrollTo(0, chatContainer.scrollHeight);
@@ -126,9 +198,7 @@ const handleOutgoingChat = () => {
     chatInput.style.height = `${initialInputHeight}px`;
 
     const html = `<div class="chat-content">
-        <div class="chat-details">
-            <p>${userText}</p>
-        </div>
+        <div class="chat-details"><p>${userText}</p></div>
     </div>`;
 
     const outgoingChatDiv = createChatElement(html, "outgoing");
@@ -137,10 +207,7 @@ const handleOutgoingChat = () => {
     chatContainer.scrollTo(0, chatContainer.scrollHeight);
 
     saveChatToSessionStorage(outgoingChatDiv.outerHTML);
-
-    // Tampilkan tombol delete, sembunyikan tombol tema
     toggleControls(true);
-
     setTimeout(showTypingAnimation, 500);
 };
 
@@ -152,8 +219,9 @@ const saveChatToSessionStorage = (chatHTML) => {
 
 const updateThemeImage = () => {
     const themeImg = document.querySelector("#theme-img");
-    if (!themeImg) return;
-    themeImg.src = document.body.classList.contains("light-mode") ? themeImgLight : themeImgDark;
+    if (themeImg) {
+        themeImg.src = document.body.classList.contains("light-mode") ? themeImgLight : themeImgDark;
+    }
 };
 
 const updateAllChatImages = () => {
@@ -161,11 +229,7 @@ const updateAllChatImages = () => {
     const currentUserImg = document.body.classList.contains("light-mode") ? userLight : userDark;
 
     chatImages.forEach((img) => {
-        if (img.id === "theme-img") {
-            img.src = document.body.classList.contains("light-mode") ? themeImgLight : themeImgDark;
-        } else {
-            img.src = currentUserImg;
-        }
+        img.src = img.id === "theme-img" ? (document.body.classList.contains("light-mode") ? themeImgLight : themeImgDark) : currentUserImg;
     });
 };
 
@@ -176,24 +240,46 @@ themeButton.addEventListener("click", () => {
 
     updateThemeImage();
     updateAllChatImages();
+    updateLogoImage();
 });
 
 deleteButton.addEventListener("click", () => {
-    if (confirm("Are you sure you want to delete all the chats?")) {
-        localStorage.removeItem("all-chats");
-        sessionStorage.removeItem("all-chats");
-        loadDataFromSessionStorage();
-        toggleControls(false);
-    }
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            localStorage.removeItem("all-chats");
+            sessionStorage.removeItem("all-chats");
+            loadDataFromSessionStorage();
+            toggleControls(false);
+            Swal.fire({
+                title: 'Deleted!',
+                text: 'Your chats have been deleted.',
+                icon: 'success',
+                timer: 1000,
+                showConfirmButton: false
+            });
+        }
+    });
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+    // Hapus semua riwayat chat saat halaman dimuat
+    sessionStorage.removeItem("all-chats");
+
     const themeColor = localStorage.getItem("themeColor");
     if (themeColor === "light_mode") {
         document.body.classList.add("light-mode");
     }
 
     updateThemeImage();
+    updateLogoImage();
     loadDataFromSessionStorage();
 });
 

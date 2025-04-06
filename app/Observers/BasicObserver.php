@@ -22,35 +22,33 @@ class BasicObserver
     public function updated(Basic $basic): void
     {
         $recepient = Auth::user();
-        $changes = $basic->getChanges();
-        $original = $basic->getOriginal();
 
-        $fieldsToCheck = [
+        $old = $basic->getOriginal('value');
+        $new = $basic->value;
+        $key = $basic->key;
+
+        // Daftar label untuk setiap key
+        $labels = [
             'title' => 'Title',
             'description' => 'Description',
-            'banner' => 'Banner Title',
-            'banner_description' => 'Banner Description',
-            'homepage' => 'Homepage',
-            'color' => 'Color',
-            'is_darkmode_active' => 'Darkmode Status',
-            'logo' => 'Logo',
+            'alert' => 'Global Alert Text',
+            'text_available' => 'Available Text',
+            'text_unavailable' => 'Unavailable Text',
+            'pdf_unavailable' => 'PDF Unavailable Message',
+            'footer' => 'Footer Text',
+            'logo_dark' => 'Dark Mode Logo',
+            'logo_light' => 'Light Mode Logo',
             'favicon' => 'Favicon',
+            'dark_color' => 'Dark Mode Background Color',
+            'light_color' => 'Light Mode Background Color',
         ];
 
-        $messages = [];
+        $label = $labels[$key] ?? $key;
 
-        foreach ($fieldsToCheck as $field => $label) {
-            if (array_key_exists($field, $changes)) {
-                $old = $original[$field] ?? '(kosong)';
-                $new = $changes[$field] ?? '(kosong)';
-                $messages[] = "{$label} has updated from \"{$old}\" to \"{$new}\"";
-            }
-        }
-
-        if (!empty($messages)) {
+        if ($old !== $new) {
             Notification::make()
-                ->title("Basic Setting '{$basic->title}' Updated")
-                ->body(implode("\n", $messages))
+                ->title("Basic Setting Updated")
+                ->body("Setting {$label} has changed from \"{$old}\" to \"{$new}\".")
                 ->sendToDatabase($recepient);
         }
     }
