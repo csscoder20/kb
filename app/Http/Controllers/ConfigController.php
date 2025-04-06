@@ -13,7 +13,6 @@ class ConfigController extends Controller
             return Basic::all()->pluck('value', 'key')->toArray();
         });
 
-        // Format asset URL untuk file yang butuh path gambar
         $imageKeys = ['theme_img_light', 'theme_img_dark', 'logo_light', 'logo_dark'];
         foreach ($imageKeys as $key) {
             if (!empty($config[$key])) {

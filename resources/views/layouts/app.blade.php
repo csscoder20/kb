@@ -47,7 +47,7 @@
             const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
             tooltipTriggerList.forEach(function (el) {
             new bootstrap.Tooltip(el, {
-            trigger: 'hover' // Hanya muncul saat hover
+            trigger: 'hover'
              });
             });
         });

@@ -23,9 +23,6 @@ class Tag extends Model
         'status'
     ];
 
-    /**
-     * Relasi Many-to-Many dengan Report
-     */
     public function reports(): BelongsToMany
     {
         return $this->belongsToMany(Report::class, 'report_tags');

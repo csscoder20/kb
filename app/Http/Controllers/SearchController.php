@@ -11,7 +11,6 @@ class SearchController extends Controller
     {
         $keyword = $request->input('keyword');
 
-        // Include relasi tags
         $reports = Report::with('tags')
             ->where('title', 'like', "%{$keyword}%")
             ->orWhere('description', 'like', "%{$keyword}%")

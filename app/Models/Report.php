@@ -36,7 +36,6 @@ class Report extends Model
                 mkdir($outputDir, 0777, true);
             }
 
-            // Ganti path sesuai lokasi instalasi LibreOffice di Windows
             $libreOfficePath = '"C:\\Program Files\\LibreOffice\\program\\soffice.exe"';
             $command = "{$libreOfficePath} --headless --convert-to pdf --outdir \"{$outputDir}\" \"{$fullPath}\"";
 

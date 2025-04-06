@@ -29,7 +29,7 @@ class FilamentServiceProvider extends ServiceProvider
                     ->url('/')
                     ->openUrlInNewTab()
                     ->icon('heroicon-o-globe-alt')
-                    ->sort(0), // Bisa atur posisi
+                    ->sort(0),
             ]);
         });
     }

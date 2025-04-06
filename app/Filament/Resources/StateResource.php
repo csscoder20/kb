@@ -49,16 +49,6 @@ class StateResource extends Resource
                     ->required()
                     ->preload()
                     ->searchable(),
-                // ->multiple(),
-                // Forms\Components\Select::make('status')
-                //     // ->numeric(),
-                //     ->options([
-                //         'active' => 'Active',
-                //         'Inactive' => 'Inactive',
-
-                //     ])
-                //     ->required()
-                //     ->native(false),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),

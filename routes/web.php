@@ -9,5 +9,4 @@ Route::get('/', function () {
 });
 
 Route::get('/search', [SearchController::class, 'search'])->name('search');
-
 Route::get('/config', [ConfigController::class, 'getConfig']);

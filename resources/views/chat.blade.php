@@ -3,7 +3,6 @@
 @section('content')
 <div class="chat-container"></div>
 
-<!-- Typing container -->
 <div class="typing-container fixed-bottom">
     <div class="container-lg mb-4">
         <div class="typing-content">

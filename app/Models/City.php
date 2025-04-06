@@ -22,7 +22,6 @@ class City extends Model
         return $this->belongsTo(State::class);
     }
 
-
     public function students(): HasMany
     {
         return $this->hasMany(Student::class);

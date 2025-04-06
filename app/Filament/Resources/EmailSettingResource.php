@@ -30,7 +30,6 @@ class EmailSettingResource extends Resource
     {
         return $form
             ->schema([
-                // Form Default
                 Forms\Components\TextInput::make('email')
                     ->email()
                     ->required()
@@ -42,9 +41,8 @@ class EmailSettingResource extends Resource
                         'smtp' => 'SMTP',
                     ])
                     ->required()
-                    ->reactive(), // Tambahkan reactive agar bisa mendeteksi perubahan pilihan driver
+                    ->reactive(),
 
-                // Form untuk Mailgun
                 Forms\Components\TextInput::make('secret_key')
                     ->required()
                     ->maxLength(255)
@@ -66,7 +64,6 @@ class EmailSettingResource extends Resource
                     ->required()
                     ->visible(fn($get) => $get('driver') === 'mailgun'),
 
-                // Form untuk SMTP
                 Forms\Components\TextInput::make('host')
                     ->required()
                     ->maxLength(255)

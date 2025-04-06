@@ -43,7 +43,6 @@ class AdminPanelProvider extends PanelProvider
                 'warning' => Color::Orange,
             ])
             ->font('Segoe UI')
-            // ->font('Inter')
             ->navigationGroups([
                 'Students Management',
                 'System Management',

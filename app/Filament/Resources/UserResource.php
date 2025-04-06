@@ -48,21 +48,10 @@ class UserResource extends Resource
                     ->email()
                     ->required()
                     ->maxLength(255),
-                // Forms\Components\DateTimePicker::make('email_verified_at')
-                //     ->required()
-                //     ->native(false),
-                // ->displayFormat('d/m/Y'),
                 Forms\Components\TextInput::make('password')
                     ->password()
                     ->required()
                     ->maxLength(255),
-                Forms\Components\FileUpload::make('profile_picture')
-                    ->image()
-                    ->directory('profile-pictures')
-                    ->imageEditor()
-                    ->previewable()
-                    ->maxSize(2048),
-
                 Forms\Components\Select::make('role')
                     ->options([
                         'superadmin' => 'Super Admin',
@@ -71,6 +60,12 @@ class UserResource extends Resource
                     ])
                     ->required()
                     ->default('guest'),
+                Forms\Components\FileUpload::make('profile_picture')
+                    ->image()
+                    ->directory('profile-pictures')
+                    ->imageEditor()
+                    ->previewable()
+                    ->maxSize(2048),
             ]);
     }
 
@@ -90,11 +85,6 @@ class UserResource extends Resource
                     ->searchable()
                     ->disableClick()
                     ->copyable(),
-                // Tables\Columns\TextColumn::make('email_verified_at')
-                //     ->dateTime()
-                //     ->sortable()
-                //     ->toggleable(isToggledHiddenByDefault: true)
-                //     ->disableClick(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -144,7 +134,7 @@ class UserResource extends Resource
                         ImageEntry::make('profile_picture')
                             ->label('Profile Picture')
                             ->circular()
-                            ->hiddenLabel(), // optional
+                            ->hiddenLabel(),
                         TextEntry::make('name'),
                         TextEntry::make('email'),
                         TextEntry::make('role')
@@ -174,7 +164,6 @@ class UserResource extends Resource
         return [
             'index' => Pages\ListUsers::route('/'),
             'create' => Pages\CreateUser::route('/create'),
-            // 'view' => Pages\ViewUser::route('/{record}'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }

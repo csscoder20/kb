@@ -9,7 +9,7 @@ class ReportTags extends Model
 {
     use HasFactory;
 
-    protected $table = 'report_tags'; // Pastikan sesuai dengan nama tabel pivot
+    protected $table = 'report_tags';
 
     protected $fillable = [
         'report_id',

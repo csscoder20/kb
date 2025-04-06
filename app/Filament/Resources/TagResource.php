@@ -42,17 +42,17 @@ class TagResource extends Resource
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255)
-                    ->live(onBlur: true) // Slug diperbarui saat kehilangan fokus
+                    ->live(onBlur: true)
                     ->afterStateUpdated(
                         fn($state, callable $set) =>
-                        $set('slug', Str::slug($state)) // Generate slug dari name
+                        $set('slug', Str::slug($state))
                     ),
 
                 TextInput::make('slug')
                     ->required()
                     ->maxLength(255)
-                    ->disabled() // Membuat slug tidak bisa diedit
-                    ->dehydrated(), // Tetap menyimpan value ke database
+                    ->disabled()
+                    ->dehydrated(),
 
                 TextInput::make('description')
                     ->maxLength(255),
