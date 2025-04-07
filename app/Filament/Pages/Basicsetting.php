@@ -65,8 +65,10 @@ class Basicsetting extends Page
                             ->required(),
                         TextInput::make('footer')
                             ->label('Footer Text')
-                            ->required()
-                            ->columnSpanFull(),
+                            ->required(),
+                        TextInput::make('created_by')
+                            ->label('Created By')
+                            ->required(),
                     ])->columns(2),
 
                 Section::make('Theme Settings')

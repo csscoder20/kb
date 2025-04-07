@@ -17,6 +17,7 @@ use App\Filament\Resources\UserResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\UserResource\RelationManagers;
 use Filament\Infolists\Components\ImageEntry;
+use Spatie\Permission\Models\Role;
 
 class UserResource extends Resource
 {
@@ -30,6 +31,16 @@ class UserResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->check() && auth()->user()->hasRole('super_admin');
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->check() && auth()->user()->hasRole('super_admin');
     }
 
     public static function getNavigationBadgeColor(): string|array|null
@@ -52,14 +63,20 @@ class UserResource extends Resource
                     ->password()
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Select::make('role')
-                    ->options([
-                        'superadmin' => 'Super Admin',
-                        'admin' => 'Admin',
-                        'guest' => 'Guest',
-                    ])
+                Forms\Components\Select::make('roles')
+                    ->label('Role')
+                    ->options(
+                        \Spatie\Permission\Models\Role::all()->pluck('name', 'name')
+                    )
+                    ->searchable()
                     ->required()
-                    ->default('guest'),
+                    ->default('guest')
+                    ->afterStateHydrated(function ($component, $state, $record) {
+                        if ($record) {
+                            $component->state($record->roles->pluck('name')->first());
+                        }
+                    })
+                    ->dehydrated(true),
                 Forms\Components\FileUpload::make('profile_picture')
                     ->image()
                     ->directory('profile-pictures')
@@ -95,14 +112,17 @@ class UserResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->disableClick(),
-                Tables\Columns\TextColumn::make('role')
+                Tables\Columns\TextColumn::make('roles.name')
+                    ->label('Role')
                     ->badge()
-                    ->disableClick()
                     ->color(fn(string $state): string => match ($state) {
+                        'super_admin' => 'danger',
                         'superadmin' => 'danger',
                         'admin' => 'warning',
                         'guest' => 'gray',
+                        default => 'gray',
                     }),
+
             ])->emptyStateDescription('Once you write your first post, it will appear here.')
             ->filters([
                 //
@@ -137,14 +157,17 @@ class UserResource extends Resource
                             ->hiddenLabel(),
                         TextEntry::make('name'),
                         TextEntry::make('email'),
-                        TextEntry::make('role')
+                        TextEntry::make('roles.name')
+                            ->label('Role')
                             ->badge()
                             ->color(fn(string $state): string => match ($state) {
+                                'super_admin' => 'danger',
                                 'superadmin' => 'danger',
                                 'admin' => 'warning',
                                 'guest' => 'gray',
                                 default => 'gray',
                             }),
+
                         TextEntry::make('email_verified_at'),
                         TextEntry::make('password')->columnSpanFull(),
                     ])->columns(3)
@@ -166,5 +189,11 @@ class UserResource extends Resource
             'create' => Pages\CreateUser::route('/create'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
+    }
+
+    public static function mutateFormDataBeforeSave(array $data): array
+    {
+        unset($data['roles']);
+        return $data;
     }
 }

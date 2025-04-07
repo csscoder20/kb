@@ -32,4 +32,9 @@ class EditUser extends EditRecord
             ->title('User Updated')
             ->body('The User data has successfully updated.');
     }
+
+    protected function afterSave(): void
+    {
+        $this->record->syncRoles([$this->data['roles'] ?? 'guest']);
+    }
 }

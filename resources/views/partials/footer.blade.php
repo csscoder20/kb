@@ -1,5 +1,15 @@
-{{-- <footer class="fixed-bottom">
-    <div class="container-lg">
-        <p>&copy; {{ date('Y') }} MoP-GPT. All rights reserved. By using MoP-GPT you agree to the Terms and Privacy.</p>
+{{-- <footer class="footer fixed-bottom bg-white shadow-sm">
+    <div class="container-fluid">
+        <div class="row text-muted">
+            <div class="col-6 text-start">
+                <p class="mb-0">
+                    <a class="text-muted" href="https://adminkit.io/" target="_blank"><strong>AdminKit</strong></a>
+                    -
+                    <a class="text-muted" href="https://adminkit.io/" target="_blank"><strong>Bootstrap
+                            Admin Template</strong></a>
+                    &copy;
+                </p>
+            </div>
+        </div>
     </div>
 </footer> --}}
