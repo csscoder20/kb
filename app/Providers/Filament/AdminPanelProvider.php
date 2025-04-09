@@ -19,7 +19,8 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Models\Basic;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
-
+use App\Filament\Pages\CustomLoginPage;
+use App\Filament\Pages\Register;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -30,6 +31,8 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            // ->login(CustomLoginPage::class)
+            // ->login(\App\Filament\Pages\CustomLoginPage::class)
             ->brandName(Basic::getValue('title'))
             ->darkModeBrandLogo(asset('storage/' . Basic::getValue('logo_dark')))
             ->brandLogo(asset('storage/' . Basic::getValue('logo_light')))
@@ -39,6 +42,8 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'danger' => Color::Red,
                 'gray' => Color::Slate,
+                // 'gray' => Basic::getValue('light_color') ?? Color::Slate,
+                'light' => Basic::getValue('dark_color') ?? Color::Gray,
                 'info' => Color::Blue,
                 'primary' => Color::Indigo,
                 'success' => Color::Emerald,
@@ -46,8 +51,6 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->font('Segoe UI')
             ->navigationGroups([
-                'Students Management',
-                'System Management',
                 'Report Management',
                 'Settings',
                 'User Management'
@@ -56,9 +59,10 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                // Pages\Dashboard::class,
                 \App\Filament\Pages\Emailsetting::class,
                 \App\Filament\Pages\Basicsetting::class,
+                // Register::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
@@ -80,7 +84,7 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->plugins([
-                FilamentShieldPlugin::make(),
+                // FilamentShieldPlugin::make(),
             ]);
     }
 }

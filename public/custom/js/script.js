@@ -102,7 +102,10 @@ const initialInputHeight = chatInput.scrollHeight,
         })
     };
 themeButton.addEventListener("click", () => {
-    document.body.classList.toggle("light-mode"), localStorage.setItem("themeColor", document.body.classList.contains("light-mode") ? "light_mode" : "dark_mode"), themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode", updateThemeImage(), updateAllChatImages(), updateLogoImage()
+    document.body.classList.toggle("light-mode"),
+    localStorage.setItem("themeColor", document.body.classList.contains("light-mode") ? "light_mode" : "dark_mode"),
+    themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode",
+    updateThemeImage(), updateAllChatImages(), updateLogoImage(), updateModalTheme()
 }), deleteButton.addEventListener("click", () => {
     Swal.fire({
         title: "Delete Chat?",

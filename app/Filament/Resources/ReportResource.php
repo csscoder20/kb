@@ -16,6 +16,7 @@ use App\Filament\Resources\ReportResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ReportResource\RelationManagers;
 use Joaopaulolndev\FilamentPdfViewer\Infolists\Components\PdfViewerEntry;
+use Illuminate\Support\Facades\Auth;
 
 class ReportResource extends Resource
 {
@@ -35,10 +36,17 @@ class ReportResource extends Resource
         return static::getModel()::count() > 5 ? 'warning' : 'success';
     }
 
+    public static function beforeCreate(Form $form, Report $record): void
+    {
+        $record->user_id = Auth::id();
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+                Forms\Components\Hidden::make('user_id')
+                    ->default(fn() => auth()->id()),
                 Forms\Components\TextInput::make('title')
                     ->required()
                     ->maxLength(255),
@@ -68,14 +76,6 @@ class ReportResource extends Resource
                         }
                     }),
                 Forms\Components\Hidden::make('pdf_file'),
-                Forms\Components\Select::make('status')
-                    ->options([
-                        'pending' => 'Pending',
-                        'approved' => 'Approved',
-                        'rejected' => 'Rejected',
-                    ])
-                    ->required()
-                    ->default('pending'),
             ]);
     }
 
@@ -89,15 +89,6 @@ class ReportResource extends Resource
                     ->limit(80)
                     ->copyable()
                     ->tooltip(fn($record) => $record->title),
-                Tables\Columns\TextColumn::make('status')
-                    ->badge()
-                    ->disableClick()
-                    ->colors([
-                        'warning' => 'pending',
-                        'info' => 'reviewed',
-                        'success' => 'approved',
-                        'danger' => 'rejected',
-                    ]),
                 Tables\Columns\TextColumn::make('tags.name')
                     ->badge()
                     ->disableClick(),

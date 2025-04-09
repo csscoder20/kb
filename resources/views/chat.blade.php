@@ -1,7 +1,7 @@
 @section('content')
 @extends('layouts.app')
 <main class="content">
-    <div class="container-fluid p-0">
+    <div class="container-fluid">
         <div class="row">
             <div class="chat-container"></div>
             <div class="typing-container">
@@ -14,11 +14,6 @@
                         </div>
 
                         <div class="typing-controls">
-                            {{-- <span id="theme-btn" class="material-symbols-rounded" data-animation="true"
-                                data-toggle="tooltip" data-placement="top" title="Ganti Tema">
-                                light_mode
-                            </span> --}}
-
                             <span id="delete-btn" class="material-symbols-rounded d-none text-danger"
                                 data-animation="true" data-toggle="tooltip" data-placement="top" title="Hapus Semua">
                                 delete

@@ -369,9 +369,9 @@ main.flex.flex-1.grow.basis-auto.flex-col.overflow-hidden.content {
     padding-bottom: 150px;
 }
 
-nav.navbar.navbar-expand a {
+/* nav.navbar.navbar-expand a {
     color: #5d5d5d;
-}
+} */
 
 button#logout-btn:hover {
     background: transparent !important;
@@ -381,9 +381,9 @@ button#logout-btn:hover {
     align-items: center;
 }
 
-span#theme-btn {
+/* span#theme-btn {
     color: #5d5d5d;
-}
+} */
 
 /* Swall */
 button.swal2-confirm.swal2-styled.swal2-default-outline {
@@ -427,4 +427,64 @@ div#swal2-html-container {
     margin: 0 !important;
     height: auto !important;
     width: 40px !important;
+}
+
+p.text-muted.text-center.mb-0.text-small {
+    font-size: 12px;
+}
+
+button#logout-btn {
+    color: #842029 !important;
+    margin: 0.5rem;
+    border-radius: 5px;
+    width: 9.5rem;
+}
+
+button#logout-btn:hover {
+    background: #ecf0f6 !important;
+    border: 0 !important;
+}
+
+body.light-mode .btn[data-bs-toggle="modal"] {
+    color: #000;
+}
+
+body.dark-mode .btn[data-bs-toggle="modal"] {
+    color: #fff;
+}
+
+button.btn.btn-primary.rounded-pill {
+    font-size: 1em;
+    padding: 0.625em 1.1em;
+}
+
+button.btn.btn-secondary.rounded-pill {
+    border-radius: 30px;
+    background-color: transparent !important;
+    border: 2px solid #ecf0f6 !important;
+    color: #000;
+    padding: 0.625em 1.1em;
+}
+
+button.swal2-confirm.swal2-styled {
+    border-radius: 30px;
+    color: #fff;
+    background-color: #3b7ddd;
+    padding: 0.625em 1.1em;
+}
+
+form#reportForm .choices {
+    width: 100%;
+}
+
+form#reportForm span#tags {
+    width: 100%;
+}
+
+.dropzone {
+    border: 1px solid #ced4da !important;
+}
+
+img#logo-img {
+    width: 20rem;
 }

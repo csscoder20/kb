@@ -10,12 +10,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[ObservedBy([ReportObserver::class])]
 
 class Report extends Model
 {
-    protected $fillable = ['title', 'description', 'file', 'status', 'pdf_file'];
+    protected $fillable = ['title', 'description', 'file', 'pdf_file', 'user_id'];
 
 
     public function tags(): BelongsToMany
@@ -23,6 +24,10 @@ class Report extends Model
         return $this->belongsToMany(Tag::class, 'report_tags');
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public static function convertDocxToPdf($docxPath)
     {
