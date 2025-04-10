@@ -15,6 +15,10 @@ class UserObserver
     {
         $recepient = Auth::user();
 
+        if (!$recepient) {
+            return; // Tidak kirim notifikasi kalau tidak ada user yang sedang login
+        }
+
         Notification::make()
             ->title("User {$user->name} Created")
             ->body("A new user named {$user->name} has been successfully created.")

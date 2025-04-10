@@ -69,6 +69,12 @@ class SearchController extends Controller
 
     public function search(Request $request)
     {
+        $keyword = trim($request->input('keyword'));
+
+        if (strlen($keyword) < 3 || str_word_count($keyword) < 1) {
+            return response()->json(['error' => 'Pesan terlalu singkat.'], 422);
+        }
+
         $keyword = $request->input('keyword');
         $keywords = explode(' ', $keyword);
 

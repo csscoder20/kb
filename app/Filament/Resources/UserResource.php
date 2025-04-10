@@ -93,7 +93,7 @@ class UserResource extends Resource
                 Tables\Columns\ImageColumn::make('profile_picture')
                     ->circular()
                     ->disableClick()
-                    ->defaultImageUrl(url('/default-avatar.png')),
+                    ->defaultImageUrl(url('storage/profile-pictures/default-avatar.png')),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->label('Nama Lengkap')

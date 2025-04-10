@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>MoP-GPT | Your MoP Report Partner</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,284 +14,223 @@
     <link rel="apple-touch-icon" href="{{ asset('assets/img/head_diamond_compnet.svg') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded&display=swap">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <link rel="stylesheet" href="{{ asset('theme/new/css/light.css') }}">
-    <link rel="stylesheet" href="{{ asset('custom/css/style.css') }}">
-    @stack('styles')
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="{{ asset('bt-theme/css/styles.css') }}" rel="stylesheet" />
+
+    <style>
+        nav.navbar.navbar-expand-lg.navbar-light {
+            border-bottom: 1px solid #e8ecf3;
+        }
+
+        .container.px-lg-5 .col-lg-9 {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .container.px-lg-5 .col-lg-9 a {
+            font-size: 16px;
+            padding-left: 0 !important;
+        }
+
+        h5.card-title.text-light.text-center span {
+            font-size: 10px !important;
+        }
+
+        div#v-pills-tabContent h5 {
+            font-size: 16px;
+            font-weight: normal;
+        }
+
+        div#v-pills-tabContent .card-body {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        div#v-pills-tabContent .card-body a {
+            padding: 0 10px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            padding-right: 0;
+        }
+
+        /* .nav-pills .nav-link {
+            background: none;
+            border: 0;
+            border-radius: var(--bs-nav-pills-border-radius);
+            text-align: left;
+            padding: 0.5rem 0;
+            background-color: transparent !important;
+            font-size: 15px !important;
+        }
+
+        .nav-pills .nav-link.active,
+        .nav-pills .show>.nav-link {
+            color: var(--bs-nav-pills-link-active-color);
+            background-color: var(--bs-nav-pills-link-active-bg);
+            color: #0d6efd !important;
+            font-weight: bold !important;
+            font-size: 15px !important;
+        } */
+
+        div#nav-tabContent .card-body {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        div#nav-tabContent h5 {
+            font-size: 1rem;
+            font-weight: normal;
+        }
+
+        div#nav-tabContent span.text-muted {
+            font-size: 12px;
+        }
+
+        .nav-tabs .nav-link.active,
+        .nav-tabs .nav-item.show .nav-link {
+            color: #0d6efd !important;
+            /* font-weight: bold; */
+        }
+    </style>
 </head>
 
 <body>
-    <div class="wrapper">
-        @include('partials.sidebar')
-        <div class="main">
-            @include('partials.header')
-            @yield('content')
-            @include('partials.footer')
-        </div>
-    </div>
+    <!-- Responsive navbar-->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container px-lg-5">
+            <div class="col-lg-9">
+                <a class="navbar-brand nav-link" aria-current="page" href="{{ ('/') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-search" viewBox="0 0 16 16">
+                        <path
+                            d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                    </svg>
+                    Search Post
+                </a>
+                <a class="navbar-brand nav-link" href="#!">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                        <path
+                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z" />
+                    </svg>
+                    New Post
+                </a>
+                <a class="navbar-brand nav-link" href="#!">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-border-all" viewBox="0 0 16 16">
+                        <path d="M0 0h16v16H0zm1 1v6.5h6.5V1zm7.5 0v6.5H15V1zM15 8.5H8.5V15H15zM7.5 15V8.5H1V15z" />
+                    </svg>
+                    All Post
+                </a>
+            </div>
+            @auth
+            <div class="dropdown">
+                <a href="#" class="d-flex align-items-center text-decoration-none" id="avatarDropdown"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    @php
+                    $user = Auth::user();
+                    $initials = collect(explode(' ', $user->name))->map(fn($word) =>
+                    strtoupper(substr($word, 0,
+                    1)))->join('');
+                    @endphp
 
-    <div class="modal fade" id="reportModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="reportModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <form id="reportForm" action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="reportModalLabel">Create MoP Report</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    @if ($user->profile_picture)
+                    <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="{{ $user->name }}"
+                        title="{{ $user->name }}" class="avatar img-fluid rounded-circle"
+                        style="width: 40px; height: 40px; object-fit: cover;">
+                    @else
+                    <div class="avatar d-flex align-items-center justify-content-center rounded-circle bg-secondary text-white"
+                        style="width: 40px; height: 40px; font-weight: bold;">
+                        {{ $initials }}
                     </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="title" class="form-label">Title</label>
-                            <input type="text" class="form-control" name="title" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="tags" class="form-label">Tags</label>
-                            <select id="tags" class="form-select" name="tags[]" multiple required>
-                                @foreach($tags as $tag)
-                                <option value="{{ $tag->id }}" data-color="{{ $tag->color }}">{{ $tag->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" name="description"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="file" class="form-label">File</label>
-                            <div id="docxDropzone" class="dropzone"></div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary rounded-pill btnCancel"
-                            data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary rounded-pill">Create Report</button>
-                    </div>
+                    @endif
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="avatarDropdown">
+                    <li class="">
+                        <form id="logout-form" method="POST" action="{{ url('/admin/logout') }}">
+                            @csrf
+                            <button type="button" class="dropdown-item text-danger" id="logout-btn">
+                                <svg class="icon-xl-heavy" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24" height="24" width="24">
+                                    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2"
+                                        stroke="currentColor" d="M16 17L21 12L16 7"></path>
+                                    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2"
+                                        stroke="currentColor" d="M21 12H9">
+                                    </path>
+                                    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2"
+                                        stroke="currentColor"
+                                        d="M12 5H7C5.89543 5 5 5.89543 5 7V17C5 18.1046 5.89543 19 7 19H12">
+                                    </path>
+                                </svg>
+                                Log out
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="dropdown-menu dropdown-menu-end">
+                <form id="logout-form" method="POST" action="{{ url('/admin/logout') }}">
+                    @csrf
+                    <button type="button" class="dropdown-item" id="logout-btn">
+                        <svg class="icon-xl-heavy" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            height="24" width="24">
+                            <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="currentColor"
+                                d="M16 17L21 12L16 7"></path>
+                            <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="currentColor"
+                                d="M21 12H9">
+                            </path>
+                            <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="currentColor"
+                                d="M12 5H7C5.89543 5 5 5.89543 5 7V17C5 18.1046 5.89543 19 7 19H12"></path>
+                        </svg>
+                        Log out
+                    </button>
                 </form>
             </div>
+            @endauth
+
+            @guest
+            <a href="{{ url('admin/login') }}" class="btn btn-secondary text-light rounded-pill">
+                Login
+            </a>
+            <a href="{{ url('admin/register') }}" class="btn btn-primary text-light rounded-pill">
+                Register
+            </a>
+            @endguest
         </div>
-    </div>
+    </nav>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-    <script src="{{ asset('custom/js/script.js') }}"></script>
-    <script src="{{ asset('theme/js/app.js') }}"></script>
-    </script>
-    @stack('scripts')
-    <script>
-        window.authUser = @json(auth()->user());
-    </script>
+    @include('partials.subheader')
 
-    <script>
-        function scrollToBottom() {
-            const chatContainer = document.querySelector('.chat-container');
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-            }
-    
-        scrollToBottom();
-    </script>
+    <section class="pt-4">
+        <div class="container px-lg-5">
+            <div class="row gx-lg-5">
+                @yield('content')
+            </div>
+        </div>
+    </section>
+    {{-- <footer class="fixed-bottom py-5"> --}}
+        <footer class="py-5">
+            <div class="container">
+                <p class="m-0 text-center text-dark">
+                    Copyright &copy; Your Website 2023
+                </p>
+            </div>
+        </footer>
 
-    <script>
-        document.getElementById('logout-btn').addEventListener('click', function (e) {
-            e.preventDefault();
-            Swal.fire({
-                title: 'Are you sure you want to log out?',
-                text: "You will log out from this session.",
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Logout',
-                cancelButtonText: 'Cancel',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('logout-form').submit();
-                }
-            });
-        });
-    </script>
-
-    <script>
-        const updateModalTheme = () => {
-        const elements = document.querySelectorAll("#reportModal .modal-content, .btn, .btn-close, svg, .form-control");
-        if (document.body.classList.contains("light-mode")) {
-        modal.classList.remove("bg-dark", "text-white");
-        modal.classList.add("bg-white", "text-dark");
-        } else {
-        modal.classList.remove("bg-white", "text-dark");
-        modal.classList.add("bg-dark", "text-white");
-        }
-        };
-    </script>
-
-    <script>
-        const tagsSelect = document.querySelector('select[name="tags[]"]');
-    
-        const choices = new Choices(tagsSelect, {
-            removeItemButton: true,
-            maxItemCount: 2,
-            placeholderValue: 'Select an Option',
-            searchPlaceholderValue: 'Seach Tag...',
-            itemSelectText: '',
-            maxItemText: (maxItemCount) => `Only ${maxItemCount} can be selected.`
-        });
-    
-        function updateSelectedTagColors() {
-            setTimeout(() => {
-                const selectedItems = document.querySelectorAll('.choices__list--multiple .choices__item');
-
-                selectedItems.forEach(item => {
-                    const value = item.getAttribute('data-value');
-                    const originalOption = [...tagsSelect.options].find(opt => opt.value === value);
-                    if (originalOption) {
-                        const color = originalOption.dataset.color;
-                        item.style.setProperty('background-color', color, 'important');
-                        item.style.setProperty('border-color', color, 'important');
-                        item.style.setProperty('color', '#fff', 'important');
-                    }
-                });
-            }, 10);
-        }
-    
-        tagsSelect.addEventListener('addItem', updateSelectedTagColors);
-        tagsSelect.addEventListener('removeItem', updateSelectedTagColors);
-    
-       document.addEventListener('DOMContentLoaded', () => {
-            updateSelectedTagColors();
-        });
-    </script>
-
-    <script>
-        Dropzone.autoDiscover = false;
-
-    let fileToUpload = null;
-
-    const dropzone = new Dropzone("#docxDropzone", {
-        url: "{{ route('reports.store') }}",
-        autoProcessQueue: false,
-        paramName: "file",
-        maxFiles: 1,
-        uploadMultiple: false,
-        acceptedFiles: ".docx",
-        addRemoveLinks: true,
-        dictDefaultMessage: "Drag & Drop your file or Browse.",
-        dictInvalidFileType: "Only .docx accepted.",
-        dictMaxFilesExceeded: "Max 1 file accepted.",
-
-        init: function () {
-            const dz = this;
-
-            dz.on("addedfile", function(file) {
-                fileToUpload = file;
-            });
-
-            document.querySelector("#reportForm").addEventListener("submit", function(e) {
-                e.preventDefault();
-
-                if (!fileToUpload) {
-                    Swal.fire({
-                        title: 'Select File',
-                        text: 'Please choose file to upload.'
-                    });
-                    return;
-                }
-
-                const form = e.target;
-                const formData = new FormData(form);
-
-                formData.append("file", fileToUpload);
-
-                Swal.fire({
-                    title: 'Sending report...',
-                    html: 'Please wait, processing.',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-
-                fetch(form.action, {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: formData
-                })
-                .then(async res => {
-                    if (!res.ok) {
-                        const errorData = await res.json();
-                        throw errorData;
-                    }
-                    return res.json();
-                })
-                .then(data => {
-                    Swal.fire({
-                        title: 'Report Created!',
-                        text: data.message || "Your report has successfully created.",
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-
-                    dz.removeAllFiles();
-                    form.reset();
-
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('reportModal'));
-                    modal.hide();
-                })
-                .catch(error => {
-                    console.error("Error when sending:", error);
-
-                    let message = "Error when sending file.";
-
-                    if (error?.errors) {
-                        message = Object.values(error.errors).flat().join("\n");
-                    }
-
-                    Swal.fire({
-                        title: 'Failed Sending.',
-                        text: message
-                    });
-                });
-            });
-        }
-    });
-    </script>
-
-    <script>
-        document.querySelector('[data-bs-dismiss="modal"].btnCancel').addEventListener('click', function () {
-            // Reset form
-            document.getElementById('reportForm').reset();
-    
-            // Clear Dropzone
-            if (dropzone) {
-                dropzone.removeAllFiles(true);
-            }
-    
-            // Reset Choices.js (karena form.reset() tidak mengupdate tampilan Choices)
-            choices.clearStore();
-            choices.setChoices(
-                [...tagsSelect.options].map(opt => ({
-                    value: opt.value,
-                    label: opt.text,
-                    selected: false,
-                    customProperties: {
-                        color: opt.dataset.color
-                    }
-                })),
-                'value',
-                'label',
-                false
-            );
-    
-            // Update warna tag yang dipilih (kosongkan)
-            updateSelectedTagColors();
-        });
-    </script>
-
+        <script src="{{ asset('bt-theme/js/scripts.js') }}"></script>
 </body>
 
 </html>

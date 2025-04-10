@@ -2257,7 +2257,7 @@ textarea.form-control-lg {
 }
 .form-floating > .form-control,
 .form-floating > .form-select {
-    height: calc(3.5rem + 2px);
+    /* height: calc(3.5rem + 2px); */
     line-height: 1.25;
 }
 .form-floating > label {

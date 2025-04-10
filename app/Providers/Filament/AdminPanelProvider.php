@@ -19,8 +19,8 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Models\Basic;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
-use App\Filament\Pages\CustomLoginPage;
-use App\Filament\Pages\Register;
+use App\Filament\Auth\CustomLoginPage;
+use App\Filament\Auth\RegisterPage;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -30,14 +30,19 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login()
-            // ->login(CustomLoginPage::class)
-            // ->login(\App\Filament\Pages\CustomLoginPage::class)
+            // ->login()
             ->brandName(Basic::getValue('title'))
             ->darkModeBrandLogo(asset('storage/' . Basic::getValue('logo_dark')))
             ->brandLogo(asset('storage/' . Basic::getValue('logo_light')))
             ->brandLogoHeight('3rem')
             ->favicon(asset('storage/' . Basic::getValue('favicon')))
+            // ->login()
+
+            ->registration(RegisterPage::class)
+            ->login(CustomLoginPage::class)
+            ->passwordReset()
+            ->emailVerification()
+            ->profile()
 
             ->colors([
                 'danger' => Color::Red,

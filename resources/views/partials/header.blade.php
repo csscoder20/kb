@@ -1,32 +1,65 @@
-<nav class="navbar navbar-expand">
+<nav id="myTab" class="navbar navbar-expand nav nav-tabs" role="tablist">
     <div class="navTop">
-        @auth
-        <button type="button" class="btn border-0" data-bs-toggle="modal" data-bs-target="#reportModal">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
-                class="icon-xl-heavy">
-                <path
-                    d="M15.6729 3.91287C16.8918 2.69392 18.8682 2.69392 20.0871 3.91287C21.3061 5.13182 21.3061 7.10813 20.0871 8.32708L14.1499 14.2643C13.3849 15.0293 12.3925 15.5255 11.3215 15.6785L9.14142 15.9899C8.82983 16.0344 8.51546 15.9297 8.29289 15.7071C8.07033 15.4845 7.96554 15.1701 8.01005 14.8586L8.32149 12.6785C8.47449 11.6075 8.97072 10.615 9.7357 9.85006L15.6729 3.91287ZM18.6729 5.32708C18.235 4.88918 17.525 4.88918 17.0871 5.32708L11.1499 11.2643C10.6909 11.7233 10.3932 12.3187 10.3014 12.9613L10.1785 13.8215L11.0386 13.6986C11.6812 13.6068 12.2767 13.3091 12.7357 12.8501L18.6729 6.91287C19.1108 6.47497 19.1108 5.76499 18.6729 5.32708ZM11 3.99929C11.0004 4.55157 10.5531 4.99963 10.0008 5.00007C9.00227 5.00084 8.29769 5.00827 7.74651 5.06064C7.20685 5.11191 6.88488 5.20117 6.63803 5.32695C6.07354 5.61457 5.6146 6.07351 5.32698 6.63799C5.19279 6.90135 5.10062 7.24904 5.05118 7.8542C5.00078 8.47105 5 9.26336 5 10.4V13.6C5 14.7366 5.00078 15.5289 5.05118 16.1457C5.10062 16.7509 5.19279 17.0986 5.32698 17.3619C5.6146 17.9264 6.07354 18.3854 6.63803 18.673C6.90138 18.8072 7.24907 18.8993 7.85424 18.9488C8.47108 18.9992 9.26339 19 10.4 19H13.6C14.7366 19 15.5289 18.9992 16.1458 18.9488C16.7509 18.8993 17.0986 18.8072 17.362 18.673C17.9265 18.3854 18.3854 17.9264 18.673 17.3619C18.7988 17.1151 18.8881 16.7931 18.9393 16.2535C18.9917 15.7023 18.9991 14.9977 18.9999 13.9992C19.0003 13.4469 19.4484 12.9995 20.0007 13C20.553 13.0004 21.0003 13.4485 20.9999 14.0007C20.9991 14.9789 20.9932 15.7808 20.9304 16.4426C20.8664 17.116 20.7385 17.7136 20.455 18.2699C19.9757 19.2107 19.2108 19.9756 18.27 20.455C17.6777 20.7568 17.0375 20.8826 16.3086 20.9421C15.6008 21 14.7266 21 13.6428 21H10.3572C9.27339 21 8.39925 21 7.69138 20.9421C6.96253 20.8826 6.32234 20.7568 5.73005 20.455C4.78924 19.9756 4.02433 19.2107 3.54497 18.2699C3.24318 17.6776 3.11737 17.0374 3.05782 16.3086C2.99998 15.6007 2.99999 14.7266 3 13.6428V10.3572C2.99999 9.27337 2.99998 8.39922 3.05782 7.69134C3.11737 6.96249 3.24318 6.3223 3.54497 5.73001C4.02433 4.7892 4.78924 4.0243 5.73005 3.54493C6.28633 3.26149 6.88399 3.13358 7.55735 3.06961C8.21919 3.00673 9.02103 3.00083 9.99922 3.00007C10.5515 2.99964 10.9996 3.447 11 3.99929Z"
-                    fill="currentColor"></path>
-            </svg>
-        </button>
-        @endauth
-
-        <span id="theme-btn" class="material-symbols-rounded mx-2" data-animation="true" data-toggle="tooltip"
-            data-placement="top" title="Ganti Tema">
-            light_mode
-        </span>
-
+        <li class="nav-item" role="presentation">
+            <button class="nav-link d-flex align-items-center" id="home-tab" data-bs-toggle="tab" data-bs-target="#home"
+                type="button" role="tab" aria-controls="home" aria-selected="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-search mx-2" viewBox="0 0 16 16">
+                    <path
+                        d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                </svg>
+                Search Post</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link d-flex align-items-center" id="profile-tab" data-bs-toggle="modal"
+                data-bs-target="#reportModal" type="button" role="tab" aria-controls="profile" aria-selected="false">
+                @auth
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-pencil-fill mx-2" viewBox="0 0 16 16">
+                    <path
+                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z" />
+                </svg>
+                @endauth
+                Write Post</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active d-flex align-items-center" id="contact-tab" data-bs-toggle="tab"
+                data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-file-earmark-text-fill mx-2" viewBox="0 0 16 16">
+                    <path
+                        d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1M4.5 9a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1zM4 10.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m.5 2.5a.5.5 0 0 1 0-1h4a.5.5 0 0 1 0 1z" />
+                </svg>
+                All Post</button>
+        </li>
         <div class="navbar-collapse collapse">
             <ul class="navbar-nav navbar-align">
+                <li><span id="theme-btn" class="material-symbols-rounded mx-3" data-animation="true"
+                        data-toggle="tooltip" data-placement="top" title="Ganti Tema">
+                        light_mode
+                    </span>
+                </li>
                 <li class="nav-item dropdown">
                     @auth
                     <div class="dropdown">
                         <a href="#" class="d-flex align-items-center text-decoration-none" id="avatarDropdown"
                             data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}"
-                                alt="{{ Auth::user()->name }}" title="{{ Auth::user()->name }}"
-                                class="avatar img-fluid rounded-circle"
+                            @php
+                            $user = Auth::user();
+                            $initials = collect(explode(' ', $user->name))->map(fn($word) => strtoupper(substr($word, 0,
+                            1)))->join('');
+                            @endphp
+
+                            @if ($user->profile_picture)
+                            <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="{{ $user->name }}"
+                                title="{{ $user->name }}" class="avatar img-fluid rounded-circle"
                                 style="width: 40px; height: 40px; object-fit: cover;">
+                            @else
+                            <div class="avatar d-flex align-items-center justify-content-center rounded-circle bg-secondary text-white"
+                                style="width: 40px; height: 40px; font-weight: bold;">
+                                {{ $initials }}
+                            </div>
+                            @endif
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="avatarDropdown">
@@ -76,15 +109,10 @@
 
                     @guest
                     <a href="{{ url('admin/login') }}" class="btn btn-secondary text-light rounded-pill">
-                        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg"
-                            class="icon-xl-heavy">
-                            <path d="M8 7L3 12L8 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                            <path d="M3 12H15" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                            <path d="M12 5H17C18.105 5 19 5.895 19 7V17C19 18.105 18.105 19 17 19H12"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg> Login
+                        Login
+                    </a>
+                    <a href="{{ url('admin/register') }}" class="btn btn-primary text-light rounded-pill">
+                        Register
                     </a>
                     @endguest
                 </li>
