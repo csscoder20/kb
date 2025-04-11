@@ -20,11 +20,17 @@ class Tag extends Model
         'color',
         'icon',
         'is_hide',
-        'status'
+        'status',
+        'alias'
     ];
 
     public function reports(): BelongsToMany
     {
         return $this->belongsToMany(Report::class, 'report_tags');
+    }
+
+    public function getColorAttribute($value)
+    {
+        return $value ?: '#e8ecf3';
     }
 }

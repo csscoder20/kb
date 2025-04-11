@@ -26,3 +26,14 @@ Route::get('/register', [RegisterController::class, 'show'])->name('register');
 // Route::get('/tag/{slug}', [TagController::class, 'show'])->name('tag.show');
 Route::get('/allposts', [TagController::class, 'show'])->name('tag.show');
 // Route::get('/allposts', [TagController::class, 'showAllPosts'])->name('tag.show');
+
+// Datatables server side processing 
+Route::get('/datatable/reports', [TagController::class, 'datatable'])->name('datatable.reports');
+
+Route::get('/subheader', function (\Illuminate\Http\Request $request) {
+    $slug = $request->query('slug');
+    $tagData = \App\Models\Tag::where('slug', $slug)->first();
+    $basics = \App\Models\Basic::getAllAsArray();
+
+    return view('components.subheader', compact('tagData', 'basics'))->render();
+});

@@ -1,13 +1,9 @@
-<nav id="myTab" class="navbar navbar-expand nav nav-tabs" role="tablist">
+<nav id="myTab" class="navbar navbar-expand nav nav-tabs px-4 py-2 rounded shadow" role="tablist">
     <div class="navTop">
         <li class="nav-item" role="presentation">
             <button class="nav-link d-flex align-items-center" id="home-tab" data-bs-toggle="tab" data-bs-target="#home"
                 type="button" role="tab" aria-controls="home" aria-selected="true">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-search mx-2" viewBox="0 0 16 16">
-                    <path
-                        d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                </svg>
+                &#xF63E;
                 Search Post</button>
         </li>
         <li class="nav-item" role="presentation">

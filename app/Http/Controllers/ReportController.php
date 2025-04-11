@@ -5,42 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Tag;
 use App\Models\Basic;
 use App\Models\Report;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Str;
 
 class ReportController extends Controller
 {
-    // public function store(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'title' => 'required|string|max:255',
-    //         'tags' => 'required|array|min:1|max:2',
-    //         'tags.*' => 'exists:tags,id',
-    //         'description' => 'nullable|string',
-    //         'file' => 'required|file|mimes:docx',
-    //     ]);
-
-    //     $filePath = $request->file('file')->store('reports', 'public');
-
-    //     $pdfPath = Report::convertDocxToPdf($filePath);
-
-    //     $report = Report::create([
-    //         'title' => $validated['title'],
-    //         'description' => $validated['description'] ?? null,
-    //         'file' => $filePath,
-    //         'pdf_file' => $pdfPath,
-    //         'user_id' => auth()->id(),
-    //     ]);
-
-    //     $report->tags()->sync($validated['tags']);
-
-    //     return response()->json([
-    //         'message' => 'Your report has successfully created!',
-    //     ]);
-    // }
-
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -73,5 +45,21 @@ class ReportController extends Controller
         return response()->json([
             'message' => 'Your report has successfully created!',
         ]);
+    }
+
+    public function datatable()
+    {
+        return DataTables::of(Report::with('tags')->latest())
+            ->addColumn('title', fn($report) => $report->title)
+            ->addColumn('created_at', fn($report) => $report->created_at->format('Y-m-d'))
+            ->addColumn('action', function ($report) {
+                $pdfBtn = '<a href="' . asset('storage/' . $report->pdf_file) . '" target="_blank" class="btn btn-danger btn-sm text-light">PDF</a>';
+                $wordBtn = $report->file
+                    ? '<a href="' . asset('storage/' . $report->file) . '" target="_blank" class="btn btn-success btn-sm text-light">Word</a>'
+                    : '';
+                return $pdfBtn . ' ' . $wordBtn;
+            })
+            ->rawColumns(['action'])
+            ->make(true);
     }
 }

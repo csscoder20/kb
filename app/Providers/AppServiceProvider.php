@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Request;
 use App\Models\Basic;
+use App\Models\Tag;
 use App\Http\Responses\LogoutResponse;
 use Filament\Http\Responses\Auth\Contracts\LogoutResponse as LogoutResponseContract;
 
@@ -35,6 +37,18 @@ class AppServiceProvider extends ServiceProvider
             });
 
             $view->with('basicConfig', $basics);
+        });
+
+        View::composer('layouts.app', function ($view) {
+            $basics = Basic::getAllAsArray();
+
+            $tagData = null;
+            if (Request::is('allposts') && Request::has('slug')) {
+                $slug = Request::query('slug');
+                $tagData = Tag::where('slug', $slug)->first();
+            }
+
+            $view->with(compact('basics', 'tagData'));
         });
     }
 }
