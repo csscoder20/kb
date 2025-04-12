@@ -92,34 +92,45 @@
     max-width: 570px;
     margin-right: 10px;
 }
-.header_search_form .input-wrapper i {
-    position: absolute;
-    left: 25px;
-    font-size: 16px;
-    color: #b6bac3;
-    top: 50%;
-    transform: translateY(-50%) rotate(80deg);
+
+.kolomPencarian.d-flex.w-100 {
+    box-shadow: 0 9px 11.5px -3px #00000026, 0 18.5px 28.5px #0000000d,
+        0 7px 37.5px #0000000a;
+    border-radius: 10px !important;
+    background-color: #fff !important;
 }
+
+ul#listPencarian small.badge.me-1 {
+    padding: 5px !important;
+    font-size: 8px;
+    height: 100%;
+}
+
+ul#listPencarian a.text-decoration-none {
+    font-size: 14px;
+}
+
+.kolomPencarian.d-flex span#searchboxIcon {
+    border-radius: 0 !important;
+    background-color: transparent !important;
+}
+
 .header_search_form .input-wrapper input {
-    background: #fff;
+    background: transparent !important;
     border: 0;
     height: 60px;
     font-size: 16px;
-    padding-left: 52px;
+    padding: 10px !important;
     width: 100%;
-    border-radius: 45px;
-    padding-right: 155px;
+    border-radius: 0;
 }
+
 select:focus,
 input:focus {
     outline: none;
     box-shadow: none;
 }
 
-[type="search"] {
-    outline-offset: 0;
-    -webkit-appearance: textfield;
-}
 .header_search_form .input-wrapper input.placeholder {
     color: #848996;
 }
@@ -143,8 +154,7 @@ input:focus {
     position: absolute;
     right: 0;
     top: 0;
-    border-top-right-radius: 45px;
-    border-bottom-right-radius: 45px;
+    border-radius: 0 10px 10px 0;
     border: 0 !important;
 }
 .header_search_form .custom-select:after {
@@ -191,7 +201,7 @@ input:focus {
     width: 100%;
     text-align: left;
     z-index: 99;
-    padding: 30px;
+    padding: 15px;
 }
 .header_search_form_info .header_search_form_panel:before {
     content: "";

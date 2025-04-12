@@ -1,6 +1,10 @@
 @extends('layouts.app')
 <link href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css" rel="stylesheet" />
 <style>
+    .d-none {
+        display: none !important;
+    }
+
     table th,
     table td {
         border: none !important;
@@ -77,9 +81,12 @@
 @section('content')
 <nav class="overflow-auto">
     <div class="nav nav-tabs flex-nowrap" id="nav-tab" role="tablist">
-        <button class="nav-link text-secondary {{ is_null(request('slug')) ? 'active' : '' }}" id="v-pills-all-tab"
-            data-bs-toggle="pill" data-bs-target="#v-pills-all" type="button" role="tab" aria-controls="v-pills-all"
-            aria-selected="{{ is_null(request('slug')) ? 'true' : 'false' }}" data-slug="allposts">
+        <button
+            class="nav-link text-secondary {{ request('slug') === 'allposts' || is_null(request('slug')) ? 'active' : '' }}"
+            id="v-pills-all-tab" data-bs-toggle="pill" data-bs-target="#v-pills-all" type="button" role="tab"
+            aria-controls="v-pills-all"
+            aria-selected="{{ request('slug') === 'allposts' || is_null(request('slug')) ? 'true' : 'false' }}"
+            data-slug="allposts"> {{-- Ubah dari "" jadi "allposts" --}}
             <i class="bi bi-menu-app-fill"></i> All
         </button>
 
@@ -105,7 +112,8 @@
 </nav>
 
 <div class="tab-content mt-3" id="nav-tabContent">
-    <div class="tab-pane fade {{ is_null(request('slug')) ? 'show active' : '' }}" id="v-pills-all" role="tabpanel">
+    <div class="tab-pane fade {{ request('slug') === 'allposts' || is_null(request('slug')) ? 'show active' : '' }}"
+        id="v-pills-all" role="tabpanel">
         @php
         $allReports = $tags->flatMap->reports->sortByDesc('created_at');
         @endphp
@@ -151,54 +159,153 @@
     @endforeach
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
 <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
 <script>
+    $(document).on('click', '.nav-link[data-slug]', function () {
+        const slug = $(this).data('slug');
+        const url = new URL(window.location);
+
+        // Reset pencarian saat tab diganti
+        $('#searchbox').val('');
+        $('#listPencarian').html('');
+        $('.header_search_form_panel').hide();
+
+        if (!slug) {
+            url.searchParams.delete('slug');
+        } else {
+            url.searchParams.set('slug', slug);
+        }
+
+        history.pushState(null, '', url.toString());
+        $('#search_post_type').val(slug).trigger('change');
+
+        Livewire.dispatch('slugChanged', { slug: slug === 'allposts' ? null : slug });
+
+        setTimeout(() => {
+            initializeReportTable(slug);
+        }, 200);
+    });
+
+    function initializeReportTable(slug) {
+        const targetTable = $(`.report-table[data-slug="${slug}"]`);
+
+        if (!$.fn.dataTable.isDataTable(targetTable)) {
+            targetTable.DataTable({
+                processing: true,
+                serverSide: true,
+                searching: false,
+                lengthChange: false,
+                ajax: {
+                    url: '{{ route('datatable.reports') }}',
+                    data: { slug: slug === 'allposts' ? '' : slug }
+                },
+                columns: [
+                    { data: 'user_image', name: 'user_image', orderable: false, searchable: false },
+                    { data: 'info', name: 'info' },
+                    { data: 'action', name: 'action', orderable: false, searchable: false }
+                ],
+                columnDefs: [
+                    { width: '10%', targets: 0 },
+                    { width: '60%', targets: 1 },
+                    { width: '30%', targets: 2 }
+                ],
+                headerCallback: function(thead) {
+                    $(thead).hide();
+                }
+            });
+        }
+    }
+
+    $('#search_post_type').on('change', function () {
+        const slug = $(this).val();
+        const url = new URL(window.location);
+
+        if (!slug) {
+            url.searchParams.delete('slug');
+        } else {
+            url.searchParams.set('slug', slug);
+        }
+
+        history.pushState(null, '', url.toString());
+        Livewire.dispatch('slugChanged', { slug: slug });
+    });
+
+    const activeTab = $('.tab-pane.show.active .report-table').data('slug');
+    if (activeTab) {
+        initializeReportTable(activeTab);
+    }
+
     $(document).ready(function () {
-$('.nav-link[data-slug]').on('click', function () {
-const slug = $(this).data('slug');
-const url = new URL(window.location);
+        $('#searchbox').on('keyup', function () {
+            let search = $(this).val().trim();
+            let slug = $('#search_post_type').val();
 
-if (slug === 'allposts') {
-url.searchParams.delete('slug');
-} else {
-url.searchParams.set('slug', slug);
-}
-
-history.pushState(null, '', url.toString());
-
-// Emit event ke Livewire
-Livewire.dispatch('slugChanged', { slug: slug === 'allposts' ? null : slug });
-});
-        $('.report-table').each(function () {
-            const table = $(this);
-            const slug = table.data('slug') === '' ? 'allposts' : table.data('slug');
-
-            table.DataTable({
-            processing: true,
-            serverSide: true,
-            searching: false,
-            lengthChange: false,
-            ajax: {
-            url: '{{ route('datatable.reports') }}',
-            data: { slug: slug }
-            },
-            columns: [
-            { data: 'user_image', name: 'user_image', orderable: false, searchable: false },
-            { data: 'info', name: 'info' },
-            { data: 'action', name: 'action', orderable: false, searchable: false }
-            ],
-            columnDefs: [
-            { width: '10%', targets: 0 },
-            { width: '60%', targets: 1 },
-            { width: '30%', targets: 2 }
-            ],
-            headerCallback: function(thead, data, start, end, display) {
-            $(thead).hide();
+            if (search.length < 2) {
+                $('#listPencarian').html('');
+                $('.header_search_form_panel').hide();
+                return;
             }
+
+            $.ajax({
+                url: '/search-posts',
+                method: 'GET',
+                data: {
+                    search: search,
+                    slug: slug
+                },
+                success: function (data) {
+                    let html = '';
+
+                    if (data.length === 0) {
+                        html = '<li class="px-2 py-1">Tidak ada hasil ditemukan.</li>';
+                    } else {
+                        data.forEach(function (report) {
+                            let tagsHtml = '';
+
+                            if (report.tags.length > 0) {
+                                report.tags.forEach(function (tag) {
+                                    tagsHtml += `<small class="badge me-1" style="background-color:${tag.color}">${tag.alias}</small>`;
+                                });
+                            } else {
+                                tagsHtml = `<small class="badge me-1" style="background-color:#ccc">Tanpa Tag</small>`;
+                            }
+
+                            html += `
+                            <li class="py-2 border-bottom d-flex justify-content-between align-items-center">
+                                <div class="tagTitle d-flex align-items-center">
+                                    ${tagsHtml}
+                                    <a href="/storage/${report.pdf_file}" target="_blank" class="text-decoration-none">
+                                        ${report.title}
+                                    </a>
+                                </div>
+                                <div class="pdfDocx d-flex">
+                                    <a href="/report/view-pdf/${report.id}" target="_blank" title="Preview .pdf file"
+                                        class="text-danger text-decoration-none">
+                                        <i class="bi bi-file-earmark-pdf fs-5 my-1"></i>
+                                    </a> | 
+                                    ${report.file ? `
+                                    <a href="/report/download-word/${report.id}" title="Download .docx file" class="text-success text-decoration-none">
+                                        <i class="bi bi-file-earmark-word fs-5 my-1"></i>
+                                    </a>` : ''}
+                                </div>
+                            </li>
+                            `;
+                        });
+                    }
+
+                    $('#listPencarian').html(html);
+                    $('.header_search_form_panel').show();
+                },
+                error: function (xhr) {
+                    console.error(xhr.responseText);
+                }
             });
         });
     });
 </script>
-
+<script>
+    $('.header_search_form_panel').addClass('d-none'); // hide
+    $('.header_search_form_panel').removeClass('d-none'); // show
+</script>
 @endsection

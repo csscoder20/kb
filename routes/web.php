@@ -37,3 +37,10 @@ Route::get('/subheader', function (\Illuminate\Http\Request $request) {
 
     return view('components.subheader', compact('tagData', 'basics'))->render();
 });
+
+Route::get('/report/{id}/view-pdf', [TagController::class, 'viewPdf'])->name('report.view.pdf');
+Route::get('/report/{id}/download-word', [TagController::class, 'downloadWord'])->name('report.download.word');
+
+Route::get('/search-posts', [TagController::class, 'search'])->name('search.posts');
+Route::get('/report/view-pdf/{id}', [TagController::class, 'viewPdf'])->name('report.view.pdf');
+Route::get('/report/download-word/{id}', [TagController::class, 'downloadWord'])->name('report.download.word');

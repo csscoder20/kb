@@ -381,48 +381,6 @@ button#logout-btn:hover {
     align-items: center;
 }
 
-/* span#theme-btn {
-    color: #5d5d5d;
-} */
-
-/* Swall */
-button.swal2-confirm.swal2-styled.swal2-default-outline {
-    border-radius: 30px;
-}
-
-button.swal2-cancel.swal2-styled.swal2-default-outline {
-    border-radius: 30px;
-    background-color: transparent !important;
-    border: 2px solid #ecf0f6 !important;
-    color: #000;
-}
-
-.swal2-popup.swal2-modal.swal2-show {
-    width: 25rem !important;
-    border-radius: 1rem;
-    padding: 1.5rem;
-}
-
-.swal2-actions {
-    width: 100%;
-    justify-content: flex-end;
-}
-
-h2#swal2-title {
-    border-bottom: 2px solid #ecf0f6;
-    padding: 20px 0;
-    text-align: left;
-    font-size: 24px;
-}
-
-div#swal2-html-container {
-    text-align: left;
-    font-size: 16px;
-    padding: 10px 0;
-}
-
-/* End Swall */
-
 .navbar .avatar {
     margin: 0 !important;
     height: auto !important;
