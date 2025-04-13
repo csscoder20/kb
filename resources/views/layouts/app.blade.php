@@ -26,6 +26,9 @@
 
     <link rel="stylesheet" href="{{ asset('bt-theme/front-search/css/style-main.css') }}">
     <link rel="stylesheet" href="{{ asset('bt-theme/front-search/css/responsive.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
     @livewireStyles
     <style>
         a.btn.btn-primary {
@@ -149,6 +152,10 @@
         }
 
         /* End Swall */
+
+        .card-footer.text-center small {
+            opacity: 60%;
+        }
     </style>
 </head>
 
@@ -162,11 +169,13 @@
                     Home
                 </a>
 
-                <a class="navbar-brand nav-link {{ Request::is('new-post') ? 'active' : '' }}"
-                    href="{{ url('new-post') }}">
+                @auth
+                <a class="navbar-brand nav-link {{ Request::is('newpost') ? 'active' : '' }}"
+                    href="{{ url('newpost') }}">
                     <i class="bi bi-pencil-square"></i>
                     New Post
                 </a>
+                @endauth
 
                 <a class="navbar-brand nav-link {{ Request::is('allposts') ? 'active' : '' }}"
                     href="{{ url('allposts?slug=allposts') }}">
@@ -261,8 +270,10 @@
     </section>
     <footer class="py-5">
         <div class="container">
-            <p class="m-0 text-center text-dark">
-                Copyright &copy; Your Website 2023
+            <p class="text-muted text-center mb-0 text-small">
+                &copy; {{ date('Y') }} {{ $basicConfig['footer'] ?? '-' }}
+                Made with <span class="text-danger">&#10084;</span>
+                by <strong>{{ $basicConfig['created_by'] ?? '-' }}</strong>
             </p>
         </div>
     </footer>
@@ -270,8 +281,8 @@
     <script src="{{ asset('bt-theme/js/scripts.js') }}"></script>
     <script src="{{ asset('bt-theme/front-search/js/main.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
+    {{-- <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script> --}}
+    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script> --}}
     <script>
         document.getElementById('logout-btn').addEventListener('click', function (e) {
                 e.preventDefault();

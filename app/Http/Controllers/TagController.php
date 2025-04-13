@@ -91,23 +91,33 @@ class TagController extends Controller
             })
             ->addColumn('info', function ($report) use ($isAll) {
                 $title = '<strong class="fw-normal">' . e($report->title) . '</strong>';
-                $date = '<div class="text-muted small"> <i class="bi bi-calendar me-1"></i>' . $report->created_at->format('Y-m-d') . '</div>';
+
+                $tags = $report->tags->map(function ($tag) {
+                    return '<span style="background-color:' . e($tag->color) . '" class="badge me-0 rounded-0" title="' . e($tag->name) . '">' . e($tag->alias) . '</span>';
+                })->implode(' ');
+
+                $date = '<div class="text-muted small"><i class="bi bi-calendar me-1"></i>' . $report->created_at->format('Y-m-d') . '</div>';
 
                 $viewDownload = '
-                <div class="mt-0 small text-muted">
-                    <i class="bi bi-eye me-1"></i>' . $report->view . '
-                    &nbsp;&nbsp;
-                    <i class="bi bi-download me-1"></i>' . $report->download . '
-                </div>';
-                $uploadedBy = '<div class="small text-muted"> <i class="bi bi-person-circle"></i> ' . e($report->user->name ?? 'Unknown') . '</div>';
-                $tags = $report->tags->map(function ($tag) {
-                    return '<span style="background-color:' . e($tag->color) . '" class="badge me-1">' . e($tag->name) . '</span>';
-                })->implode(' ');
-                return $title . '<div class="mt-1 gap-4 d-flex">' . $date . $viewDownload . $uploadedBy . '</div>' . ($tags ? '<div class="mt-1">' . $tags . '</div>' : '');
+                    <div class="mt-0 small text-muted">
+                        <i class="bi bi-eye me-1"></i>' . $report->view . '
+                        &nbsp;&nbsp;
+                        <i class="bi bi-download me-1"></i>' . $report->download . '
+                    </div>';
+
+                $uploadedBy = '<div class="small text-muted"><i class="bi bi-person-circle"></i> ' . e($report->user->name ?? 'Unknown') . '</div>';
+
+                return '
+                    <div class="mb-1">
+                        <div class="d-flex align-items-center gap-2">' . $title . '<div class="tagsDiv d-flex">' . $tags . '</div></div>
+                        <div class="d-flex flex-wrap gap-3 mt-2">' . $date . $viewDownload . $uploadedBy . '</div>
+                    </div>
+                ';
             })
+
             ->addColumn('action', function ($report) {
                 if (!auth()->check()) {
-                    return '<span class="text-muted small">Login untuk mengakses file</span>';
+                    return '<span class="text-muted small">-</span>';
                 }
 
                 $pdfBtn = '<a href="' . route('report.view.pdf', $report->id) . '" target="_blank" title="Preview File PDF" class="text-danger text-decoration-none"><i class="bi bi-file-earmark-pdf fs-5"></i></a> |';

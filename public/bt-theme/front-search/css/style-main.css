@@ -100,7 +100,7 @@
     background-color: #fff !important;
 }
 
-ul#listPencarian small.badge.me-1 {
+ul#listPencarian small {
     padding: 5px !important;
     font-size: 8px;
     height: 100%;

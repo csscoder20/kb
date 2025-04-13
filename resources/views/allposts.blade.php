@@ -5,6 +5,10 @@
         display: none !important;
     }
 
+    table#DataTables_Table_1 span.badge.me-1 {
+        font-size: 10px;
+    }
+
     table th,
     table td {
         border: none !important;
@@ -29,12 +33,13 @@
     }
 
     tbody>tr>td:nth-child(2) {
-        width: 73% !important;
+        width: 80% !important;
     }
 
     tbody>tr>td:nth-child(3) {
-        width: 20% !important;
+        width: 13% !important;
         text-align: right;
+        vertical-align: top;
     }
 
     .report-table tbody tr:hover {
@@ -48,13 +53,17 @@
         padding-left: 0 !important;
     }
 
+    table.dataTable>tbody>tr {
+        background-color: transparent;
+        border-bottom: 1px solid #ebebeb;
+    }
+
     th.text-center.dt-orderable-asc.dt-orderable-desc {
         width: 20%;
     }
 
-    table#DataTables_Table_0 span.badge.me-1 {
-        padding: 5px;
-        font-size: 10px;
+    table#DataTables_Table_0 .tagsDiv span {
+        font-size: 8px !important;
     }
 
     table#DataTables_Table_0 strong {
@@ -77,9 +86,19 @@
     .dt-layout-cell.dt-layout-start {
         font-size: 12px;
     }
+
+    ul#listPencarian a {
+        margin-left: 5px;
+    }
 </style>
 @section('content')
 <nav class="overflow-auto">
+    @guest
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Notice:</strong> You cannot upload, preview, or download reports until you are logged in.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endguest
     <div class="nav nav-tabs flex-nowrap" id="nav-tab" role="tablist">
         <button
             class="nav-link text-secondary {{ request('slug') === 'allposts' || is_null(request('slug')) ? 'active' : '' }}"
@@ -159,8 +178,66 @@
     @endforeach
 </div>
 
+<div class="modal fade" id="reportModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <form id="reportForm" action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reportModalLabel">Create MoP Report</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tags" class="form-label">Tags</label>
+                        <select id="tags" class="form-select" name="tags[]" multiple required>
+                            @foreach($tags as $tag)
+                            <option value="{{ $tag->id }}" data-color="{{ $tag->color }}">{{ $tag->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" name="description"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="file" class="form-label">File</label>
+                        <div id="docxDropzone" class="dropzone"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary rounded-pill btnCancel"
+                        data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary rounded-pill">Create Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
+
+<script>
+    const handleClick = (e) => {
+    e.preventDefault();
+    const modalElement = document.getElementById('reportModal');
+    const modal = new Modal(modalElement, {
+    backdrop: false,
+    keyboard: true,
+    focus: true
+    });
+    modal.show();
+    };
+</script>
+<script>
+    window.isLoggedIn = @json(auth()->check());
+</script>
 <script>
     $(document).on('click', '.nav-link[data-slug]', function () {
         const slug = $(this).data('slug');
@@ -265,21 +342,16 @@
 
                             if (report.tags.length > 0) {
                                 report.tags.forEach(function (tag) {
-                                    tagsHtml += `<small class="badge me-1" style="background-color:${tag.color}">${tag.alias}</small>`;
+                                    tagsHtml += `<small class="badge me-0 rounded-0" style="background-color:${tag.color}">${tag.alias}</small>`;
                                 });
                             } else {
-                                tagsHtml = `<small class="badge me-1" style="background-color:#ccc">Tanpa Tag</small>`;
+                                tagsHtml = `<small class="badge me-0 rounded-0" style="background-color:#ccc">Tanpa Tag</small>`;
                             }
 
-                            html += `
-                            <li class="py-2 border-bottom d-flex justify-content-between align-items-center">
-                                <div class="tagTitle d-flex align-items-center">
-                                    ${tagsHtml}
-                                    <a href="/storage/${report.pdf_file}" target="_blank" class="text-decoration-none">
-                                        ${report.title}
-                                    </a>
-                                </div>
-                                <div class="pdfDocx d-flex">
+                            // Cek login
+                            let fileLinks = '';
+                            if (window.isLoggedIn) {
+                                fileLinks = `
                                     <a href="/report/view-pdf/${report.id}" target="_blank" title="Preview .pdf file"
                                         class="text-danger text-decoration-none">
                                         <i class="bi bi-file-earmark-pdf fs-5 my-1"></i>
@@ -288,8 +360,23 @@
                                     <a href="/report/download-word/${report.id}" title="Download .docx file" class="text-success text-decoration-none">
                                         <i class="bi bi-file-earmark-word fs-5 my-1"></i>
                                     </a>` : ''}
-                                </div>
-                            </li>
+                                `;
+                            } else {
+                                fileLinks = `<span class="text-muted small">-</span>`;
+                            }
+
+                            html += `
+                                <li class="py-2 border-bottom d-flex justify-content-between align-items-center">
+                                    <div class="tagTitle d-flex align-items-center">
+                                        ${tagsHtml}
+                                        <a href="/storage/${report.pdf_file}" target="_blank" class="text-decoration-none">
+                                            ${report.title}
+                                        </a>
+                                    </div>
+                                    <div class="pdfDocx d-flex">
+                                        ${fileLinks}
+                                    </div>
+                                </li>
                             `;
                         });
                     }

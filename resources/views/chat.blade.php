@@ -23,7 +23,7 @@
                         <strong class="text-light">New:</strong>
                         <a href="{{ asset('storage/' . $tag->reports->first()->pdf_file) }}" target="_blank"
                             class="text-light text-decoration-none">
-                            {{ $tag->reports->first()->title }}
+                            {{ Str::limit($tag->reports->first()->title, 30) }}
                         </a>
                         @else
                         <small class="text-muted">Belum ada postingan</small>

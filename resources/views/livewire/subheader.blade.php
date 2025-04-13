@@ -16,7 +16,7 @@ $textColor = $isDefault ? 'color: #667c99;' : 'color: #fff;';
     </div>
     <div class="container px-lg-5 mb-4">
         <div class="doc_banner_content">
-            @if (!Request::is('/'))
+            @if (!Request::is('/', 'newpost'))
             <form action="#" class="header_search_form">
                 <div class="header_search_form_info">
                     <div class="form-group">
