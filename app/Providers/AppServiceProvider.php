@@ -8,26 +8,18 @@ use Illuminate\Support\Facades\Request;
 use App\Models\Basic;
 use App\Models\Tag;
 use App\Http\Responses\LogoutResponse;
+use App\Http\Responses\LoginResponse;
 use Filament\Http\Responses\Auth\Contracts\LogoutResponse as LogoutResponseContract;
-
+use Filament\Http\Responses\Auth\Contracts\LoginResponse as LoginResponseContract;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
+
     public function register(): void
     {
         $this->app->bind(LogoutResponseContract::class, LogoutResponse::class);
+        $this->app->singleton(LoginResponseContract::class, LoginResponse::class);
     }
-
-    /**
-     * Bootstrap any application services.
-     */
-    // public function boot(): void
-    // {
-    //     //
-    // }
 
     public function boot()
     {

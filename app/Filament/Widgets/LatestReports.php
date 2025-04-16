@@ -34,9 +34,13 @@ class LatestReports extends BaseWidget
             Tables\Columns\ImageColumn::make('user.profile_picture')
                 ->circular()
                 ->disableClick()
-                ->label('Dibua Oleh')
+                ->label('Dibuat Oleh')
                 ->tooltip(fn($record) => $record->user?->name)
-                ->defaultImageUrl(url('storage/default-avatar.png')),
+                ->getStateUsing(
+                    fn($record) =>
+                    $record->user?->profile_picture
+                        ?: 'https://ui-avatars.com/api/?name=' . urlencode($record->user?->name ?? 'User') . '&color=FFFFFF&background=020617'
+                ),
             Tables\Columns\TextColumn::make('status')->badge()->label('Status'),
             Tables\Columns\TextColumn::make('created_at')->label('Tanggal')->dateTime('d M Y H:i'),
         ];

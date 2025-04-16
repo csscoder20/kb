@@ -7,9 +7,17 @@ use Illuminate\Http\Request;
 use App\Models\Tag;
 use App\Models\Basic;
 use App\Models\Report;
+use App\Models\Customer;
+// use Illuminate\Routing\Controller;
 
 class PostController extends Controller
 {
+
+    // public function __construct()
+    // {
+    //     $this->middleware('auth');
+    // }
+
     public function newPost()
     {
         $tags = Tag::withCount('reports') // hitung jumlah report per tag
@@ -37,9 +45,12 @@ class PostController extends Controller
             $tagData = Tag::where('slug', $activeSlug)->first();
         }
 
+        $customers = Customer::orderBy('name')->get();
+
         $allReports = Report::latest()->get();
         $basics = Basic::getAllAsArray();
 
-        return view('allposts', compact('tags', 'activeSlug', 'tagData', 'basics', 'allReports'));
+        // return view('allposts', compact('tags', 'activeSlug', 'tagData', 'basics', 'allReports'));
+        return view('allposts', compact('tags', 'activeSlug', 'tagData', 'basics', 'allReports', 'customers'));
     }
 }

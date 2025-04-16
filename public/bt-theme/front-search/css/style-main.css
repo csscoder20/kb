@@ -106,7 +106,7 @@ ul#listPencarian small {
     height: 100%;
 }
 
-ul#listPencarian a.text-decoration-none {
+ul#listPencarian span {
     font-size: 14px;
 }
 

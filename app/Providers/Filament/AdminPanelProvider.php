@@ -30,24 +30,19 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            // ->login()
             ->brandName(Basic::getValue('title'))
             ->darkModeBrandLogo(asset('storage/' . Basic::getValue('logo_dark')))
             ->brandLogo(asset('storage/' . Basic::getValue('logo_light')))
             ->brandLogoHeight('3rem')
             ->favicon(asset('storage/' . Basic::getValue('favicon')))
-            // ->login()
-
             ->registration(RegisterPage::class)
             ->login(CustomLoginPage::class)
             ->passwordReset()
             ->emailVerification()
             ->profile()
-
             ->colors([
                 'danger' => Color::Red,
                 'gray' => Color::Slate,
-                // 'gray' => Basic::getValue('light_color') ?? Color::Slate,
                 'light' => Basic::getValue('dark_color') ?? Color::Gray,
                 'info' => Color::Blue,
                 'primary' => Color::Indigo,

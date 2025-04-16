@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Report extends Model
 {
-    protected $fillable = ['title', 'description', 'file', 'pdf_file', 'user_id'];
+    protected $fillable = ['title', 'description', 'file', 'pdf_file', 'user_id', 'customer_id'];
 
 
     public function tags(): BelongsToMany
@@ -27,6 +27,11 @@ class Report extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
     }
 
     public static function convertDocxToPdf($docxPath)

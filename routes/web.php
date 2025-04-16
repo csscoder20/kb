@@ -8,6 +8,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\CustomerController;
 use App\Filament\Pages\Register;
 
 // Route::get('/', function () {
@@ -19,6 +20,7 @@ Route::get('/', [ChatController::class, 'showForm']);
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 Route::get('/config', [ConfigController::class, 'getConfig']);
 Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
+Route::get('/ask', [ChatController::class, 'ask'])->name('tag.ask');
 
 
 // routes/web.php
@@ -45,3 +47,6 @@ Route::get('/report/{id}/download-word', [TagController::class, 'downloadWord'])
 Route::get('/search-posts', [TagController::class, 'search'])->name('search.posts');
 Route::get('/report/view-pdf/{id}', [TagController::class, 'viewPdf'])->name('report.view.pdf');
 Route::get('/report/download-word/{id}', [TagController::class, 'downloadWord'])->name('report.download.word');
+
+// Route Customer
+Route::get('/customers/select', [CustomerController::class, 'select']);

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
+use App\Models\Customer;
 
 class ReportController extends Controller
 {
@@ -21,7 +22,13 @@ class ReportController extends Controller
             'tags.*' => 'exists:tags,id',
             'description' => 'nullable|string',
             'file' => 'required|file|mimes:docx',
+            'customer' => 'required',
         ]);
+
+        $customerInput = $validated['customer'];
+        $customer = is_numeric($customerInput)
+            ? Customer::find($customerInput)
+            : Customer::firstOrCreate(['name' => $customerInput]);
 
         // Buat nama file berdasarkan title
         $title = $validated['title'];
@@ -38,6 +45,7 @@ class ReportController extends Controller
             'file' => $filePath,
             'pdf_file' => $pdfPath,
             'user_id' => auth()->id(),
+            'customer_id' => $customer->id,
         ]);
 
         $report->tags()->sync($validated['tags']);

@@ -8,6 +8,7 @@ use App\Models\Report;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Routing\Controller;
+use App\Models\Customer;
 
 // class TagController extends \App\Http\Controllers\Controller
 class TagController extends Controller
@@ -18,36 +19,94 @@ class TagController extends Controller
         $this->middleware('auth')->only(['viewPdf', 'downloadWord']);
     }
 
+    // public function search(Request $request)
+    // {
+    //     $search = $request->input('search');
+    //     $slug = $request->input('slug');
+
+    //     // Jika tidak ada keyword pencarian atau panjangnya kurang dari 2 karakter, return empty array
+    //     if (!$search || strlen($search) < 2) {
+    //         return response()->json([]);
+    //     }
+
+    //     // Memulai query pencarian, hanya pada kolom 'title' yang ada di tabel
+    //     $query = Report::query()
+    //         ->where('title', 'like', '%' . $search . '%')
+    //         ->with('tags') // Mengambil relasi tags
+    //         ->limit(10)
+    //         ->latest();
+
+    //     // Jika slug ada dan bukan 'allposts', tambahkan filter berdasarkan slug tag
+    //     if ($slug && $slug !== 'allposts') {
+    //         $query->whereHas('tags', function ($q) use ($slug) {
+    //             $q->where('slug', $slug); // Filter berdasarkan tag aktif
+    //         });
+    //     }
+
+    //     // Ambil hasil pencarian
+    //     $results = $query->get();
+
+    //     // Mengembalikan hasil pencarian dalam bentuk JSON
+    //     return response()->json($results);
+    // }
+
     public function search(Request $request)
     {
         $search = $request->input('search');
         $slug = $request->input('slug');
 
-        // Jika tidak ada keyword pencarian atau panjangnya kurang dari 2 karakter, return empty array
         if (!$search || strlen($search) < 2) {
             return response()->json([]);
         }
 
-        // Memulai query pencarian, hanya pada kolom 'title' yang ada di tabel
+        // Pecah keyword jadi array kata
+        $keywords = explode(' ', $search);
+
+        // Bangun query utama
         $query = Report::query()
-            ->where('title', 'like', '%' . $search . '%')
-            ->with('tags') // Mengambil relasi tags
-            ->limit(10)
+            ->with('tags')
             ->latest();
 
-        // Jika slug ada dan bukan 'allposts', tambahkan filter berdasarkan slug tag
+        // Jika ada slug (dan bukan allposts), filter berdasarkan tag
         if ($slug && $slug !== 'allposts') {
             $query->whereHas('tags', function ($q) use ($slug) {
-                $q->where('slug', $slug); // Filter berdasarkan tag aktif
+                $q->where('slug', $slug);
             });
         }
 
-        // Ambil hasil pencarian
-        $results = $query->get();
+        $query = Report::query()
+            ->with(['tags', 'customer']) // ← tambahkan relasi customer di sini
+            ->latest();
 
-        // Mengembalikan hasil pencarian dalam bentuk JSON
-        return response()->json($results);
+        // Tambahkan kondisi where untuk setiap kata di keyword
+        $query->where(function ($q) use ($keywords) {
+            foreach ($keywords as $word) {
+                $q->where('title', 'like', '%' . $word . '%');
+            }
+        });
+
+        // Ambil hasil maksimal 10
+        $results = $query->limit(10)->get();
+
+        $highlightedResults = $results->map(function ($item) use ($keywords) {
+            $highlightedTitle = $item->title;
+
+            foreach ($keywords as $word) {
+                $highlightedTitle = preg_replace("/($word)/i", '<strong class="text-primary" >$1</strong>', $highlightedTitle);
+            }
+
+            // Tambahkan nama customer jika ada
+            if ($item->customer && $item->customer->name) {
+                $highlightedTitle .= ' <span class="text-success">- ' . e($item->customer->name) . '</span>';
+            }
+
+            $item->highlighted_title = $highlightedTitle;
+            return $item;
+        });
+
+        return response()->json($highlightedResults);
     }
+
 
 
     public function show(Request $request)
@@ -63,15 +122,16 @@ class TagController extends Controller
             $tagData = Tag::where('slug', $activeSlug)->first();
         }
 
+        $customers = Customer::orderBy('name')->get();
         $allReports = Report::latest()->get();
         $basics = Basic::getAllAsArray();
 
-        return view('allposts', compact('tags', 'activeSlug', 'tagData', 'basics', 'allReports'));
+        return view('allposts', compact('tags', 'activeSlug', 'tagData', 'basics', 'allReports', 'customers'));
     }
 
     public function datatable(Request $request)
     {
-        $query = Report::with(['tags', 'user'])->latest(); // pastikan relasi user di-load
+        $query = Report::with(['tags', 'user', 'customer'])->latest(); // pastikan relasi user di-load
 
         if ($request->filled('slug')) {
             $query->whereHas('tags', function ($q) use ($request) {
@@ -85,12 +145,43 @@ class TagController extends Controller
             ->addColumn('user_image', function ($report) {
                 if ($report->user && $report->user->profile_picture) {
                     $url = asset('storage/' . $report->user->profile_picture);
-                    return '<img src="' . $url . '" alt="User Image" title="' . e($report->user->name) . '" class="rounded-circle" width="40" height="40">';
+                    return '<img src="' . $url . '" alt="User Image" title="' . e($report->user->name) . '" class="rounded-circle shadow-sm hover-effect" width="40" height="40">';
                 }
-                return '<img src="' . asset('storage/profile-pictures/default-avatar.png') . '" alt="Default Image" title="No Name" class="rounded-circle" width="40" height="40">';
+
+                $name = $report->user->name ?? 'No Name';
+
+                // Ambil inisial dari setiap kata
+                $initial = collect(explode(' ', $name))
+                    ->filter()
+                    ->map(fn($word) => strtoupper(mb_substr($word, 0, 1)))
+                    ->join('');
+
+                // Warna latar dari hash nama
+                $hash = md5($name);
+                $backgroundColor = '#' . substr($hash, 0, 6);
+
+                // Warna teks berdasarkan luminance
+                $r = hexdec(substr($backgroundColor, 1, 2));
+                $g = hexdec(substr($backgroundColor, 3, 2));
+                $b = hexdec(substr($backgroundColor, 5, 2));
+                $luminance = ($r * 0.299 + $g * 0.587 + $b * 0.114);
+                $textColor = $luminance > 186 ? '#000000' : '#FFFFFF';
+
+                return '<div title="' . e($name) . '" 
+                    class="rounded-circle d-flex justify-content-center align-items-center avatar-initial" 
+                    style="width:40px;height:40px;background-color:' . $backgroundColor . ';color:' . $textColor . ';font-weight:bold;">
+                    ' . $initial . '
+                </div>';
             })
+
+
             ->addColumn('info', function ($report) use ($isAll) {
-                $title = '<strong class="fw-normal">' . e($report->title) . '</strong>';
+                $customerName = $report->customer->name ?? null;
+                $fullTitle = $customerName
+                    ? $report->title . ' - <span class="text-success">' . e($customerName) . '</span>'
+                    : $report->title;
+
+                $title = '<strong class="fw-normal">' . $fullTitle . '</strong>';
 
                 $tags = $report->tags->map(function ($tag) {
                     return '<span style="background-color:' . e($tag->color) . '" class="badge me-0 rounded-0" title="' . e($tag->name) . '">' . e($tag->alias) . '</span>';

@@ -77,12 +77,12 @@ class UserResource extends Resource
                         }
                     })
                     ->dehydrated(true),
-                Forms\Components\FileUpload::make('profile_picture')
-                    ->image()
-                    ->directory('profile-pictures')
-                    ->imageEditor()
-                    ->previewable()
-                    ->maxSize(2048),
+                // Forms\Components\FileUpload::make('profile_picture')
+                //     ->image()
+                //     ->directory('profile-pictures')
+                //     ->imageEditor()
+                //     ->previewable()
+                //     ->maxSize(2048),
             ]);
     }
 
@@ -93,7 +93,12 @@ class UserResource extends Resource
                 Tables\Columns\ImageColumn::make('profile_picture')
                     ->circular()
                     ->disableClick()
-                    ->defaultImageUrl(url('storage/profile-pictures/default-avatar.png')),
+                    ->getStateUsing(
+                        fn($record) =>
+                        $record->profile_picture
+                            ? url('storage/' . $record->profile_picture)
+                            : 'https://ui-avatars.com/api/?name=' . urlencode($record->name) . '&color=FFFFFF&background=020617'
+                    ),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->label('Nama Lengkap')

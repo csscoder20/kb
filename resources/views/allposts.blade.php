@@ -62,11 +62,13 @@
         width: 20%;
     }
 
-    table#DataTables_Table_0 .tagsDiv span {
+    div#nav-tabContent table .tagsDiv span {
         font-size: 8px !important;
+        padding: 5px !important;
     }
 
-    table#DataTables_Table_0 strong {
+    div#nav-tabContent table strong {
+        color: #111 !important;
         font-weight: normal;
     }
 
@@ -94,9 +96,8 @@
 @section('content')
 <nav class="overflow-auto">
     @guest
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <div class="alert alert-warning " role="alert">
         <strong>Notice:</strong> You cannot upload, preview, or download reports until you are logged in.
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     @endguest
     <div class="nav nav-tabs flex-nowrap" id="nav-tab" role="tablist">
@@ -178,7 +179,7 @@
     @endforeach
 </div>
 
-<div class="modal fade" id="reportModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+{{-- <div class="modal fade" id="reportModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="reportModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -217,13 +218,13 @@
             </form>
         </div>
     </div>
-</div>
+</div> --}}
 
 <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
+{{-- <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script> --}}
+{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script> --}}
 
-<script>
+{{-- <script>
     const handleClick = (e) => {
     e.preventDefault();
     const modalElement = document.getElementById('reportModal');
@@ -234,7 +235,7 @@
     });
     modal.show();
     };
-</script>
+</script> --}}
 <script>
     window.isLoggedIn = @json(auth()->check());
 </script>
@@ -262,6 +263,13 @@
         setTimeout(() => {
             initializeReportTable(slug);
         }, 200);
+    });
+
+    $('#searchbox').on('focus', function () {
+    let search = $(this).val().trim();
+    if (search.length >= 2) {
+    $('.header_search_form_panel').show(); // tampilkan kembali hasil pencarian sebelumnya
+    }
     });
 
     function initializeReportTable(slug) {
@@ -366,17 +374,17 @@
                             }
 
                             html += `
-                                <li class="py-2 border-bottom d-flex justify-content-between align-items-center">
-                                    <div class="tagTitle d-flex align-items-center">
-                                        ${tagsHtml}
-                                        <a href="/storage/${report.pdf_file}" target="_blank" class="text-decoration-none">
-                                            ${report.title}
-                                        </a>
-                                    </div>
-                                    <div class="pdfDocx d-flex">
-                                        ${fileLinks}
-                                    </div>
-                                </li>
+                            <li class="py-2 border-bottom d-flex justify-content-between align-items-center">
+                                <div class="tagTitle d-flex align-items-center">
+                                    ${tagsHtml}
+                                    <span class="text-decoration-none">
+                                        ${report.highlighted_title}
+                                    </span>
+                                </div>
+                                <div class="pdfDocx d-flex">
+                                    ${fileLinks}
+                                </div>
+                            </li>
                             `;
                         });
                     }
@@ -389,6 +397,12 @@
                 }
             });
         });
+    });
+
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('#searchbox, .header_search_form_panel').length) {
+            $('.header_search_form_panel').hide();
+        }
     });
 </script>
 <script>

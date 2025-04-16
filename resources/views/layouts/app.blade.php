@@ -31,10 +31,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
     @livewireStyles
     <style>
+        a.dropdown-item.text-dark:hover {
+            border-radius: 5px;
+        }
+
+        a.dropdown-item.text-dark:focus,
+        a.dropdown-item.text-dark:active {
+            background-color: transparent !important;
+            outline: none;
+            box-shadow: none;
+        }
+
+        /* 
         a.btn.btn-primary {
             background-color: #4f46e5 !important;
             border: 0 !important;
-        }
+        } */
 
         nav.navbar.navbar-expand-lg.navbar-light {
             border-bottom: 1px solid #e8ecf3;
@@ -135,12 +147,6 @@
             padding: 10px 0;
         }
 
-        button:active,
-        .btn:active {
-            background-color: transparent !important;
-            box-shadow: none !important;
-            border-color: transparent !important;
-        }
 
         button:hover,
         .btn:hover {
@@ -155,6 +161,38 @@
 
         .card-footer.text-center small {
             opacity: 60%;
+        }
+
+        footer.py-5 p.text-muted.text-center.mb-0.text-small {
+            font-size: 12px;
+        }
+
+        .swal2-actions.swal2-loading {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: Center !important;
+        }
+
+        .avatar-initial {
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: default;
+        }
+
+        .avatar-initial:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .avatar-hover {
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+        .avatar-hover:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
@@ -172,7 +210,8 @@
                 @auth
                 <a class="navbar-brand nav-link {{ Request::is('newpost') ? 'active' : '' }}"
                     href="{{ url('newpost') }}">
-                    <i class="bi bi-pencil-square"></i>
+                    {{-- <i class="bi bi-pencil-square"></i> --}}
+                    <i class="bi bi-pen-fill"></i>
                     New Post
                 </a>
                 @endauth
@@ -182,6 +221,10 @@
                     <i class="bi bi-menu-app-fill"></i>
                     All Post
                 </a>
+                {{-- <a class="navbar-brand nav-link {{ Request::is('ask') ? 'active' : '' }}" href="{{ url('ask') }}">
+                    <i class="bi bi-menu-app-fill"></i>
+                    Ask Now
+                </a> --}}
             </div>
             @auth
             <div class="dropdown">
@@ -189,40 +232,48 @@
                     data-bs-toggle="dropdown" aria-expanded="false">
                     @php
                     $user = Auth::user();
-                    $initials = collect(explode(' ', $user->name))->map(fn($word) =>
-                    strtoupper(substr($word, 0,
-                    1)))->join('');
+                    $initials = collect(explode(' ', $user->name))
+                    ->map(fn($word) => strtoupper(substr($word, 0, 1)))
+                    ->join('');
+
+                    // Warna background berdasarkan hash nama
+                    $hash = md5($user->name);
+                    $bgColor = '#' . substr($hash, 0, 6);
+
+                    // Warna teks berdasarkan luminance
+                    $r = hexdec(substr($bgColor, 1, 2));
+                    $g = hexdec(substr($bgColor, 3, 2));
+                    $b = hexdec(substr($bgColor, 5, 2));
+                    $textColor = (($r * 0.299 + $g * 0.587 + $b * 0.114) > 186) ? '#000000' : '#FFFFFF';
                     @endphp
 
                     @if ($user->profile_picture)
                     <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="{{ $user->name }}"
-                        title="{{ $user->name }}" class="avatar img-fluid rounded-circle"
+                        title="{{ $user->name }}" class="avatar img-fluid rounded-circle avatar-hover"
                         style="width: 40px; height: 40px; object-fit: cover;">
                     @else
-                    <div class="avatar d-flex align-items-center justify-content-center rounded-circle bg-secondary text-white"
-                        style="width: 40px; height: 40px; font-weight: bold;">
+                    <div class="avatar d-flex align-items-center justify-content-center rounded-circle avatar-hover"
+                        title="{{ $user->name }}"
+                        style="width: 40px; height: 40px; font-weight: bold; background-color: {{ $bgColor }}; color: {{ $textColor }};">
                         {{ $initials }}
                     </div>
                     @endif
                 </a>
 
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="avatarDropdown">
-                    <li class="">
+                    @role('super_admin')
+                    <li>
+                        <a href="{{ url('/admin/dashboard') }}" class="dropdown-item text-dark">
+                            <i class="bi bi-speedometer2"></i>
+                            MyPanel
+                        </a>
+                    </li>
+                    @endrole
+                    <li>
                         <form id="logout-form" method="POST" action="{{ url('/admin/logout') }}" class="m-0">
                             @csrf
-                            <button type="button" class="dropdown-item text-danger" id="logout-btn">
-                                <svg class="icon-xl-heavy" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 24 24" height="24" width="24">
-                                    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2"
-                                        stroke="currentColor" d="M16 17L21 12L16 7"></path>
-                                    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2"
-                                        stroke="currentColor" d="M21 12H9">
-                                    </path>
-                                    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2"
-                                        stroke="currentColor"
-                                        d="M12 5H7C5.89543 5 5 5.89543 5 7V17C5 18.1046 5.89543 19 7 19H12">
-                                    </path>
-                                </svg>
+                            <button type="submit" class="dropdown-item text-danger" id="logout-btn">
+                                <i class="bi bi-box-arrow-right"></i>
                                 Log out
                             </button>
                         </form>
@@ -281,10 +332,10 @@
     <script src="{{ asset('bt-theme/js/scripts.js') }}"></script>
     <script src="{{ asset('bt-theme/front-search/js/main.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    {{-- <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script> --}}
-    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script> --}}
     <script>
-        document.getElementById('logout-btn').addEventListener('click', function (e) {
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 Swal.fire({
                     title: 'Are you sure you want to log out?',
@@ -301,6 +352,7 @@
                     }
                 });
             });
+        }
     </script>
 </body>
 

@@ -60,7 +60,7 @@
 
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="avatarDropdown">
                             <li class="">
-                                <form id="logout-form" method="POST" action="{{ url('/admin/logout') }}">
+                                <form id="logout-form" method="POST" action="{{ url('/mopgpt-admin/logout') }}">
                                     @csrf
                                     <button type="button" class="dropdown-item text-danger" id="logout-btn">
                                         <svg class="icon-xl-heavy" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -83,7 +83,7 @@
                     </div>
 
                     <div class="dropdown-menu dropdown-menu-end">
-                        <form id="logout-form" method="POST" action="{{ url('/admin/logout') }}">
+                        <form id="logout-form" method="POST" action="{{ url('/mopgpt-admin/logout') }}">
                             @csrf
                             <button type="button" class="dropdown-item" id="logout-btn">
                                 <svg class="icon-xl-heavy" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -104,10 +104,10 @@
                     @endauth
 
                     @guest
-                    <a href="{{ url('admin/login') }}" class="btn btn-secondary text-light rounded-pill">
+                    <a href="{{ url('mopgpt-admin/login') }}" class="btn btn-secondary text-light rounded-pill">
                         Login
                     </a>
-                    <a href="{{ url('admin/register') }}" class="btn btn-primary text-light rounded-pill">
+                    <a href="{{ url('mopgpt-admin/register') }}" class="btn btn-primary text-light rounded-pill">
                         Register
                     </a>
                     @endguest
