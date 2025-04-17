@@ -20,6 +20,11 @@ class FilamentServiceProvider extends ServiceProvider
      * Bootstrap services.
      */
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()?->hasRole('super_admin');
+    }
+
     public function boot()
     {
         Filament::serving(function () {

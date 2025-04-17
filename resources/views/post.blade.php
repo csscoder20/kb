@@ -22,13 +22,14 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="mb-3">
-                            <div class="alert alert-warning text-muted" role="alert">
-                                <strong>Penting!</strong> Format Penamaan file MoP sama dengan judul lengkap MoP. (Judul
-                                MoP - Nama Customer)<br>
-                                <span>Contoh: <strong class="text-primary">Upgrade Panorama and Palo Alto 850 from
-                                        Version
-                                        10.1.11H5 TO 10.1.14H9 -
-                                        Mubadala Energy (Sebuku) Ltd </strong></span>
+                            <div class="alert alert-warning d-flex align-items-center gap-2" role="alert">
+                                <i class="bi bi-info-circle fs-1"></i>
+                                <div>
+                                    <strong>Format Penamaan file MoP</strong><br>
+                                    <span>Contoh: <strong class="text-primary">Upgrade Panorama and Palo Alto 850 from
+                                            Version
+                                            10.1.11H5 TO 10.1.14H9 </strong></span>
+                                </div>
                             </div>
                             <label for="title" class="form-label">MoP Title</label><br>
                             <input type="text" class="form-control" name="title" id="title" required>

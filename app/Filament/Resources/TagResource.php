@@ -30,6 +30,37 @@ class TagResource extends Resource
         return static::getModel()::count();
     }
 
+    // public function mount()
+    // {
+    //     $this->form->fill(Tag::getAllAsArray());
+    // }
+    public function mount()
+    {
+        abort_unless(auth()->user()?->hasRole('super_admin'), 204); // 204 = No Content
+    }
+
+    // Jika si Mas bukan super_admin, di panel si Mas, menu ini gak tampil
+    public static function canViewAny(): bool
+    {
+        return auth()->check() && auth()->user()->hasRole('super_admin');
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->check() && auth()->user()->hasRole('super_admin');
+    }
+
+    // public static function canViewAny(): bool
+    // {
+    //     return auth()->check() && auth()->user()->hasRole('super_admin');
+    // }
+
+    // public static function shouldRegisterNavigation(): bool
+    // {
+    //     return auth()->check() && auth()->user()->hasRole('super_admin');
+    // }
+
+
     public static function getNavigationBadgeColor(): string|array|null
     {
         return static::getModel()::count() > 5 ? 'warning' : 'success';

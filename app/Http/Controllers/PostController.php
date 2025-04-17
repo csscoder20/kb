@@ -13,11 +13,6 @@ use App\Models\Customer;
 class PostController extends Controller
 {
 
-    // public function __construct()
-    // {
-    //     $this->middleware('auth');
-    // }
-
     public function newPost()
     {
         $tags = Tag::withCount('reports') // hitung jumlah report per tag

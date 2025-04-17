@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ReportResource\RelationManagers;
 use Joaopaulolndev\FilamentPdfViewer\Infolists\Components\PdfViewerEntry;
 use Illuminate\Support\Facades\Auth;
+use KoalaFacade\FilamentAlertBox\Forms\Components\AlertBox;
 
 class ReportResource extends Resource
 {
@@ -26,14 +27,40 @@ class ReportResource extends Resource
     protected static ?string $modelLabel = 'Posts';
     protected static ?string $navigationGroup = 'Report Management';
 
+    // public static function getNavigationBadge(): ?string
+    // {
+    //     return static::getModel()::count();
+    // }
+
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        $user = Auth::user();
+
+        $query = static::getModel()::query();
+
+        if (!$user->hasRole('super_admin')) {
+            $query->where('user_id', $user->id);
+        }
+
+        return $query->count();
     }
+
+    // public static function getNavigationBadgeColor(): string|array|null
+    // {
+    //     return static::getModel()::count() > 5 ? 'warning' : 'success';
+    // }
 
     public static function getNavigationBadgeColor(): string|array|null
     {
-        return static::getModel()::count() > 5 ? 'warning' : 'success';
+        $user = Auth::user();
+
+        $query = static::getModel()::query();
+
+        if (!$user->hasRole('super_admin')) {
+            $query->where('user_id', $user->id);
+        }
+
+        return $query->count() > 5 ? 'warning' : 'success';
     }
 
     public static function beforeCreate(Form $form, Report $record): void
@@ -45,11 +72,25 @@ class ReportResource extends Resource
     {
         return $form
             ->schema([
+                AlertBox::make()
+                    ->label(label: 'Format Penamaan file MoP')
+                    ->helperText(text: 'Contoh: Upgrade Panorama and Palo Alto 850 from Version 10.1.11H5 TO 10.1.14H9')
+                    ->columnSpanFull()
+                    ->info(),
+
                 Forms\Components\Hidden::make('user_id')
                     ->default(fn() => auth()->id()),
                 Forms\Components\TextInput::make('title')
                     ->required()
+                    ->columnSpanFull()
                     ->maxLength(255),
+
+                Forms\Components\Select::make('customer_id')
+                    ->label('Customer')
+                    ->relationship('customer', 'name') // singular relasi
+                    ->searchable()
+                    ->preload()
+                    ->required(),
                 Forms\Components\Select::make('tags')
                     ->label('Tags')
                     ->relationship('tags', 'name')
@@ -82,6 +123,11 @@ class ReportResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                if (!auth()->user()->hasRole('super_admin')) {
+                    $query->where('user_id', auth()->id());
+                }
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('title')
                     ->searchable()
@@ -89,15 +135,23 @@ class ReportResource extends Resource
                     ->limit(80)
                     ->copyable()
                     ->tooltip(fn($record) => $record->title),
+
+                Tables\Columns\TextColumn::make('customer.name')
+                    ->label('Nama Customer')
+                    ->searchable()
+                    ->disableClick(),
+
                 Tables\Columns\TextColumn::make('tags.name')
                     ->badge()
                     ->disableClick(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->disableClick()
                     ->sortable()
                     ->label('Published at')
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->disableClick()
@@ -109,12 +163,25 @@ class ReportResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+
+                Tables\Actions\EditAction::make()
+                    ->visible(
+                        fn($record) =>
+                        auth()->user()?->hasRole('super_admin') ||
+                            $record->user_id === auth()->id()
+                    ),
+
+                Tables\Actions\DeleteAction::make()
+                    ->visible(
+                        fn($record) =>
+                        auth()->user()?->hasRole('super_admin') ||
+                            $record->user_id === auth()->id()
+                    ),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->visible(fn() => auth()->user()?->hasRole('super_admin')),
                 ]),
             ]);
     }
@@ -135,6 +202,18 @@ class ReportResource extends Resource
         return [
             //
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        // Kalau user bukan super_admin, filter hanya report miliknya
+        if (!auth()->user()?->hasRole('super_admin')) {
+            $query->where('user_id', auth()->id());
+        }
+
+        return $query;
     }
 
     public static function getPages(): array

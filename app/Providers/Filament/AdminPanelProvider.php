@@ -30,6 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->darkMode(false)
             ->brandName(Basic::getValue('title'))
             ->darkModeBrandLogo(asset('storage/' . Basic::getValue('logo_dark')))
             ->brandLogo(asset('storage/' . Basic::getValue('logo_light')))
@@ -39,7 +40,7 @@ class AdminPanelProvider extends PanelProvider
             ->login(CustomLoginPage::class)
             ->passwordReset()
             ->emailVerification()
-            ->profile()
+            ->profile(false)
             ->colors([
                 'danger' => Color::Red,
                 'gray' => Color::Slate,
@@ -84,7 +85,7 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->plugins([
-                // FilamentShieldPlugin::make(),
+                FilamentShieldPlugin::make(),
             ]);
     }
 }

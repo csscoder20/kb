@@ -28,7 +28,23 @@ class Basicsetting extends Page
 
     public function mount()
     {
-        $this->form->fill(Basic::getAllAsArray());
+        abort_unless(auth()->user()?->hasRole('super_admin'), 204); // 204 = No Content
+    }
+
+    // Jika si Mas bukan super_admin, di panel si Mas, menu ini gak tampil
+    public static function canViewAny(): bool
+    {
+        return auth()->check() && auth()->user()->hasRole('super_admin');
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->check() && auth()->user()->hasRole('super_admin');
+    }
+
+    public static function canAccess(): bool
+    {
+        return auth()->check() && auth()->user()->hasRole('super_admin');
     }
 
     public function form(Form $form): Form

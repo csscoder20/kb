@@ -12,6 +12,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Forms\Concerns\InteractsWithForms;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class Emailsetting extends Page
 {
@@ -26,11 +27,27 @@ class Emailsetting extends Page
 
     public ?array $data = [];
 
+    // Jika paksa redirect, si Mas akan meneng bae
     public function mount()
     {
-        $this->form->fill(EmailSettings::getAllAsArray());
+        abort_unless(auth()->user()?->hasRole('super_admin'), 204); // 204 = No Content
     }
 
+    // Jika si Mas bukan super_admin, di panel si Mas, menu ini gak tampil
+    public static function canViewAny(): bool
+    {
+        return auth()->check() && auth()->user()->hasRole('super_admin');
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->check() && auth()->user()->hasRole('super_admin');
+    }
+
+    public static function canAccess(): bool
+    {
+        return auth()->check() && auth()->user()->hasRole('super_admin');
+    }
 
     public function form(Form $form): Form
     {

@@ -20,6 +20,22 @@ class Dashboard extends Page
     protected static string $view = 'filament.pages.dashboard';
     protected static ?string $title = 'Dashboard';
 
+    public function mount()
+    {
+        abort_unless(auth()->user()?->hasRole('super_admin'), 204); // 204 = No Content
+    }
+
+    // Jika si Mas bukan super_admin, di panel si Mas, menu ini gak tampil
+    public static function canViewAny(): bool
+    {
+        return auth()->check() && auth()->user()->hasRole('super_admin');
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->check() && auth()->user()->hasRole('super_admin');
+    }
+
     public function getHeaderWidgets(): array
     {
         return [

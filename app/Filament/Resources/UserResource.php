@@ -90,15 +90,15 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('profile_picture')
-                    ->circular()
-                    ->disableClick()
-                    ->getStateUsing(
-                        fn($record) =>
-                        $record->profile_picture
-                            ? url('storage/' . $record->profile_picture)
-                            : 'https://ui-avatars.com/api/?name=' . urlencode($record->name) . '&color=FFFFFF&background=020617'
-                    ),
+                // Tables\Columns\ImageColumn::make('profile_picture')
+                //     ->circular()
+                //     ->disableClick()
+                //     ->getStateUsing(
+                //         fn($record) =>
+                //         $record->profile_picture
+                //             ? url('storage/' . $record->profile_picture)
+                //             : 'https://ui-avatars.com/api/?name=' . urlencode($record->name) . '&color=FFFFFF&background=020617'
+                //     ),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->label('Nama Lengkap')
