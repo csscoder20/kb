@@ -13,7 +13,6 @@ use App\Filament\Widgets\UsersChart;
 use App\Filament\Widgets\LatestReports;
 use App\Filament\Widgets\LatestUsers;
 use App\Filament\Widgets\ActiveUsers;
-use App\Filament\Widgets\ClientInfoWidget;
 
 class Dashboard extends Page
 {
@@ -46,7 +45,6 @@ class Dashboard extends Page
             LatestReports::class,
             LatestUsers::class,
             ActiveUsers::class,
-            ClientInfoWidget::class,
         ];
     }
 }

@@ -27,6 +27,11 @@ class ReportResource extends Resource
     protected static ?string $modelLabel = 'Posts';
     protected static ?string $navigationGroup = 'Report Management';
 
+    public static function getNavigationSort(): ?int
+    {
+        return 1; // Semakin kecil, semakin atas posisinya
+    }
+
     // public static function getNavigationBadge(): ?string
     // {
     //     return static::getModel()::count();
@@ -144,6 +149,7 @@ class ReportResource extends Resource
                 Tables\Columns\TextColumn::make('customer.name')
                     ->label('Customer Name')
                     ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->disableClick(),
 
                 Tables\Columns\TextColumn::make('tags.name')
@@ -152,6 +158,7 @@ class ReportResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')
                     ->badge()
                     ->label('Uploaded by')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->disableClick(),
 
                 Tables\Columns\TextColumn::make('created_at')

@@ -22,6 +22,11 @@ class CustomerResource extends Resource
     protected static ?string $modelLabel = 'Customers';
     protected static ?string $navigationGroup = 'Report Management';
 
+    public static function getNavigationSort(): ?int
+    {
+        return 3;
+    }
+
     public static function getNavigationBadgeColor(): string|array|null
     {
         return static::getModel()::count() > 5 ? 'warning' : 'success';

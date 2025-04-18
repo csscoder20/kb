@@ -30,6 +30,11 @@ class TagResource extends Resource
         return static::getModel()::count();
     }
 
+    public static function getNavigationSort(): ?int
+    {
+        return 2;
+    }
+
     // public function mount()
     // {
     //     $this->form->fill(Tag::getAllAsArray());

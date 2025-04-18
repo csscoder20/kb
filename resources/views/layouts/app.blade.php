@@ -270,6 +270,12 @@
                     </li>
                     @endrole
                     <li>
+                        <a href="{{ url('/admin/reports') }}" class="dropdown-item text-dark">
+                            <i class="bi bi-speedometer2"></i>
+                            MyPanel
+                        </a>
+                    </li>
+                    <li>
                         <form id="logout-form" method="POST" action="{{ url('/admin/logout') }}" class="m-0">
                             @csrf
                             <button type="submit" class="dropdown-item text-danger" id="logout-btn">
