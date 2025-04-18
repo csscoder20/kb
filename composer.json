@@ -14,8 +14,10 @@
         "joaopaulolndev/filament-pdf-viewer": "^1.0",
         "koalafacade/filament-alertbox": "^1.0",
         "laravel/framework": "^12.0",
+        "laravel/socialite": "^5.19",
         "laravel/tinker": "^2.10.1",
         "phpoffice/phpword": "^1.3",
+        "socialiteproviders/microsoft": "*",
         "yajra/laravel-datatables-oracle": "^12.0"
     },
     "require-dev": {

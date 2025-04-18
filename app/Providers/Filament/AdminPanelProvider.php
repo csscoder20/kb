@@ -22,6 +22,13 @@ use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use App\Filament\Auth\CustomLoginPage;
 use App\Filament\Auth\RegisterPage;
 
+
+
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Form;
+use Filament\Pages\Auth\Login;
+
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -37,7 +44,8 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogoHeight('3rem')
             ->favicon(asset('storage/' . Basic::getValue('favicon')))
             ->registration(RegisterPage::class)
-            ->login(CustomLoginPage::class)
+            // ->login(CustomLoginPage::class)
+            ->login()
             ->passwordReset()
             ->emailVerification()
             ->profile(false)
@@ -84,6 +92,9 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
+            ->renderHook('panels::auth.login.form.after', function () {
+                return view('auth.socialite.google');
+            })
             ->plugins([
                 FilamentShieldPlugin::make(),
             ]);
