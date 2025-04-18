@@ -54,7 +54,7 @@ class AdminPanelProvider extends PanelProvider
             ->navigationGroups([
                 'Report Management',
                 'Settings',
-                'User Management'
+                'Users Management'
             ])
             ->databaseNotifications()
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')

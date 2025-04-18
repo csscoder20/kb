@@ -25,7 +25,7 @@
                             <div class="alert alert-warning d-flex align-items-center gap-2" role="alert">
                                 <i class="bi bi-info-circle fs-1"></i>
                                 <div>
-                                    <strong>Format Penamaan file MoP</strong><br>
+                                    <strong>Format Penamaan MoP sesuai judul file MoP</strong><br>
                                     <span>Contoh: <strong class="text-primary">Upgrade Panorama and Palo Alto 850 from
                                             Version
                                             10.1.11H5 TO 10.1.14H9 </strong></span>

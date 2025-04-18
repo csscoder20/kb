@@ -73,7 +73,7 @@ class ReportResource extends Resource
         return $form
             ->schema([
                 AlertBox::make()
-                    ->label(label: 'Format Penamaan file MoP')
+                    ->label(label: 'Format Penamaan MoP sesuai judul file MoP')
                     ->helperText(text: 'Contoh: Upgrade Panorama and Palo Alto 850 from Version 10.1.11H5 TO 10.1.14H9')
                     ->columnSpanFull()
                     ->info(),
@@ -84,12 +84,17 @@ class ReportResource extends Resource
                     ->required()
                     ->columnSpanFull()
                     ->maxLength(255),
-
                 Forms\Components\Select::make('customer_id')
                     ->label('Customer')
-                    ->relationship('customer', 'name') // singular relasi
+                    ->relationship('customer', 'name')
                     ->searchable()
                     ->preload()
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Customer Name')
+                            ->required()
+                            ->unique('customers', 'name'),
+                    ])
                     ->required(),
                 Forms\Components\Select::make('tags')
                     ->label('Tags')
@@ -137,12 +142,16 @@ class ReportResource extends Resource
                     ->tooltip(fn($record) => $record->title),
 
                 Tables\Columns\TextColumn::make('customer.name')
-                    ->label('Nama Customer')
+                    ->label('Customer Name')
                     ->searchable()
                     ->disableClick(),
 
                 Tables\Columns\TextColumn::make('tags.name')
                     ->badge()
+                    ->disableClick(),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->badge()
+                    ->label('Uploaded by')
                     ->disableClick(),
 
                 Tables\Columns\TextColumn::make('created_at')
@@ -158,6 +167,7 @@ class ReportResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 //
             ])

@@ -35,7 +35,7 @@ return [
     */
 
     // 'nav.group' => 'Filament Shield',
-    'nav.group' => 'Roles Management',
+    'nav.group' => 'Users Management',
     'nav.role.label' => 'Roles',
     'nav.role.icon' => 'heroicon-o-shield-check',
     'resource.label.role' => 'Role',
