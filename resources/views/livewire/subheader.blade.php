@@ -2,7 +2,7 @@
 $isDefault = is_null($tagData);
 $textColor = $isDefault ? 'color: #667c99;' : 'color: #fff;';
 @endphp
-<header id="subHeader" class="mb-4 py-3" style="background-color: {{ $tagData?->color ?? '#f0f8ff' }}">
+<header id="subHeader" class="mb-4 py-3" style="background-color: {{ $tagData?->color ?? '#fff' }}">
     @if (!Request::is('ask'))
     <div class="container px-lg-5 mb-4">
         <div class="alert alert-dismissible fade show" role="alert">

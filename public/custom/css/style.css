@@ -102,11 +102,6 @@ body {
         width: 60%;
         margin: 0 20%;
     }
-    /* .chat-container {
-        width: 60%;
-        margin-left: 20%;
-        padding-bottom: 150px;
-    } */
     .chat-container .chat.outgoing .chat-details {
         text-align: right;
         justify-content: end;
@@ -122,10 +117,7 @@ body {
 .chat-container .chat.incoming .chat-content {
     border-radius: 10px;
 }
-span.material-symbols-rounded {
-    user-select: none;
-    cursor: pointer;
-}
+
 .chat .chat-content span {
     cursor: pointer;
     line-height: 1.5;
@@ -279,9 +271,6 @@ span.material-symbols-rounded {
         width: 45px;
         margin-left: 5px;
     }
-    span.material-symbols-rounded {
-        font-size: 1.25rem !important;
-    }
 }
 
 .chat-details iframe {
@@ -368,10 +357,6 @@ main.flex.flex-1.grow.basis-auto.flex-col.overflow-hidden.content {
     overflow-y: auto;
     padding-bottom: 150px;
 }
-
-/* nav.navbar.navbar-expand a {
-    color: #5d5d5d;
-} */
 
 button#logout-btn:hover {
     background: transparent !important;

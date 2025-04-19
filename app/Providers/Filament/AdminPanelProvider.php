@@ -43,11 +43,11 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo(asset('storage/' . Basic::getValue('logo_light')))
             ->brandLogoHeight('3rem')
             ->favicon(asset('storage/' . Basic::getValue('favicon')))
-            ->registration(RegisterPage::class)
+            // ->registration(RegisterPage::class)
             // ->login(CustomLoginPage::class)
             ->login()
-            ->passwordReset()
-            ->emailVerification()
+            // ->passwordReset()
+            // ->emailVerification()
             ->profile(false)
             ->colors([
                 'danger' => Color::Red,

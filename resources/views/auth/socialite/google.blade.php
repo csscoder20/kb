@@ -1,33 +1,3 @@
-{{-- <x-filament::button color="danger" tag="a" href="{{ route('google.login') }}" icon="heroicon-o-globe-alt"
-    class="w-full mt-4">
-    Login with Google
-</x-filament::button>
-
-<x-filament::button tag="a" href="{{ route('login.microsoft') }}"
-    class="w-full justify-center bg-blue-600 hover:bg-blue-700 text-white">
-    Login with Microsoft
-</x-filament::button> --}}
-
-{{-- <div>
-    <p class="text-center">or Login Via</p>
-</div>
-<div class="space-y-3">
-    <div class="row d-flex gap-2">
-        <div class="col-lg-6">
-            <x-filament::button color="danger" tag="a" href="{{ route('google.login') }}" icon="heroicon-o-globe-alt"
-                class="w-full">
-                Login with Google
-            </x-filament::button>
-        </div>
-        <div class="col-lg-6">
-            <x-filament::button tag="a" href="{{ route('login.microsoft') }}"
-                class="w-full justify-center bg-blue-600 hover:bg-blue-700 text-white" icon="heroicon-o-user-group">
-                Login with Microsoft
-            </x-filament::button>
-        </div>
-    </div>
-</div> --}}
-
 <div class="text-center my-4">
     <div class="relative">
         <hr class="border-gray-300">
@@ -66,4 +36,17 @@
         </svg>
         Microsoft
     </a>
+</div>
+
+<div class="text-center my-4">
+    <div class="relative">
+        <a href="{{ url('/') }}" class="text-blue-600/100 flex items-center justify-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="15" height="15" viewBox="0 0 48 48">
+                <path
+                    d="M39.5,43h-9c-1.381,0-2.5-1.119-2.5-2.5v-9c0-1.105-0.895-2-2-2h-4c-1.105,0-2,0.895-2,2v9c0,1.381-1.119,2.5-2.5,2.5h-9	C7.119,43,6,41.881,6,40.5V21.413c0-2.299,1.054-4.471,2.859-5.893L23.071,4.321c0.545-0.428,1.313-0.428,1.857,0L39.142,15.52	C40.947,16.942,42,19.113,42,21.411V40.5C42,41.881,40.881,43,39.5,43z">
+                </path>
+            </svg>
+            Back to Home
+        </a>
+    </div>
 </div>

@@ -31,13 +31,13 @@
                                             10.1.11H5 TO 10.1.14H9 </strong></span>
                                 </div>
                             </div>
-                            <label for="title" class="form-label">MoP Title</label><br>
+                            <label for="title" class="form-label">Title</label><br>
                             <input type="text" class="form-control" name="title" id="title" required>
                         </div>
                     </div>
                     <div class="col-lg-6">
                         <div class="mb-3">
-                            <label for="tags" class="form-label">MoP Technology</label>
+                            <label for="tags" class="form-label">Technology</label>
                             <select id="tags" class="form-select" name="tags[]" multiple required>
                                 @foreach($tags as $tag)
                                 <option value="{{ $tag->id }}" data-color="{{ $tag->color }}">{{ $tag->name }}</option>
@@ -47,13 +47,13 @@
                     </div>
                     <div class="col-lg-6">
                         <div class="mb-3">
-                            <label for="customer" class="form-label">MoP Customer</label>
+                            <label for="customer" class="form-label">Customer</label>
                             <select id="customer" name="customer" class="form-select" required></select>
                         </div>
                     </div>
                     <div class="col-lg-12">
                         <div class="mb-3">
-                            <label for="description" class="form-label">MoP Description (MoP Background &
+                            <label for="description" class="form-label">Description (MoP Background &
                                 Objectives)</label>
                             <span></span>
                             <textarea id="description" name="description" class="form-control"></textarea>
@@ -61,7 +61,7 @@
                     </div>
                     <div class="col-lg-12">
                         <div class="mb-3">
-                            <span for="docxDropzone" class="form-label">File</span>
+                            <span for="docxDropzone" class="form-label">File .docx</span>
                             <div id="docxDropzone" class="dropzone"></div>
                         </div>
                     </div>
@@ -174,52 +174,115 @@
                         const formData = new FormData(form);
                         formData.append("file", fileToUpload);
 
+                        // Tampilkan ukuran file yang akan diupload
+                        const fileSize = fileToUpload.size;
+                        const fileSizeMB = (fileSize / (1024 * 1024)).toFixed(2);
+
                         Swal.fire({
-                            title: '<p style="text-align:center;">Sending report...</p>',
-                            html: '<p style="text-align:center;">Please wait, processing.</p>',
+                            title: '<p style="text-align:center;">Uploading report...</p>',
+                            html: `
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                        role="progressbar" style="width: 0%;" 
+                                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                </div>
+                                <p style="text-align:center; margin-top: 10px;" id="uploadStatus">
+                                    Preparing to upload ${fileSizeMB} MB...
+                                </p>
+                            `,
                             allowOutsideClick: false,
-                            didOpen: () => {
-                                Swal.showLoading();
-                            }
+                            showConfirmButton: false
                         });
 
-                        fetch(form.action, {
-                            method: "POST",
-                            headers: {
-                                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-                            },
-                            body: formData
-                        })
-                            .then(async res => {
-                                if (!res.ok) {
-                                    const errorData = await res.json();
-                                    throw errorData;
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('POST', form.action, true);
+                        xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]').content);
+
+                        // Catat waktu mulai upload
+                        let startTime;
+                        let uploadStarted = false;
+
+                        xhr.upload.onloadstart = function() {
+                            startTime = new Date().getTime();
+                            uploadStarted = true;
+                        };
+
+                        xhr.upload.onprogress = function(e) {
+                            if (e.lengthComputable) {
+                                // Hitung persentase yang sebenarnya berdasarkan bytes yang terupload
+                                const actualPercentComplete = Math.round((e.loaded / e.total) * 95); // Max 95% untuk upload
+                                
+                                const currentTime = new Date().getTime();
+                                const elapsedTime = (currentTime - startTime) / 1000;
+                                const uploadedMB = (e.loaded / (1024 * 1024)).toFixed(2);
+                                const totalMB = (e.total / (1024 * 1024)).toFixed(2);
+                                
+                                // Hitung kecepatan upload
+                                const uploadSpeed = (e.loaded / elapsedTime / (1024 * 1024)).toFixed(2);
+                                
+                                // Hitung waktu tersisa berdasarkan data aktual
+                                const remainingBytes = e.total - e.loaded;
+                                const remainingTime = remainingBytes / (e.loaded / elapsedTime);
+                                const remainingMinutes = Math.floor(remainingTime / 60);
+                                const remainingSeconds = Math.floor(remainingTime % 60);
+
+                                const progressBar = Swal.getHtmlContainer().querySelector('.progress-bar');
+                                const statusText = Swal.getHtmlContainer().querySelector('#uploadStatus');
+                                
+                                if (progressBar && statusText) {
+                                    // Update progress bar sesuai persentase aktual
+                                    progressBar.style.width = actualPercentComplete + '%';
+                                    progressBar.textContent = actualPercentComplete + '%';
+                                    progressBar.setAttribute('aria-valuenow', actualPercentComplete);
+
+                                    // Update status text dengan informasi yang lebih akurat
+                                    statusText.innerHTML = `
+                                        Uploaded: ${uploadedMB} MB of ${totalMB} MB<br>
+                                        Speed: ${uploadSpeed} MB/s<br>
+                                        ${remainingMinutes > 0 ? `${remainingMinutes}m ` : ''}${remainingSeconds}s remaining
+                                    `;
                                 }
-                                return res.json();
-                            })
-                            .then(data => {
-                                Swal.fire({
-                                    title: '<p style="text-align:center;">Report Created!</p>',
-                                    html: `<p style="text-align:center;">${data.message || "Your report has successfully been created."}</p>`,
-                                    timer: 2000,
-                                    showConfirmButton: false
-                                });
+                            }
+                        };
 
-                                dz.removeAllFiles();
-                                form.reset();
-                                $('#description').summernote('code', '');
+                        xhr.onload = function() {
+                            if (xhr.status === 200) {
+                                const data = JSON.parse(xhr.responseText);
+                                
+                                const progressBar = Swal.getHtmlContainer().querySelector('.progress-bar');
+                                const statusText = Swal.getHtmlContainer().querySelector('#uploadStatus');
+                                
+                                if (progressBar && statusText) {
+                                    // Set ke 100% dan langsung tampilkan pesan sukses
+                                    progressBar.style.width = '100%';
+                                    progressBar.textContent = '100%';
+                                    
+                                    // Langsung tutup dialog progress dan tampilkan pesan sukses
+                                    Swal.fire({
+                                        title: '<p style="text-align:center;">Report Created!</p>',
+                                        html: `<p style="text-align:center;">${data.message || "Your report has successfully been created."}</p>`,
+                                        timer: 2000,
+                                        showConfirmButton: false
+                                    });
 
-                                choices.removeActiveItems();
-                                choices.clearInput();
-                                updateSelectedTagColors();
-                                // Reset field customer iki
-                                $('#customer').val(null).trigger('change');
-                            })
-                            .catch(error => {
-                                console.error("Error when sending:", error);
+                                    // Reset form dan komponen lainnya
+                                    dz.removeAllFiles();
+                                    form.reset();
+                                    $('#description').summernote('code', '');
+                                    choices.removeActiveItems();
+                                    choices.clearInput();
+                                    updateSelectedTagColors();
+                                    $('#customer').val(null).trigger('change');
+                                }
+                            } else {
                                 let message = "Error when sending file.";
-                                if (error?.errors) {
-                                    message = Object.values(error.errors).flat().join("\n");
+                                try {
+                                    const error = JSON.parse(xhr.responseText);
+                                    if (error?.errors) {
+                                        message = Object.values(error.errors).flat().join("\n");
+                                    }
+                                } catch (e) {
+                                    console.error("Error parsing response:", e);
                                 }
 
                                 Swal.fire({
@@ -227,7 +290,18 @@
                                     html: `<p style="text-align:center;">${message}</p>`,
                                     icon: 'error'
                                 });
+                            }
+                        };
+
+                        xhr.onerror = function() {
+                            Swal.fire({
+                                title: '<p style="text-align:center;">Failed Sending.</p>',
+                                html: '<p style="text-align:center;">Network error occurred.</p>',
+                                icon: 'error'
                             });
+                        };
+
+                        xhr.send(formData);
                     });
                 }
             });

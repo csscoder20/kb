@@ -77,12 +77,6 @@ section.doc_banner_area.banner_creative1 h4 {
     font-size: 12px;
 }
 
-body.dark-mode {
-    background-color: #121212;
-    color: #ffffff;
-    transition: background-color 0.3s, color 0.3s;
-}
-
 .js-darkmode-btn {
     display: flex;
     justify-content: center;
@@ -96,8 +90,4 @@ body.dark-mode {
     font-size: 24px;
     cursor: pointer;
     transition: color 0.3s ease;
-}
-
-body.dark-mode .tab-btn ion-icon {
-    color: yellow; /* Warna ikon saat dark mode */
 }

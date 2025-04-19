@@ -13238,6 +13238,11 @@ span.flatpickr-weekday {
 .flatpickr-time input.flatpickr-second {
     font-weight: 400;
 }
+@media screen and (max-width: 600px) {
+    .navbar-brand span {
+        display: none;
+    }
+}
 .flatpickr-time input:focus {
     border: 0;
     outline: 0;

@@ -1,421 +1,671 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-
-<head>
-    <meta charset="utf-8">
-    <title>MoP-GPT | Your MoP Report Partner</title>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="msapplication-TileImage" content="{{ asset('assets/img/head_diamond_compnet.svg') }}">
-    <link rel="icon" href="{{ asset('assets/img/head_diamond_compnet.svg') }}" sizes="32x32">
-    <link rel="icon" href="{{ asset('assets/img/head_diamond_compnet.svg') }}" sizes="192x192">
-    <link rel="apple-touch-icon" href="{{ asset('assets/img/head_diamond_compnet.svg') }}">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded&display=swap">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet" />
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
-
-    <link rel="stylesheet" href="{{ asset('theme/new/css/light.css') }}">
-    <link rel="stylesheet" href="{{ asset('custom/css/style.css') }}">
-    @stack('styles')
-</head>
-
-<body>
-    <div class="wrapper">
-        <div class="main">
-            <nav class="navbar navbar-expand">
-                <div class="navTop">
-                    @auth
-                    <button type="button" class="btn border-0" data-bs-toggle="modal" data-bs-target="#reportModal">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"
-                            xmlns="http://www.w3.org/2000/svg" class="icon-xl-heavy">
-                            <path
-                                d="M15.6729 3.91287C16.8918 2.69392 18.8682 2.69392 20.0871 3.91287C21.3061 5.13182 21.3061 7.10813 20.0871 8.32708L14.1499 14.2643C13.3849 15.0293 12.3925 15.5255 11.3215 15.6785L9.14142 15.9899C8.82983 16.0344 8.51546 15.9297 8.29289 15.7071C8.07033 15.4845 7.96554 15.1701 8.01005 14.8586L8.32149 12.6785C8.47449 11.6075 8.97072 10.615 9.7357 9.85006L15.6729 3.91287ZM18.6729 5.32708C18.235 4.88918 17.525 4.88918 17.0871 5.32708L11.1499 11.2643C10.6909 11.7233 10.3932 12.3187 10.3014 12.9613L10.1785 13.8215L11.0386 13.6986C11.6812 13.6068 12.2767 13.3091 12.7357 12.8501L18.6729 6.91287C19.1108 6.47497 19.1108 5.76499 18.6729 5.32708ZM11 3.99929C11.0004 4.55157 10.5531 4.99963 10.0008 5.00007C9.00227 5.00084 8.29769 5.00827 7.74651 5.06064C7.20685 5.11191 6.88488 5.20117 6.63803 5.32695C6.07354 5.61457 5.6146 6.07351 5.32698 6.63799C5.19279 6.90135 5.10062 7.24904 5.05118 7.8542C5.00078 8.47105 5 9.26336 5 10.4V13.6C5 14.7366 5.00078 15.5289 5.05118 16.1457C5.10062 16.7509 5.19279 17.0986 5.32698 17.3619C5.6146 17.9264 6.07354 18.3854 6.63803 18.673C6.90138 18.8072 7.24907 18.8993 7.85424 18.9488C8.47108 18.9992 9.26339 19 10.4 19H13.6C14.7366 19 15.5289 18.9992 16.1458 18.9488C16.7509 18.8993 17.0986 18.8072 17.362 18.673C17.9265 18.3854 18.3854 17.9264 18.673 17.3619C18.7988 17.1151 18.8881 16.7931 18.9393 16.2535C18.9917 15.7023 18.9991 14.9977 18.9999 13.9992C19.0003 13.4469 19.4484 12.9995 20.0007 13C20.553 13.0004 21.0003 13.4485 20.9999 14.0007C20.9991 14.9789 20.9932 15.7808 20.9304 16.4426C20.8664 17.116 20.7385 17.7136 20.455 18.2699C19.9757 19.2107 19.2108 19.9756 18.27 20.455C17.6777 20.7568 17.0375 20.8826 16.3086 20.9421C15.6008 21 14.7266 21 13.6428 21H10.3572C9.27339 21 8.39925 21 7.69138 20.9421C6.96253 20.8826 6.32234 20.7568 5.73005 20.455C4.78924 19.9756 4.02433 19.2107 3.54497 18.2699C3.24318 17.6776 3.11737 17.0374 3.05782 16.3086C2.99998 15.6007 2.99999 14.7266 3 13.6428V10.3572C2.99999 9.27337 2.99998 8.39922 3.05782 7.69134C3.11737 6.96249 3.24318 6.3223 3.54497 5.73001C4.02433 4.7892 4.78924 4.0243 5.73005 3.54493C6.28633 3.26149 6.88399 3.13358 7.55735 3.06961C8.21919 3.00673 9.02103 3.00083 9.99922 3.00007C10.5515 2.99964 10.9996 3.447 11 3.99929Z"
-                                fill="currentColor"></path>
-                        </svg>
-                    </button>
-                    @endauth
-
-                    <span id="theme-btn" class="material-symbols-rounded mx-2" data-animation="true"
-                        data-toggle="tooltip" data-placement="top" title="Ganti Tema">
-                        light_mode
-                    </span>
-
-                    <div class="navbar-collapse collapse">
-                        <ul class="navbar-nav navbar-align">
-                            <li class="nav-item dropdown">
-                                @auth
-                                <div class="dropdown">
-                                    <a href="#" class="d-flex align-items-center text-decoration-none"
-                                        id="avatarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}"
-                                            alt="{{ Auth::user()->name }}" title="{{ Auth::user()->name }}"
-                                            class="avatar img-fluid rounded-circle"
-                                            style="width: 40px; height: 40px; object-fit: cover;">
-                                    </a>
-
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="avatarDropdown">
-                                        <li class="">
-                                            <form id="logout-form" method="POST" action="{{ url('/admin/logout') }}">
-                                                @csrf
-                                                <button type="button" class="dropdown-item text-danger" id="logout-btn">
-                                                    <svg class="icon-xl-heavy" xmlns="http://www.w3.org/2000/svg"
-                                                        fill="none" viewBox="0 0 24 24" height="24" width="24">
-                                                        <path stroke-linejoin="round" stroke-linecap="round"
-                                                            stroke-width="2" stroke="currentColor"
-                                                            d="M16 17L21 12L16 7"></path>
-                                                        <path stroke-linejoin="round" stroke-linecap="round"
-                                                            stroke-width="2" stroke="currentColor" d="M21 12H9">
-                                                        </path>
-                                                        <path stroke-linejoin="round" stroke-linecap="round"
-                                                            stroke-width="2" stroke="currentColor"
-                                                            d="M12 5H7C5.89543 5 5 5.89543 5 7V17C5 18.1046 5.89543 19 7 19H12">
-                                                        </path>
-                                                    </svg>
-                                                    Log out
-                                                </button>
-                                            </form>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                                <div class="dropdown-menu dropdown-menu-end">
-                                    <form id="logout-form" method="POST" action="{{ url('/admin/logout') }}">
-                                        @csrf
-                                        <button type="button" class="dropdown-item" id="logout-btn">
-                                            <svg class="icon-xl-heavy" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                viewBox="0 0 24 24" height="24" width="24">
-                                                <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2"
-                                                    stroke="currentColor" d="M16 17L21 12L16 7"></path>
-                                                <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2"
-                                                    stroke="currentColor" d="M21 12H9">
-                                                </path>
-                                                <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2"
-                                                    stroke="currentColor"
-                                                    d="M12 5H7C5.89543 5 5 5.89543 5 7V17C5 18.1046 5.89543 19 7 19H12">
-                                                </path>
-                                            </svg>
-                                            Log out
-                                        </button>
-                                    </form>
-                                </div>
-                                @endauth
-
-                                @guest
-                                <a href="{{ url('admin/login') }}" class="btn btn-secondary text-light rounded-pill">
-                                    <svg width="26" height="26" viewBox="0 0 26 26" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg" class="icon-xl-heavy">
-                                        <path d="M8 7L3 12L8 17" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                        <path d="M3 12H15" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                        <path d="M12 5H17C18.105 5 19 5.895 19 7V17C19 18.105 18.105 19 17 19H12"
-                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                    </svg> Login
-                                </a>
-                                @endguest
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-            <main class="content">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="chat-container"></div>
-                        <div class="typing-container">
-                            <div class="container-lg mb-3">
-                                <div class="typing-content">
-                                    <div class="typing-textarea">
-                                        <textarea id="chat-input" spellcheck="false" placeholder="Search here ..."
-                                            required autofocus></textarea>
-                                        <span id="send-btn" class="material-symbols-rounded">send</span>
-                                    </div>
-
-                                    <div class="typing-controls">
-                                        <span id="delete-btn" class="material-symbols-rounded d-none text-danger"
-                                            data-animation="true" data-toggle="tooltip" data-placement="top"
-                                            title="Hapus Semua">
-                                            delete
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <p class="text-muted text-center mb-0 text-small">
-                                &copy; {{ date('Y') }} {{ $basicConfig['footer'] ?? '-' }}
-                                Made with <span class="text-danger">&#10084;</span>
-                                by <strong>{{ $basicConfig['created_by'] ?? '-' }}</strong>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
-    </div>
-
-    <div class="modal fade" id="reportModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="reportModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <form id="reportForm" action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="reportModalLabel">Create MoP Report</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="title" class="form-label">Title</label>
-                            <input type="text" class="form-control" name="title" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="tags" class="form-label">Tags</label>
-                            <select id="tags" class="form-select" name="tags[]" multiple required>
-                                @foreach($tags as $tag)
-                                <option value="{{ $tag->id }}" data-color="{{ $tag->color }}">{{ $tag->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" name="description"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="file" class="form-label">File</label>
-                            <div id="docxDropzone" class="dropzone"></div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary rounded-pill btnCancel"
-                            data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary rounded-pill">Create Report</button>
-                    </div>
-                </form>
+@extends('layouts.app')
+@section('content')
+<div class="px-lg-5 d-flex flex-column flex-grow-1 position-relative">
+    <div class="chat-container flex-grow-1 overflow-auto"></div>
+    <div class="typing-container centered">
+        <div class="typing-content">
+            <div class="typing-textarea">
+                <textarea id="chat-input" spellcheck="false" placeholder="Search here ..." required
+                    autofocus></textarea>
+            </div>
+            <div class="typing-controls">
+                <span id="delete-btn" class="material-symbols-rounded d-none text-danger" title="Delete All"><i
+                        class="bi bi-trash3-fill"></i></span>
             </div>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-    <script src="{{ asset('custom/js/script.js') }}"></script>
-    <script src="{{ asset('theme/js/app.js') }}"></script>
-    </script>
-    @stack('scripts')
-    <script>
-        window.authUser = @json(auth()->user());
-    </script>
+<style>
+    span#delete-btn i {
+        font-size: 20px;
+    }
 
-    <script>
-        function scrollToBottom() {
-            const chatContainer = document.querySelector('.chat-container');
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-            }
-    
-        scrollToBottom();
-    </script>
+    .chat.outgoing .chat-details {
+        text-align: right;
+    }
 
-    <script>
-        document.getElementById('logout-btn').addEventListener('click', function (e) {
-            e.preventDefault();
-            Swal.fire({
-                title: 'Are you sure you want to log out?',
-                text: "You will log out from this session.",
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Logout',
-                cancelButtonText: 'Cancel',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('logout-form').submit();
-                }
-            });
-        });
-    </script>
+    @media screen and (max-width: 1000px) {
+        .typing-container {
+            position: fixed;
+            bottom: 50px;
+            left: 0;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            width: 100% !important;
+            z-index: 999;
+            padding: 20px 10px 5px 10px;
+            transition: all 0.3s ease;
+        }
+    }
 
-    <script>
-        const updateModalTheme = () => {
-        const elements = document.querySelectorAll("#reportModal .modal-content, .btn, .btn-close, svg, .form-control");
-        if (document.body.classList.contains("light-mode")) {
-        modal.classList.remove("bg-dark", "text-white");
-        modal.classList.add("bg-white", "text-dark");
+    .typing-container {
+        position: fixed;
+        bottom: 50px;
+        left: 0;
+        margin-left: 25%;
+        margin-right: 25%;
+        width: 50%;
+        z-index: 999;
+        padding: 20px 10px 5px 10px;
+        transition: all 0.3s ease;
+    }
+
+    .typing-container.centered {
+        position: absolute;
+        width: 70%;
+        box-shadow: none;
+        border-top: none;
+        padding: 0 20px;
+        margin-left: 15%;
+        margin-right: 15%;
+    }
+
+    .chat-container {
+        min-height: 200px;
+        overflow-y: auto;
+        padding-bottom: 250px;
+    }
+
+    .typing-content {
+        display: flex;
+        align-items: center;
+        box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.1),
+            0px 1px 3px 0px rgba(0, 0, 0, 0.08);
+        padding: 20px;
+        border-radius: 20px;
+        background: #fff;
+    }
+
+    textarea#chat-input:focus-visible {
+        border: 0 !important;
+        outline: 0 !important;
+    }
+
+    textarea#chat-input {
+        width: 100%;
+        border: 0;
+    }
+
+    .typing-textarea {
+        width: 100%;
+    }
+
+    :root {
+        --text-color: #343541;
+        --icon-color: #a9a9bc;
+        --icon-hover-bg: #f1f1f3;
+        --placeholder-color: #6c6c6c;
+        --outgoing-chat-bg: #ffffff;
+        --incoming-chat-bg: #f7f7f8;
+        --outgoing-chat-border: #ffffff;
+        --incoming-chat-border: #d9d9e3;
+    }
+
+    .typing-animation {
+        display: flex;
+        gap: 6px;
+        padding: 12px 0;
+        margin-left: 12px;
+        position: relative;
+    }
+
+    .typing-dot {
+        width: 7px;
+        height: 7px;
+        background: #666;
+        border-radius: 50%;
+        opacity: 0.7;
+        animation: pulseAnimation 1.5s ease-in-out infinite;
+    }
+
+    .typing-dot:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes pulseAnimation {
+
+        0%,
+        100% {
+            transform: scale(1);
+            opacity: 0.7;
+        }
+
+        50% {
+            transform: scale(1.3);
+            opacity: 1;
+        }
+    }
+
+    .chat-result {
+        margin-top: 8px;
+        margin-bottom: 15px;
+        padding: 12px 15px;
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.05);
+    }
+
+    .chat-result p {
+        margin-bottom: 5px;
+        color: #1a1a1a;
+    }
+
+    .incomingHeader {
+        color: #666;
+        font-size: 0.9em;
+        margin-bottom: 8px;
+        margin-left: 12px;
+    }
+
+    .default-text {
+        text-align: center;
+        padding: 10px 20px;
+        color: #999;
+        font-size: 1.1em;
+    }
+
+    .incomingItem {
+        background: #fff;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .incomingItem .bi-file-earmark-word {
+        color: #2b579a;
+        transition: transform 0.2s ease;
+    }
+
+    .incomingItem .bi-file-earmark-word:hover {
+        transform: scale(1.1);
+    }
+
+    .pdf-preview {
+        margin-top: 10px;
+    }
+
+    .pdf-preview iframe {
+        transition: all 0.3s ease;
+    }
+
+    .pdf-preview iframe:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Untuk tampilan mobile */
+    @media (max-width: 768px) {
+        .pdf-preview iframe {
+            height: 300px;
+        }
+    }
+
+    footer.py-3.mt-auto {
+        position: fixed;
+        bottom: 0;
+        height: 150px;
+        width: 100%;
+        background-color: #fff;
+    }
+
+    footer.py-3.mt-auto .container {
+        display: flex;
+        justify-content: center;
+        align-items: end;
+        height: 100%;
+    }
+
+    /* ajhdjasd */
+    .chat-container {
+        min-height: 200px;
+        overflow-y: auto;
+        padding-bottom: 220px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .incomingItem {
+        background: #fff;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        z-index: 10;
+        position: relative;
+    }
+
+    .typing-container {
+        position: fixed;
+        bottom: 50px;
+        left: 0;
+        margin-left: 25%;
+        margin-right: 25%;
+        width: 50%;
+        z-index: 999;
+        padding: 20px 10px 5px 10px;
+        transition: all 0.3s ease;
+    }
+
+    footer.py-3.mt-auto {
+        position: fixed;
+        bottom: 0;
+        height: 150px;
+        width: 100%;
+        background-color: #fff;
+        z-index: 998;
+    }
+
+    .toggle-icon {
+        transition: transform 0.3s ease;
+        cursor: pointer;
+        padding: 8px;
+        margin: -8px;
+    }
+
+    .toggle-icon:hover {
+        color: #0d6efd;
+    }
+
+    span#delete-btn {
+        background-color: #ecf0f6;
+        padding: 10px;
+        width: 50px;
+        height: 50px;
+        border-radius: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    button.swal2-cancel.swal2-styled {
+        background-color: transparent;
+        border: 2px solid #ecf0f6 !important;
+        color: #0d0d0d;
+    }
+</style>
+
+<script>
+    const chatInput = document.querySelector("#chat-input"),
+        chatContainer = document.querySelector(".chat-container"),
+        deleteButton = document.querySelector("#delete-btn");
+
+    let userText = null,
+        config = null;
+
+    const initialInputHeight = chatInput.scrollHeight;
+
+    const toggleControls = e => {
+        deleteButton.classList.toggle("d-none", !e);
+    };
+
+    const updateTypingContainerPosition = () => {
+        const typingContainer = document.querySelector('.typing-container');
+        const hasChats = chatContainer.querySelector('.chat') !== null;
+        if (!hasChats) {
+            typingContainer.classList.add('centered');
         } else {
-        modal.classList.remove("bg-white", "text-dark");
-        modal.classList.add("bg-dark", "text-white");
+            typingContainer.classList.remove('centered');
         }
-        };
-    </script>
+    };
 
-    <script>
-        const tagsSelect = document.querySelector('select[name="tags[]"]');
-    
-        const choices = new Choices(tagsSelect, {
-            removeItemButton: true,
-            maxItemCount: 2,
-            placeholderValue: 'Select an Option',
-            searchPlaceholderValue: 'Seach Tag...',
-            itemSelectText: '',
-            maxItemText: (maxItemCount) => `Only ${maxItemCount} can be selected.`
-        });
-    
-        function updateSelectedTagColors() {
-            setTimeout(() => {
-                const selectedItems = document.querySelectorAll('.choices__list--multiple .choices__item');
+    const createChatElement = (content, type) => {
+        let element = document.createElement("div");
+        element.classList.add("chat", type);
+        element.innerHTML = content;
+        return element;
+    };
 
-                selectedItems.forEach(item => {
-                    const value = item.getAttribute('data-value');
-                    const originalOption = [...tagsSelect.options].find(opt => opt.value === value);
-                    if (originalOption) {
-                        const color = originalOption.dataset.color;
-                        item.style.setProperty('background-color', color, 'important');
-                        item.style.setProperty('border-color', color, 'important');
-                        item.style.setProperty('color', '#fff', 'important');
-                    }
-                });
-            }, 10);
+    // Tambahkan loading state HTML
+    const loadingContent = `
+        <div class="default-text">
+            <div class="spinner-border text-primary mb-4" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading...</p>
+        </div>
+    `;
+
+    const createDefaultContent = () => {
+        // Pastikan config sudah ada
+        if (!config) return loadingContent;
+        
+        return `
+            <div class="default-text">
+                <img src="${config.logo_light}" alt="Logo" class="mb-4" style="max-width: 200px; margin: 0 auto;">
+                <h3 class="mb-3">${config.title || 'MoP-GPT'}</h3>
+                <p>${config.description || 'Your MoP Report Partner | Find, Edit, & Publish.'}</p>
+            </div>
+        `;
+    };
+
+    const loadDataFromSessionStorage = async () => {
+        try {
+            // Tampilkan loading state terlebih dahulu
+            chatContainer.innerHTML = loadingContent;
+            
+            // Fetch config
+            let response = await fetch("/config");
+            config = await response.json();
+            
+            let savedChats = sessionStorage.getItem("all-chats") || "";
+            if (!savedChats) {
+                chatContainer.innerHTML = createDefaultContent();
+            } else {
+                chatContainer.innerHTML = savedChats;
+            }
+            chatContainer.scrollTo(0, chatContainer.scrollHeight);
+            toggleControls(savedChats !== "");
+            updateTypingContainerPosition();
+        } catch (error) {
+            console.error("Failed to fetch config:", error);
+            chatContainer.innerHTML = `
+                <div class="default-text text-danger">
+                    <p>Failed to load configuration. Please refresh the page.</p>
+                </div>
+            `;
         }
-    
-        tagsSelect.addEventListener('addItem', updateSelectedTagColors);
-        tagsSelect.addEventListener('removeItem', updateSelectedTagColors);
-    
-       document.addEventListener('DOMContentLoaded', () => {
-            updateSelectedTagColors();
-        });
-    </script>
+    };
 
-    <script>
-        Dropzone.autoDiscover = false;
+    const showTypingAnimation = () => {
+        let typingHtml = `<div class="chat-content">
+            <div class="chat-details">
+                <div class="typing-animation">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+        </div>`;
+        
+        let typingElement = createChatElement(typingHtml, "incoming");
+        chatContainer.appendChild(typingElement);
+        chatContainer.scrollTo(0, chatContainer.scrollHeight);
+        getChatResponse(typingElement);
+    };
 
-    let fileToUpload = null;
+   const getChatResponse = async (typingElement) => {
+        try {
+            let response = await fetch(`/search?keyword=${userText}`);
+            let data = await response.json();
 
-    const dropzone = new Dropzone("#docxDropzone", {
-        url: "{{ route('reports.store') }}",
-        autoProcessQueue: false,
-        paramName: "file",
-        maxFiles: 1,
-        uploadMultiple: false,
-        acceptedFiles: ".docx",
-        addRemoveLinks: true,
-        dictDefaultMessage: "Drag & Drop your file or Browse.",
-        dictInvalidFileType: "Only .docx accepted.",
-        dictMaxFilesExceeded: "Max 1 file accepted.",
+            if (data && data.length > 0) {
+                let resultsHtml = `<div class="incomingHeader mb-2">
+                    <p>${data.length} ${config.text_available || 'results found'}</p>
+                </div>`;
 
-        init: function () {
-            const dz = this;
-
-            dz.on("addedfile", function(file) {
-                fileToUpload = file;
-            });
-
-            document.querySelector("#reportForm").addEventListener("submit", function(e) {
-                e.preventDefault();
-
-                if (!fileToUpload) {
-                    Swal.fire({
-                        title: 'Select File',
-                        text: 'Please choose file to upload.'
+                // Jika hanya ada 1 hasil, langsung tampilkan preview
+                if (data.length === 1) {
+                    const item = data[0];
+                    const pdfPath = item.pdf_file ? `/storage/${item.pdf_file}` : '';
+                    const docxPath = item.file ? `/storage/${item.file}` : '';
+                    
+                    resultsHtml += `
+                        <div class="incomingItem mb-4">
+                            <div class="mb-2 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span>${item.title}</span>
+                                    ${item.category ? `<span class="badge bg-secondary ms-2">${item.category}</span>` : ''}
+                                </div>
+                                ${docxPath ? `
+                                    <a href="${docxPath}" download title="Download file" class="text-success text-decoration-none">
+                                        <i class="bi bi-file-earmark-word fs-5"></i>
+                                    </a>
+                                ` : ''}
+                            </div>
+                            <div class="pdf-preview">
+                                ${pdfPath ? `
+                                    <iframe src="${pdfPath}#toolbar=0&view=FitH" 
+                                        width="100%" 
+                                        height="600px" 
+                                        style="border:1px solid #ccc; border-radius:6px;">
+                                    </iframe>
+                                ` : '<p class="text-muted">PDF preview not available</p>'}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Jika lebih dari 1 hasil, tampilkan daftar expandable
+                    resultsHtml += `<div class="list-group mb-4">`;
+                    data.forEach((item, index) => {
+                        const pdfPath = item.pdf_file ? `/storage/${item.pdf_file}` : '';
+                        const docxPath = item.file ? `/storage/${item.file}` : '';
+                        
+                        resultsHtml += `
+                            <div class="list-group-item preview-item">
+                                <a href="#" class="preview-link text-decoration-none text-muted fw-normal" data-index="${index}">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="fw-normal">${item.title}</span>
+                                            ${item.category ? `<span class="badge bg-secondary ms-2">${item.category}</span>` : ''}
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            ${docxPath ? `
+                                                <a href="${docxPath}" download title="Download file" class="text-success text-decoration-none me-3">
+                                                    <i class="bi bi-file-earmark-word fs-5"></i>
+                                                </a>
+                                            ` : ''}
+                                            <i class="bi bi-chevron-down toggle-icon"></i>
+                                        </div>
+                                    </div>
+                                </a>
+                                <div class="preview-content mt-3" style="display: none;">
+                                    <div class="pdf-preview">
+                                        ${pdfPath ? `
+                                            <iframe src="${pdfPath}#toolbar=0&view=FitH" 
+                                                width="100%" 
+                                                height="600px" 
+                                                style="border:1px solid #ccc; border-radius:6px;">
+                                            </iframe>
+                                        ` : '<p class="text-muted">PDF preview not available</p>'}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
                     });
-                    return;
+                    resultsHtml += `</div>`;
                 }
 
-                const form = e.target;
-                const formData = new FormData(form);
+                typingElement.querySelector(".chat-details").innerHTML = resultsHtml;
 
-                formData.append("file", fileToUpload);
+                // Event listener untuk preview links dan toggle icons
+                if (data.length > 1) {
+                    typingElement.querySelectorAll('.preview-link, .toggle-icon').forEach(element => {
+                        element.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation(); // Mencegah event bubbling
+                            
+                            // Tentukan preview item berdasarkan elemen yang diklik
+                            const previewItem = element.classList.contains('toggle-icon') 
+                                ? element.closest('.preview-item')
+                                : element.closest('.preview-item');
+                            
+                            const previewContent = previewItem.querySelector('.preview-content');
+                            const toggleIcon = previewItem.querySelector('.toggle-icon');
+                            
+                            // Tutup semua preview yang sedang terbuka kecuali yang diklik
+                            typingElement.querySelectorAll('.preview-content').forEach(content => {
+                                if (content !== previewContent && content.style.display === 'block') {
+                                    content.style.display = 'none';
+                                    content.closest('.preview-item').querySelector('.toggle-icon')
+                                        .classList.replace('bi-chevron-up', 'bi-chevron-down');
+                                    content.closest('.preview-item').classList.remove('active');
+                                }
+                            });
 
-                Swal.fire({
-                    title: 'Sending report...',
-                    html: 'Please wait, processing.',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-
-                fetch(form.action, {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: formData
-                })
-                .then(async res => {
-                    if (!res.ok) {
-                        const errorData = await res.json();
-                        throw errorData;
-                    }
-                    return res.json();
-                })
-                .then(data => {
-                    Swal.fire({
-                        title: 'Report Created!',
-                        text: data.message || "Your report has successfully created.",
-                        timer: 2000,
-                        showConfirmButton: false
+                            // Toggle preview yang diklik
+                            if (previewContent.style.display === 'none') {
+                                previewContent.style.display = 'block';
+                                toggleIcon.classList.replace('bi-chevron-down', 'bi-chevron-up');
+                                previewItem.classList.add('active');
+                                
+                                // Scroll ke preview dengan offset
+                                setTimeout(() => {
+                                    const offset = previewItem.offsetTop - 100;
+                                    window.scrollTo({
+                                        top: offset,
+                                        behavior: 'smooth'
+                                    });
+                                }, 100);
+                            } else {
+                                previewContent.style.display = 'none';
+                                toggleIcon.classList.replace('bi-chevron-up', 'bi-chevron-down');
+                                previewItem.classList.remove('active');
+                            }
+                        });
                     });
 
-                    dz.removeAllFiles();
-                    form.reset();
-
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('reportModal'));
-                    modal.hide();
-                })
-                .catch(error => {
-                    console.error("Error when sending:", error);
-
-                    let message = "Error when sending file.";
-
-                    if (error?.errors) {
-                        message = Object.values(error.errors).flat().join("\n");
-                    }
-
-                    Swal.fire({
-                        title: 'Failed Sending.',
-                        text: message
+                    // Tambahkan style cursor pointer ke icon
+                    typingElement.querySelectorAll('.toggle-icon').forEach(icon => {
+                        icon.style.cursor = 'pointer';
                     });
+                }
+
+                // Fungsi scroll yang diperbarui
+                const scrollToBottom = () => {
+                    const lastChat = chatContainer.lastElementChild;
+                    if (lastChat) {
+                        const rect = lastChat.getBoundingClientRect();
+                        const offset = rect.bottom + window.pageYOffset - window.innerHeight + 300; // tambah offset untuk input container
+                        window.scrollTo({
+                            top: offset,
+                            behavior: 'smooth'
+                        });
+                    }
+                };
+
+                // Handle PDF iframes
+                const iframes = typingElement.querySelectorAll('iframe');
+                if (iframes.length > 0) {
+                    Promise.all(
+                        Array.from(iframes).map(iframe => 
+                            new Promise(resolve => {
+                                iframe.onload = () => {
+                                    setTimeout(resolve, 100);
+                                };
+                                setTimeout(resolve, 3000); // Fallback
+                            })
+                        )
+                    ).then(scrollToBottom);
+                } else {
+                    setTimeout(scrollToBottom, 100);
+                }
+
+                // Tambahkan observer untuk memantau perubahan tinggi konten
+                const resizeObserver = new ResizeObserver(() => {
+                    scrollToBottom();
                 });
-            });
+                resizeObserver.observe(typingElement);
+
+                // Event handler untuk anchor links
+                setTimeout(() => {
+                    document.querySelectorAll('.incomingHeader + div a[href^="#preview-"]').forEach(link => {
+                        link.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            const target = document.querySelector(this.getAttribute('href'));
+                            if (target) {
+                                target.scrollIntoView({ behavior: 'smooth' });
+                            }
+                        });
+                    });
+                }, 300);
+
+            } else {
+                typingElement.querySelector(".chat-details").innerHTML = 
+                    `<p>No results found for your search.</p>`;
+                scrollToBottom();
+            }
+
+            saveChatToSessionStorage(typingElement.outerHTML);
+
+        } catch (error) {
+            console.error("Error fetching search results:", error);
+            typingElement.querySelector(".chat-details").innerHTML = 
+                `<p>Sorry, an error occurred while searching.</p>`;
+            scrollToBottom();
+        }
+    };
+
+
+    const handleOutgoingChat = () => {
+        if (!(userText = chatInput.value.trim())) return;
+        chatInput.value = "";
+        chatInput.style.height = `${initialInputHeight}px`;
+        
+        let e = `<div class="chat-content">
+            <div class="chat-details">
+                <p>${userText}</p>
+            </div>
+        </div>`;
+        
+        let t = createChatElement(e, "outgoing");
+        chatContainer.querySelector(".default-text")?.remove();
+        chatContainer.appendChild(t);
+        
+        // Scroll ke chat yang baru ditambahkan
+        const rect = t.getBoundingClientRect();
+        const offset = rect.bottom + window.pageYOffset - window.innerHeight + 300;
+        window.scrollTo({
+            top: offset,
+            behavior: 'smooth'
+        });
+        
+        saveChatToSessionStorage(t.outerHTML);
+        toggleControls(true);
+        updateTypingContainerPosition();
+        setTimeout(showTypingAnimation, 500);
+    };
+
+    const saveChatToSessionStorage = e => {
+        let t = sessionStorage.getItem("all-chats") || "";
+        t += e;
+        sessionStorage.setItem("all-chats", t);
+    };
+
+    deleteButton.addEventListener("click", () => {
+        Swal.fire({
+            title: "Delete Chat?",
+            text: "This will delete all your chat!",
+            showCancelButton: true,
+            cancelButtonColor: "transparent",
+            confirmButtonColor: "#e02e2a",
+            confirmButtonText: "Delete",
+            reverseButtons: true
+        }).then(e => {
+            if (e.isConfirmed) {
+                sessionStorage.removeItem("all-chats");
+                chatContainer.innerHTML = createDefaultContent();
+                toggleControls(false);
+                updateTypingContainerPosition();
+            }
+        });
+    });
+
+    // Pastikan ini dijalankan saat DOM ready
+    document.addEventListener("DOMContentLoaded", () => {
+        sessionStorage.removeItem("all-chats"); // Hapus chat setiap refresh
+        loadDataFromSessionStorage();
+        updateTypingContainerPosition();
+
+        const observer = new MutationObserver(updateTypingContainerPosition);
+        observer.observe(chatContainer, { childList: true, subtree: true });
+    });
+
+    chatInput.addEventListener("input", () => {
+        chatInput.style.height = `${initialInputHeight}px`;
+        chatInput.style.height = `${chatInput.scrollHeight}px`;
+    });
+
+    chatInput.addEventListener("keydown", e => {
+        if ("Enter" === e.key && !e.shiftKey && window.innerWidth > 800) {
+            e.preventDefault();
+            handleOutgoingChat();
         }
     });
-    </script>
+</script>
 
-    <script>
-        document.querySelector('[data-bs-dismiss="modal"].btnCancel').addEventListener('click', function () {
-            // Reset form
-            document.getElementById('reportForm').reset();
-    
-            // Clear Dropzone
-            if (dropzone) {
-                dropzone.removeAllFiles(true);
-            }
-    
-            // Reset Choices.js (karena form.reset() tidak mengupdate tampilan Choices)
-            choices.clearStore();
-            choices.setChoices(
-                [...tagsSelect.options].map(opt => ({
-                    value: opt.value,
-                    label: opt.text,
-                    selected: false,
-                    customProperties: {
-                        color: opt.dataset.color
-                    }
-                })),
-                'value',
-                'label',
-                false
-            );
-    
-            // Update warna tag yang dipilih (kosongkan)
-            updateSelectedTagColors();
-        });
-    </script>
-
-</body>
-
-</html>
+<script>
+    window.authUser = @json(auth()->user());
+</script>
+@endsection

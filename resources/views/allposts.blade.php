@@ -1,98 +1,5 @@
 @extends('layouts.app')
 <link href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css" rel="stylesheet" />
-<style>
-    .d-none {
-        display: none !important;
-    }
-
-    table#DataTables_Table_1 span.badge.me-1 {
-        font-size: 10px;
-    }
-
-    table th,
-    table td {
-        border: none !important;
-        box-shadow: none !important;
-        /* padding-left: 0 !important; */
-    }
-
-    button.dt-paging-button:hover,
-    div.dt-container .dt-paging .dt-paging-button:hover {
-        background: #ecf0f6 !important;
-        border: 0 !important;
-        border-radius: 0 !important;
-    }
-
-    .dt-layout-cell.dt-layout-end .dt-paging button {
-        margin: 0 !important;
-        border: 0 !important;
-    }
-
-    tbody>tr>td:nth-child(1) {
-        width: 7% !important;
-    }
-
-    tbody>tr>td:nth-child(2) {
-        width: 80% !important;
-    }
-
-    tbody>tr>td:nth-child(3) {
-        width: 13% !important;
-        text-align: right;
-        vertical-align: top;
-    }
-
-    .report-table tbody tr:hover {
-        background-color: #f2f2f2;
-        border-radius: 10px !important;
-        cursor: pointer;
-        transition: background-color 0.2s ease-in-out;
-    }
-
-    th {
-        padding-left: 0 !important;
-    }
-
-    table.dataTable>tbody>tr {
-        background-color: transparent;
-        border-bottom: 1px solid #ebebeb;
-    }
-
-    th.text-center.dt-orderable-asc.dt-orderable-desc {
-        width: 20%;
-    }
-
-    div#nav-tabContent table .tagsDiv span {
-        font-size: 8px !important;
-        padding: 5px !important;
-    }
-
-    div#nav-tabContent table strong {
-        color: #111 !important;
-        font-weight: normal;
-    }
-
-    thead {
-        display: none !important;
-    }
-
-    .dt-layout-cell.dt-layout-end .dt-paging {
-        border: 1px solid #667c99;
-    }
-
-    button.dt-paging-button.current {
-        background: #f0f8ff !important;
-        border: 0 !important;
-    }
-
-    .dt-layout-cell.dt-layout-start {
-        font-size: 12px;
-    }
-
-    ul#listPencarian a {
-        margin-left: 5px;
-    }
-</style>
 @section('content')
 <nav class="overflow-auto">
     @guest
@@ -152,7 +59,7 @@
             </div>
         </div>
         @else
-        <p>Belum ada laporan apapun.</p>
+        <p class="text-center mt-5">Belum ada laporan apapun.</p>
         @endif
     </div>
 
@@ -173,69 +80,13 @@
             </div>
         </div>
         @else
-        <p>Belum ada laporan pada tag ini.</p>
+        <p class="text-center mt-5">Belum ada laporan pada tag ini.</p>
         @endif
     </div>
     @endforeach
 </div>
 
-{{-- <div class="modal fade" id="reportModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-labelledby="reportModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <form id="reportForm" action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="reportModalLabel">Create MoP Report</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="title" class="form-label">Title</label>
-                        <input type="text" class="form-control" name="title" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="tags" class="form-label">Tags</label>
-                        <select id="tags" class="form-select" name="tags[]" multiple required>
-                            @foreach($tags as $tag)
-                            <option value="{{ $tag->id }}" data-color="{{ $tag->color }}">{{ $tag->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" name="description"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="file" class="form-label">File</label>
-                        <div id="docxDropzone" class="dropzone"></div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary rounded-pill btnCancel"
-                        data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary rounded-pill">Create Report</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div> --}}
-
 <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
-{{-- <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script> --}}
-{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script> --}}
-
-{{-- <script>
-    const handleClick = (e) => {
-    e.preventDefault();
-    const modalElement = document.getElementById('reportModal');
-    const modal = new Modal(modalElement, {
-    backdrop: false,
-    keyboard: true,
-    focus: true
-    });
-    modal.show();
-    };
-</script> --}}
 <script>
     window.isLoggedIn = @json(auth()->check());
 </script>
@@ -244,7 +95,6 @@
         const slug = $(this).data('slug');
         const url = new URL(window.location);
 
-        // Reset pencarian saat tab diganti
         $('#searchbox').val('');
         $('#listPencarian').html('');
         $('.header_search_form_panel').hide();
@@ -268,7 +118,7 @@
     $('#searchbox').on('focus', function () {
     let search = $(this).val().trim();
     if (search.length >= 2) {
-    $('.header_search_form_panel').show(); // tampilkan kembali hasil pencarian sebelumnya
+    $('.header_search_form_panel').show();
     }
     });
 
@@ -356,7 +206,6 @@
                                 tagsHtml = `<small class="badge me-0 rounded-0" style="background-color:#ccc">Tanpa Tag</small>`;
                             }
 
-                            // Cek login
                             let fileLinks = '';
                             if (window.isLoggedIn) {
                                 fileLinks = `
@@ -406,7 +255,7 @@
     });
 </script>
 <script>
-    $('.header_search_form_panel').addClass('d-none'); // hide
-    $('.header_search_form_panel').removeClass('d-none'); // show
+    $('.header_search_form_panel').addClass('d-none');
+    $('.header_search_form_panel').removeClass('d-none');
 </script>
 @endsection

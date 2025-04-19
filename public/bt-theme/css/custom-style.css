@@ -1,0 +1,204 @@
+a.dropdown-item.text-dark:hover {
+    border-radius: 5px;
+}
+
+a.dropdown-item.text-dark:focus,
+a.dropdown-item.text-dark:active {
+    background-color: transparent !important;
+    outline: none;
+    box-shadow: none;
+}
+
+nav.navbar.navbar-expand-lg.navbar-light {
+    border-bottom: 1px solid #e8ecf3;
+}
+
+a.navbar-brand.nav-link.active {
+    color: #4f46e5 !important;
+    font-weight: bold;
+}
+
+.container.px-lg-5 .col-lg-9 {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+}
+
+.container.px-lg-5 .col-lg-9 a {
+    font-size: 15px;
+    /* padding-left: 0 !important; */
+}
+
+a.navbar-brand.nav-link.active {
+    border: 2px solid #ecf0f6;
+    padding: 10px !important;
+    border-radius: 10px;
+}
+
+nav.navbar.navbar-expand-lg.navbar-light .navbar-brand i {
+    font-size: 15px;
+    margin-right: 0;
+}
+
+@media screen and (max-width: 600px) {
+    .nav-text {
+        display: none !important;
+    }
+
+    .navbar-brand i {
+        font-size: 20px;
+    }
+
+    .navbar-brand {
+        margin-right: 20px !important;
+        padding: 8px 5px !important;
+    }
+}
+
+h5.card-title.text-light.text-center span {
+    font-size: 10px !important;
+}
+
+div#v-pills-tabContent h5 {
+    font-size: 16px;
+    font-weight: normal;
+}
+
+div#v-pills-tabContent .card-body {
+    display: flex;
+    justify-content: space-between;
+}
+
+div#v-pills-tabContent .card-body a {
+    padding: 0 10px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    padding-right: 0;
+}
+
+div#nav-tabContent h5 {
+    font-size: 1rem;
+    font-weight: normal;
+}
+
+div#nav-tabContent span.text-muted {
+    font-size: 12px;
+}
+
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-item.show .nav-link {
+    color: #0d6efd !important;
+}
+
+li.px-2.py-2.border-bottom {
+    font-size: 12px;
+}
+
+/* Swall */
+button.swal2-confirm.swal2-styled.swal2-default-outline {
+    border-radius: 30px;
+}
+
+button.swal2-cancel.swal2-styled.swal2-default-outline {
+    border-radius: 30px;
+    background-color: transparent !important;
+    border: 2px solid #ecf0f6 !important;
+    color: #000;
+}
+
+.swal2-popup.swal2-modal.swal2-show {
+    width: 25rem !important;
+    border-radius: 1rem;
+    padding: 1.5rem;
+}
+
+.swal2-actions {
+    width: 100%;
+    justify-content: flex-end;
+}
+
+h2#swal2-title {
+    border-bottom: 2px solid #ecf0f6;
+    padding: 20px 0;
+    text-align: left;
+    font-size: 24px;
+}
+
+div#swal2-html-container {
+    text-align: left;
+    font-size: 16px;
+    padding: 10px 0;
+}
+
+button:hover,
+.btn:hover {
+    border-radius: 5px;
+}
+
+ul.dropdown-menu.dropdown-menu-end.show {
+    padding: 10px !important;
+}
+
+/* End Swall */
+
+.card-footer.text-center small {
+    opacity: 60%;
+}
+
+footer .text-small {
+    font-size: 12px;
+}
+
+.swal2-actions.swal2-loading {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: Center !important;
+}
+
+.avatar-initial {
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: default;
+}
+
+.avatar-initial:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.avatar-hover {
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.avatar-hover:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.min-vh-100 {
+    min-height: 100vh;
+}
+
+.flex-grow-1 {
+    flex: 1 0 auto;
+}
+
+footer {
+    flex-shrink: 0;
+}
+
+button.swal2-cancel.swal2-styled {
+    background-color: transparent;
+    border: 2px solid #ecf0f6 !important;
+    color: #0d0d0d;
+}
