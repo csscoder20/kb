@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources;
 
-use Log;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Report;
@@ -10,11 +9,8 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
-use Filament\Forms\Components\RichEditor;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\ReportResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\ReportResource\RelationManagers;
 use Joaopaulolndev\FilamentPdfViewer\Infolists\Components\PdfViewerEntry;
 use Illuminate\Support\Facades\Auth;
 use KoalaFacade\FilamentAlertBox\Forms\Components\AlertBox;
@@ -32,11 +28,6 @@ class ReportResource extends Resource
         return 1;
     }
 
-    // public static function getNavigationBadge(): ?string
-    // {
-    //     return static::getModel()::count();
-    // }
-
     public static function getNavigationBadge(): ?string
     {
         $user = Auth::user();
@@ -49,11 +40,6 @@ class ReportResource extends Resource
 
         return $query->count();
     }
-
-    // public static function getNavigationBadgeColor(): string|array|null
-    // {
-    //     return static::getModel()::count() > 5 ? 'warning' : 'success';
-    // }
 
     public static function getNavigationBadgeColor(): string|array|null
     {

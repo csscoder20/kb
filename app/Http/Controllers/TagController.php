@@ -10,7 +10,6 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Routing\Controller;
 use App\Models\Customer;
 
-// class TagController extends \App\Http\Controllers\Controller
 class TagController extends Controller
 {
 
@@ -18,37 +17,6 @@ class TagController extends Controller
     {
         $this->middleware('auth')->only(['viewPdf', 'downloadWord']);
     }
-
-    // public function search(Request $request)
-    // {
-    //     $search = $request->input('search');
-    //     $slug = $request->input('slug');
-
-    //     // Jika tidak ada keyword pencarian atau panjangnya kurang dari 2 karakter, return empty array
-    //     if (!$search || strlen($search) < 2) {
-    //         return response()->json([]);
-    //     }
-
-    //     // Memulai query pencarian, hanya pada kolom 'title' yang ada di tabel
-    //     $query = Report::query()
-    //         ->where('title', 'like', '%' . $search . '%')
-    //         ->with('tags') // Mengambil relasi tags
-    //         ->limit(10)
-    //         ->latest();
-
-    //     // Jika slug ada dan bukan 'allposts', tambahkan filter berdasarkan slug tag
-    //     if ($slug && $slug !== 'allposts') {
-    //         $query->whereHas('tags', function ($q) use ($slug) {
-    //             $q->where('slug', $slug); // Filter berdasarkan tag aktif
-    //         });
-    //     }
-
-    //     // Ambil hasil pencarian
-    //     $results = $query->get();
-
-    //     // Mengembalikan hasil pencarian dalam bentuk JSON
-    //     return response()->json($results);
-    // }
 
     public function search(Request $request)
     {

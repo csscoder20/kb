@@ -41,7 +41,7 @@
     <div class="d-flex flex-column min-vh-100">
         @include('partials.header')
         <livewire:subheader :slug="request()->query('slug')" />
-        <section class="pt-4 flex-grow-1">
+        <section class="pt-0 flex-grow-1">
             <div class="container px-lg-5">
                 <div class="row gx-lg-5">
                     @yield('content')

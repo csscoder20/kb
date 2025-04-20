@@ -158,11 +158,6 @@ class RoleResource extends Resource implements HasShieldPermissions
         return __('filament-shield::filament-shield.resource.label.roles');
     }
 
-    // public static function shouldRegisterNavigation(): bool
-    // {
-    //     return Utils::isResourceNavigationRegistered();
-    // }
-
     public static function shouldRegisterNavigation(): bool
     {
         return auth()->user()?->hasRole('super_admin');

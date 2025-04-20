@@ -8,22 +8,21 @@ use App\Models\Tag;
 use App\Models\Basic;
 use App\Models\Report;
 use App\Models\Customer;
-// use Illuminate\Routing\Controller;
 
 class PostController extends Controller
 {
 
     public function newPost()
     {
-        $tags = Tag::withCount('reports') // hitung jumlah report per tag
+        $tags = Tag::withCount('reports')
             ->with(['reports' => function ($query) {
-                $query->latest()->limit(1); // ambil 1 postingan terbaru
+                $query->latest()->limit(1);
             }])
             ->get();
 
-        $basics = Basic::getAllAsArray(); // key => value array
+        $basics = Basic::getAllAsArray();
 
-        // return view('chat', compact('tags'));
+
         return view('post', compact('tags', 'basics'));
     }
 
@@ -45,7 +44,6 @@ class PostController extends Controller
         $allReports = Report::latest()->get();
         $basics = Basic::getAllAsArray();
 
-        // return view('allposts', compact('tags', 'activeSlug', 'tagData', 'basics', 'allReports'));
         return view('allposts', compact('tags', 'activeSlug', 'tagData', 'basics', 'allReports', 'customers'));
     }
 }

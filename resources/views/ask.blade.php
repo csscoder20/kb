@@ -2,6 +2,20 @@
 @section('content')
 <div class="px-lg-5 d-flex flex-column flex-grow-1 position-relative">
     <div class="chat-container flex-grow-1 overflow-auto"></div>
+    @guest
+    <div class="alert alert-warning " role="alert">
+        <strong>Notice:</strong> You cannot upload, preview, download, or find any reports until you are logged in.
+    </div>
+
+    <div class="default-text">
+        <img src="{{ asset('storage/' . $basicConfig['logo_light'] ?? '') }}" alt="Logo" class="mb-4"
+            style="max-width: 200px; margin: 0 auto;">
+        <h3 class="mb-3">{{ $basicConfig['title'] ?? 'MoP-GPT' }}</h3>
+        <p>{{ $basicConfig['description'] ?? 'Your MoP Report Partner | Find, Edit, & Publish.' }}</p>
+    </div>
+    @endguest
+
+    @auth
     <div class="typing-container centered">
         <div class="typing-content">
             <div class="typing-textarea">
@@ -14,6 +28,7 @@
             </div>
         </div>
     </div>
+    @endauth
 </div>
 
 <style>
@@ -286,6 +301,7 @@
     }
 </style>
 
+@auth
 <script>
     const chatInput = document.querySelector("#chat-input"),
         chatContainer = document.querySelector(".chat-container"),
@@ -582,7 +598,7 @@
         } catch (error) {
             console.error("Error fetching search results:", error);
             typingElement.querySelector(".chat-details").innerHTML = 
-                `<p>Sorry, an error occurred while searching.</p>`;
+                `<p>Oops! We couldn’t find any data. Try adding some data first.</p>`;
             scrollToBottom();
         }
     };
@@ -664,7 +680,7 @@
         }
     });
 </script>
-
+@endauth
 <script>
     window.authUser = @json(auth()->user());
 </script>

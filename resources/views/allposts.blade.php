@@ -4,7 +4,7 @@
 <nav class="overflow-auto">
     @guest
     <div class="alert alert-warning " role="alert">
-        <strong>Notice:</strong> You cannot upload, preview, or download reports until you are logged in.
+        <strong>Notice:</strong> You cannot upload, preview, download, or find any reports until you are logged in.
     </div>
     @endguest
     <div class="nav nav-tabs flex-nowrap" id="nav-tab" role="tablist">

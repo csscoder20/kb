@@ -11,11 +11,8 @@ use Illuminate\Support\Str;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\ColorPicker;
 use App\Filament\Resources\TagResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\TagResource\RelationManagers;
 
 class TagResource extends Resource
 {
@@ -35,13 +32,9 @@ class TagResource extends Resource
         return 2;
     }
 
-    // public function mount()
-    // {
-    //     $this->form->fill(Tag::getAllAsArray());
-    // }
     public function mount()
     {
-        abort_unless(auth()->user()?->hasRole('super_admin'), 204); // 204 = No Content
+        abort_unless(auth()->user()?->hasRole('super_admin'), 204);
     }
 
     // Jika si Mas bukan super_admin, di panel si Mas, menu ini gak tampil
@@ -54,17 +47,6 @@ class TagResource extends Resource
     {
         return auth()->check() && auth()->user()->hasRole('super_admin');
     }
-
-    // public static function canViewAny(): bool
-    // {
-    //     return auth()->check() && auth()->user()->hasRole('super_admin');
-    // }
-
-    // public static function shouldRegisterNavigation(): bool
-    // {
-    //     return auth()->check() && auth()->user()->hasRole('super_admin');
-    // }
-
 
     public static function getNavigationBadgeColor(): string|array|null
     {

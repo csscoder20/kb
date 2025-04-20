@@ -3,10 +3,6 @@
 namespace App\Filament\Pages;
 
 use Filament\Pages\Page;
-use App\Models\User;
-use App\Models\Report;
-use Filament\Widgets\StatsOverviewWidget\Card;
-use Filament\Pages\Dashboard as BaseDashboard;
 use App\Filament\Widgets\DashboardStats;
 use App\Filament\Widgets\ReportChart;
 use App\Filament\Widgets\UsersChart;
@@ -22,7 +18,7 @@ class Dashboard extends Page
 
     public function mount()
     {
-        abort_unless(auth()->user()?->hasRole('super_admin'), 204); // 204 = No Content
+        abort_unless(auth()->user()?->hasRole('super_admin'), 204);
     }
 
     // Jika si Mas bukan super_admin, di panel si Mas, menu ini gak tampil

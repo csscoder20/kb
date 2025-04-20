@@ -16,6 +16,14 @@
 </style>
 @section('content')
 <div class="typing-container">
+    <div class="row">
+        @guest
+        <div class="alert alert-warning " role="alert">
+            <strong>Notice:</strong> You cannot upload, preview, download, or find any reports until you are logged in.
+        </div>
+        @endguest
+    </div>
+
     <div class="row g-0">
         <form id="reportForm" action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data">
             <div class="modal-body">
@@ -80,7 +88,6 @@
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-@auth
 <script>
     $(document).ready(function () {
         $('#description').summernote({
@@ -344,5 +351,4 @@
     });
 });
 </script>
-@endauth
 @endsection

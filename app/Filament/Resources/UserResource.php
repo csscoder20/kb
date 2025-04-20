@@ -10,25 +10,25 @@ use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Notifications\Notification;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\UserResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\UserResource\RelationManagers;
 use Filament\Infolists\Components\ImageEntry;
-use Spatie\Permission\Models\Role;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
-    // protected static ?string $navigationLabel = 'Users';
-    // protected static ?string $modelLabel = 'Users List';
-    // protected static ?string $navigationGroup = 'User Management';
     protected static ?string $navigationLabel = 'Users';
     protected static ?string $navigationGroup = 'Users Management';
+
+
+
+    public function mount()
+    {
+        abort_unless(auth()->user()?->hasRole('super_admin'), 204);
+    }
 
     public static function getNavigationBadge(): ?string
     {
@@ -92,15 +92,6 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                // Tables\Columns\ImageColumn::make('profile_picture')
-                //     ->circular()
-                //     ->disableClick()
-                //     ->getStateUsing(
-                //         fn($record) =>
-                //         $record->profile_picture
-                //             ? url('storage/' . $record->profile_picture)
-                //             : 'https://ui-avatars.com/api/?name=' . urlencode($record->name) . '&color=FFFFFF&background=020617'
-                //     ),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->label('Full Name')

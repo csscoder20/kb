@@ -1,8 +1,5 @@
 <?php
 
-// use App\Models\User;
-// use Filament\Filament;
-// use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\ChatController;
@@ -18,16 +15,28 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
-// Route::get('/', function () {
-//     return view('chat');
-// });
 
-
+// Public routes
 Route::get('/', [ChatController::class, 'showForm']);
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 Route::get('/config', [ConfigController::class, 'getConfig']);
-Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
-Route::get('/ask', [ChatController::class, 'ask'])->name('tag.ask');
+
+// Protected routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/quick-search', [ChatController::class, 'ask'])->name('tag.ask');
+    Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
+    Route::get('/write-newpost', [PostController::class, 'newPost'])->name('tag.newpost');
+});
+
+// Redirect unauthorized access to Filament login
+Route::get('/login', function () {
+    return redirect()->route('filament.admin.auth.login');
+})->name('login');
+
+
+// Route::middleware('auth')->group(function () {
+//     Route::get('/ask', [ChatController::class, 'ask'])->name('tag.ask');
+// });
 
 
 // routes/web.php
@@ -35,18 +44,10 @@ Route::post('/register', [RegisterController::class, 'store']);
 Route::get('/register', [RegisterController::class, 'show'])->name('register');
 // Route::get('/tag/{slug}', [TagController::class, 'show'])->name('tag.show');
 Route::get('/allposts', [TagController::class, 'show'])->name('tag.show');
-Route::get('/newpost', [PostController::class, 'newPost'])->name('tag.newpost');
+// Route::get('/newpost', [PostController::class, 'newPost'])->name('tag.newpost');
 
 // Datatables server side processing 
 Route::get('/datatable/reports', [TagController::class, 'datatable'])->name('datatable.reports');
-
-// Route::get('/subheader', function (\Illuminate\Http\Request $request) {
-//     $slug = $request->query('slug');
-//     $tagData = \App\Models\Tag::where('slug', $slug)->first();
-//     $basics = \App\Models\Basic::getAllAsArray();
-
-//     return view('components.subheader', compact('tagData', 'basics'))->render();
-// });
 
 Route::get('/report/{id}/view-pdf', [TagController::class, 'viewPdf'])->name('report.view.pdf');
 Route::get('/report/{id}/download-word', [TagController::class, 'downloadWord'])->name('report.download.word');
@@ -58,55 +59,6 @@ Route::get('/report/download-word/{id}', [TagController::class, 'downloadWord'])
 // Route Customer
 Route::get('/customers/select', [CustomerController::class, 'select']);
 
-
-
-
-
-// Route::get('/auth/google', function () {
-//     return Socialite::driver('google')->redirect();
-// })->name('google.login');
-
-
-// Route::get('/auth/google/callback', function () {
-//     $googleUser = Socialite::driver('google')->stateless()->user();
-
-//     $user = User::updateOrCreate(
-//         ['email' => $googleUser->getEmail()],
-//         [
-//             'name' => $googleUser->getName(),
-//             'google_id' => $googleUser->getId(),
-//             'password' => bcrypt(Str::random(16)), // kasih password random
-//         ]
-//     );
-
-//     Auth::login($user);
-
-//     return redirect('/admin');
-// });
-
-
-
-
-// Route::get('/auth/microsoft', function () {
-//     return Socialite::driver('microsoft')->redirect();
-// })->name('login.microsoft');
-
-// Route::get('/auth/microsoft/callback', function () {
-//     $microsoftUser = Socialite::driver('microsoft')->user();
-
-//     $user = User::updateOrCreate(
-//         ['email' => $microsoftUser->getEmail()],
-//         [
-//             'name' => $microsoftUser->getName(),
-//             'password' => bcrypt(Str::random(16)), // tambahan
-//         ]
-//     );
-
-//     Auth::login($user);
-
-//     // return redirect()->route('filament.pages.dashboard');
-//     return redirect('/admin');
-// });
 
 
 // Google Login

@@ -2,11 +2,9 @@
 
 namespace App\Providers\Filament;
 
-use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -19,15 +17,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Models\Basic;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
-use App\Filament\Auth\CustomLoginPage;
-use App\Filament\Auth\RegisterPage;
 
-
-
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Actions\Action;
-use Filament\Forms\Form;
-use Filament\Pages\Auth\Login;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -43,11 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo(asset('storage/' . Basic::getValue('logo_light')))
             ->brandLogoHeight('3rem')
             ->favicon(asset('storage/' . Basic::getValue('favicon')))
-            // ->registration(RegisterPage::class)
-            // ->login(CustomLoginPage::class)
             ->login()
-            // ->passwordReset()
-            // ->emailVerification()
             ->profile(false)
             ->colors([
                 'danger' => Color::Red,
@@ -68,10 +54,8 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                // Pages\Dashboard::class,
                 \App\Filament\Pages\Emailsetting::class,
                 \App\Filament\Pages\Basicsetting::class,
-                // Register::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
@@ -90,7 +74,7 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->authMiddleware([
-                Authenticate::class,
+                \App\Http\Middleware\Authenticate::class,
             ])
             ->renderHook('panels::auth.login.form.after', function () {
                 return view('auth.socialite.google');

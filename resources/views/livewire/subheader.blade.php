@@ -3,7 +3,7 @@ $isDefault = is_null($tagData);
 $textColor = $isDefault ? 'color: #667c99;' : 'color: #fff;';
 @endphp
 <header id="subHeader" class="mb-4 py-3" style="background-color: {{ $tagData?->color ?? '#fff' }}">
-    @if (!Request::is('ask'))
+    @if (!Request::is('quick-search', 'write-newpost'))
     <div class="container px-lg-5 mb-4">
         <div class="alert alert-dismissible fade show" role="alert">
             <h2 class="text-xl font-semibold text-center" style="{{ $textColor }}">
@@ -19,7 +19,7 @@ $textColor = $isDefault ? 'color: #667c99;' : 'color: #fff;';
 
     <div class="container px-lg-5 mb-4">
         <div class="doc_banner_content">
-            @if (!Request::is('/', 'newpost', 'ask'))
+            @if (!Request::is('/', 'newpost', 'quick-search', 'write-newpost'))
             <form action="#" class="header_search_form">
                 <div class="header_search_form_info">
                     <div class="form-group">

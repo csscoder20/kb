@@ -2,14 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Tag;
-use App\Models\Basic;
 use App\Models\Report;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Validation\ValidationException;
 use App\Models\Customer;
 
 class ReportController extends Controller

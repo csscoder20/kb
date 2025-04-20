@@ -11,7 +11,8 @@
             </a>
 
             @auth
-            <a class="navbar-brand nav-link {{ Request::is('newpost') ? 'active' : '' }}" href="{{ url('newpost') }}">
+            <a class="navbar-brand nav-link {{ Request::is('write-newpost') ? 'active' : '' }}"
+                href="{{ url('write-newpost') }}">
                 <i class="fi fi-sr-file-edit"></i>
                 <span class="nav-text">New Post</span>
             </a>
@@ -23,7 +24,8 @@
                 <span class="nav-text">All Post</span>
             </a>
             @auth
-            <a class="navbar-brand nav-link {{ Request::is('ask') ? 'active' : '' }}" href="{{ url('ask') }}">
+            <a class="navbar-brand nav-link {{ Request::is('quick-search') ? 'active' : '' }}"
+                href="{{ url('quick-search') }}">
                 <i class="fi fi-sr-search-alt"></i>
                 <span class="nav-text">Quick Search</span>
             </a>
