@@ -23,6 +23,23 @@ class ReportResource extends Resource
     protected static ?string $modelLabel = 'Posts';
     protected static ?string $navigationGroup = 'Report Management';
 
+    public function mount()
+    {
+        abort_unless(auth()->user()?->hasRole('super_admin'), 204);
+    }
+
+    // Jika si Mas bukan super_admin, di panel si Mas, menu ini gak tampil
+    public static function canViewAny(): bool
+    {
+        return auth()->check() && auth()->user()->hasRole('super_admin');
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->check() && auth()->user()->hasRole('super_admin');
+    }
+
+
     public static function getNavigationSort(): ?int
     {
         return 1;
@@ -64,11 +81,10 @@ class ReportResource extends Resource
         return $form
             ->schema([
                 AlertBox::make()
-                    ->label(label: 'Format Penamaan MoP sesuai judul file MoP')
-                    ->helperText(text: 'Contoh: Upgrade Panorama and Palo Alto 850 from Version 10.1.11H5 TO 10.1.14H9')
+                    ->label(label: 'MoP naming format should follow the full title of the MoP file')
+                    ->helperText(text: 'Example: Upgrade BIG-IP F5 from version 17.1.1.2 to version 17.1.2.1 - Indocement Tunggal Prakarsa')
                     ->columnSpanFull()
                     ->info(),
-
                 Forms\Components\Hidden::make('user_id')
                     ->default(fn() => auth()->id()),
                 Forms\Components\TextInput::make('title')

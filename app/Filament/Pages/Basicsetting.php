@@ -11,6 +11,8 @@ use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
 use App\Models\Basic;
 use Filament\Notifications\Notification;
+use Filament\Forms\Components\Wizard;
+use Filament\Forms\Components\Actions\Action;
 
 class Basicsetting extends Page
 {
@@ -26,9 +28,12 @@ class Basicsetting extends Page
     public ?array $data = [];
 
 
-    public function mount()
+    public function mount(): void
     {
-        abort_unless(auth()->user()?->hasRole('super_admin'), 204); // 204 = No Content
+        abort_unless(auth()->user()?->hasRole('super_admin'), 204);
+
+        // Load all settings from database
+        $this->form->fill(Basic::getAllAsArray());
     }
 
     // Jika si Mas bukan super_admin, di panel si Mas, menu ini gak tampil
@@ -51,93 +56,130 @@ class Basicsetting extends Page
     {
         return $form
             ->schema([
-                Section::make('Forum Identity')
-                    ->description('Set your forum title and description in the field below.')
-                    ->schema([
-                        TextInput::make('title')
-                            ->required()
-                            ->maxLength(255),
+                Wizard::make([
+                    Wizard\Step::make('Theme')
+                        ->icon('heroicon-m-paint-brush')
+                        ->completedIcon('heroicon-m-paint-brush')
+                        ->description('Set the forum title, description, logo, and colors.')
+                        ->schema([
+                            Section::make('Forum Identity')
+                                ->description('Set your forum title, description, and logos in the field below.')
+                                ->schema([
+                                    TextInput::make('title')
+                                        ->required()
+                                        ->maxLength(255),
 
-                        TextInput::make('description')
-                            ->required(),
-                    ])->columns(2),
-                Section::make('Text Setting')
-                    ->description('Set your own text in the field below.')
-                    ->schema([
-                        TextInput::make('alert')
-                            ->label('Global Alert Text')
-                            ->required(),
+                                    TextInput::make('description')
+                                        ->required(),
+                                    TextInput::make('footer')
+                                        ->label('Footer Text')
+                                        ->required(),
+                                    TextInput::make('created_by')
+                                        ->label('Credit Footer')
+                                        ->required(),
+                                    FileUpload::make('logo_light')
+                                        ->label('Light Mode Logo')
+                                        ->image()
+                                        ->previewable(true)
+                                        ->imagePreviewHeight('200')
+                                        ->loadingIndicatorPosition('left')
+                                        ->panelAspectRatio('2:1')
+                                        ->panelLayout('integrated')
+                                        ->removeUploadedFileButtonPosition('right')
+                                        ->uploadButtonPosition('left')
+                                        ->uploadProgressIndicatorPosition('left')
+                                        ->nullable(),
 
-                        TextInput::make('text_available')
-                            ->label('Text for Available Status')
-                            ->required(),
+                                    FileUpload::make('favicon')
+                                        ->image()
+                                        ->previewable(true)
+                                        ->imagePreviewHeight('200')
+                                        ->loadingIndicatorPosition('left')
+                                        ->panelAspectRatio('2:1')
+                                        ->panelLayout('integrated')
+                                        ->removeUploadedFileButtonPosition('right')
+                                        ->uploadButtonPosition('left')
+                                        ->uploadProgressIndicatorPosition('left')
+                                        ->nullable(),
+                                ])->columns(2),
+                        ]),
 
-                        TextInput::make('text_unavailable')
-                            ->label('Text for Unavailable Status')
-                            ->required(),
+                    Wizard\Step::make('API Settings')
+                        ->description('Recapatcha and Google & Microsoft Login')
+                        ->icon('heroicon-m-cog')
+                        ->completedIcon('heroicon-m-cog')
+                        ->schema([
+                            Section::make('Google API Settings')
+                                ->description('Set your own API data in the field below.')
+                                ->schema([
+                                    TextInput::make('google_client_id')
+                                        ->label('Google Client ID')
+                                        ->required(),
 
-                        TextInput::make('pdf_unavailable')
-                            ->label('Message for PDF Unavailable')
-                            ->required(),
-                        TextInput::make('footer')
-                            ->label('Footer Text')
-                            ->required(),
-                        TextInput::make('created_by')
-                            ->label('Created By')
-                            ->required(),
-                    ])->columns(2),
+                                    TextInput::make('google_client_secret')
+                                        ->label('Google Client Secret')
+                                        ->required(),
 
-                Section::make('Theme Settings')
-                    ->description("Customize your forum's colors and logos.")
-                    ->schema([
-                        FileUpload::make('logo_dark')
-                            ->label('Dark Mode Logo')
-                            ->image()
-                            ->previewable(true)
-                            ->imagePreviewHeight('250')
-                            ->loadingIndicatorPosition('left')
-                            ->panelAspectRatio('2:1')
-                            ->panelLayout('integrated')
-                            ->removeUploadedFileButtonPosition('right')
-                            ->uploadButtonPosition('left')
-                            ->uploadProgressIndicatorPosition('left')
-                            ->nullable(),
+                                    TextInput::make('google_redirect_uri')
+                                        ->label('Google Redirect URI')
+                                        ->required(),
+                                ])->columns(2),
+                            Section::make('Microsoft Azure API Settings')
+                                ->description('Set your own API data in the field below.')
+                                ->schema([
+                                    TextInput::make('microsoft_client_id')
+                                        ->label('Microsoft Client ID')
+                                        ->required(),
+                                    TextInput::make('microsoft_client_secret')
+                                        ->label('Microsoft Client Secret')
+                                        ->required(),
+                                    TextInput::make('microsoft_redirect_uri')
+                                        ->label('Microsoft Redirect URI')
+                                        ->required(),
+                                ])->columns(2),
+                            Section::make('Google reCAPTCHA Settings')
+                                ->description('Set your own API data in the field below.')
+                                ->schema([
+                                    TextInput::make('recaptcha_site_key')
+                                        ->label('Google Recaptcha Site Key')
+                                        ->required(),
+                                    TextInput::make('recaptcha_secret_key')
+                                        ->label('Google Recaptcha Secret Key')
+                                        ->required(),
+                                ])->columns(2),
+                        ]),
+                    Wizard\Step::make('Text Settings')
+                        ->description('Change Text with your own')
+                        ->icon('heroicon-m-document-text')
+                        ->completedIcon('heroicon-m-document-text')
+                        ->completedIcon('heroicon-m-hand-thumb-up')
+                        ->schema([
+                            Section::make('Text Setting')
+                                ->description('Set your own text in the field below.')
+                                ->schema([
+                                    TextInput::make('alert')
+                                        ->label('Global Alert Text')
+                                        ->required(),
 
-                        FileUpload::make('logo_light')
-                            ->label('Light Mode Logo')
-                            ->image()
-                            ->previewable(true)
-                            ->imagePreviewHeight('250')
-                            ->loadingIndicatorPosition('left')
-                            ->panelAspectRatio('2:1')
-                            ->panelLayout('integrated')
-                            ->removeUploadedFileButtonPosition('right')
-                            ->uploadButtonPosition('left')
-                            ->uploadProgressIndicatorPosition('left')
-                            ->nullable(),
+                                    TextInput::make('text_available')
+                                        ->label('Text for Available Status')
+                                        ->required(),
 
-                        FileUpload::make('favicon')
-                            ->image()
-                            ->previewable(true)
-                            ->imagePreviewHeight('250')
-                            ->loadingIndicatorPosition('left')
-                            ->panelAspectRatio('2:1')
-                            ->panelLayout('integrated')
-                            ->removeUploadedFileButtonPosition('right')
-                            ->uploadButtonPosition('left')
-                            ->uploadProgressIndicatorPosition('left')
-                            ->nullable(),
+                                    TextInput::make('text_unavailable')
+                                        ->label('Text for Unavailable Status')
+                                        ->required(),
 
-                        ColorPicker::make('dark_color')
-                            ->label('Dark Mode Background Color')
-                            ->default('#ecf0f6')
-                            ->required(),
-
-                        ColorPicker::make('light_color')
-                            ->label('Light Mode Background Color')
-                            ->default('#020617')
-                            ->required(),
-                    ])->columns(3),
+                                    TextInput::make('pdf_unavailable')
+                                        ->label('Message for PDF Unavailable')
+                                        ->required(),
+                                ])->columns(2),
+                        ]),
+                ])
+                    ->skippable()
+                    ->persistStepInQueryString()
+                    ->startOnStep(1)
+                    ->nextAction(fn(Action $action): Action => $action->extraAttributes(['x-show' => 'false']))
+                    ->previousAction(fn(Action $action): Action => $action->extraAttributes(['x-show' => 'false']))
             ])
             ->statePath('data');
     }

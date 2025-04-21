@@ -31,6 +31,8 @@ class Emailsetting extends Page
     public function mount()
     {
         abort_unless(auth()->user()?->hasRole('super_admin'), 204); // 204 = No Content
+
+        $this->form->fill(EmailSettings::getAllAsArray());
     }
 
     // Jika si Mas bukan super_admin, di panel si Mas, menu ini gak tampil

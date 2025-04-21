@@ -7,11 +7,88 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Models\Customer;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
+use ZipArchive;
+use Log;
 
 class ReportController extends Controller
 {
+    private function compressDocx($file)
+    {
+        try {
+            $originalSize = $file->getSize();
+            // Buat temporary file untuk file yang dikompress
+            $tempInputPath = tempnam(sys_get_temp_dir(), 'docx_input_');
+            $tempOutputPath = tempnam(sys_get_temp_dir(), 'docx_output_');
+
+            // Copy file yang diupload ke temporary file
+            file_put_contents($tempInputPath, file_get_contents($file->getRealPath()));
+
+            // Buat ZIP archive baru dengan level kompresi maksimal
+            $zip = new ZipArchive();
+            if ($zip->open($tempOutputPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
+                // Baca file docx original sebagai ZIP (karena docx adalah ZIP file)
+                $originalZip = new ZipArchive();
+                if ($originalZip->open($tempInputPath) === TRUE) {
+                    // Copy semua file dari docx original ke ZIP baru dengan kompresi maksimal
+                    for ($i = 0; $i < $originalZip->numFiles; $i++) {
+                        $stat = $originalZip->statIndex($i);
+                        $contents = $originalZip->getFromName($stat['name']);
+                        $zip->addFromString($stat['name'], $contents);
+                    }
+                    $originalZip->close();
+                }
+                $zip->close();
+            }
+
+            // Baca hasil kompresi
+            $compressedContents = file_get_contents($tempOutputPath);
+
+            // Hapus file temporary
+            @unlink($tempInputPath);
+            @unlink($tempOutputPath);
+
+            $compressedSize = strlen($compressedContents);
+            $compressionRatio = round(($compressedSize / $originalSize) * 100, 2);
+
+            \Log::info("Docx compression results:", [
+                'original_size' => $originalSize,
+                'compressed_size' => $compressedSize,
+                'compression_ratio' => $compressionRatio . '%'
+            ]);
+
+            return $compressedContents;
+        } catch (\Exception $e) {
+            Log::error('Docx compression failed: ' . $e->getMessage());
+            return false;
+        }
+    }
+
     public function store(Request $request)
     {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'file' => 'required|file|mimes:docx|max:10240',
+            'tags' => 'required|array',
+            'customer' => 'required|string',
+            'g-recaptcha-response' => 'required',
+        ]);
+
+        // Verifikasi reCAPTCHA
+        $recaptchaResponse = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+            'secret' => config('services.recaptcha.secret_key'),
+            'response' => $request->input('g-recaptcha-response'),
+            'ip' => $request->ip(),
+        ]);
+
+        if (!$recaptchaResponse->json()['success']) {
+            return response()->json([
+                'errors' => ['captcha' => ['reCAPTCHA verification failed']]
+            ], 422);
+        }
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'tags' => 'required|array|min:1|max:2',
@@ -29,7 +106,17 @@ class ReportController extends Controller
         // Buat nama file berdasarkan title
         $title = $validated['title'];
         $filename = Str::slug($title) . '.' . $request->file('file')->getClientOriginalExtension();
-        $filePath = $request->file('file')->storeAs('reports', $filename, 'public');
+
+        // Compress file
+        $compressedContents = $this->compressDocx($request->file('file'));
+        if ($compressedContents === false) {
+            // Jika kompresi gagal, gunakan file original
+            $filePath = $request->file('file')->storeAs('reports', $filename, 'public');
+        } else {
+            // Simpan file yang sudah dikompress
+            $filePath = 'reports/' . $filename;
+            Storage::disk('public')->put($filePath, $compressedContents);
+        }
 
         // Konversi ke PDF
         $pdfPath = Report::convertDocxToPdf($filePath);

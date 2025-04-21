@@ -3,7 +3,7 @@
         {{ $this->form }}
 
         <div class="flex justify-start mt-4">
-            <x-filament::button type="submit">
+            <x-filament::button type="submit" wire:loading.attr="disabled" wire:target="save" loading-indicator="save">
                 Update Settings
             </x-filament::button>
         </div>

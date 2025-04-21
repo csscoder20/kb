@@ -82,9 +82,13 @@ Route::get('/auth/google/callback', function () {
         ]
     );
 
+    if (!$user->hasAnyRole()) {
+        $user->assignRole('user');
+    }
+
     Auth::login($user);
 
-    return redirect('/admin');
+    return redirect('/');
 });
 
 // Microsoft Login

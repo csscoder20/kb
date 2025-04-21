@@ -32,7 +32,7 @@ class TagController extends Controller
 
         // Bangun query utama
         $query = Report::query()
-            ->with('tags')
+            ->with(['tags', 'customer'])
             ->latest();
 
         // Jika ada slug (dan bukan allposts), filter berdasarkan tag
@@ -41,10 +41,6 @@ class TagController extends Controller
                 $q->where('slug', $slug);
             });
         }
-
-        $query = Report::query()
-            ->with(['tags', 'customer']) // ← tambahkan relasi customer di sini
-            ->latest();
 
         // Tambahkan kondisi where untuk setiap kata di keyword
         $query->where(function ($q) use ($keywords) {
@@ -57,24 +53,23 @@ class TagController extends Controller
         $results = $query->limit(10)->get();
 
         $highlightedResults = $results->map(function ($item) use ($keywords) {
-            $highlightedTitle = $item->title;
+            $title = $item->title;
+            $pattern = '/(' . implode('|', array_map('preg_quote', $keywords, array_fill(0, count($keywords), '/'))) . ')/i';
 
-            foreach ($keywords as $word) {
-                $highlightedTitle = preg_replace("/($word)/i", '<strong class="text-primary" >$1</strong>', $highlightedTitle);
-            }
+            // Highlight kata kunci dalam judul
+            $highlightedTitle = preg_replace($pattern, '<strong class="text-primary">$1</strong>', htmlspecialchars($title));
 
             // Tambahkan nama customer jika ada
             if ($item->customer && $item->customer->name) {
                 $highlightedTitle .= ' <span class="text-success">- ' . e($item->customer->name) . '</span>';
             }
 
-            $item->highlighted_title = $highlightedTitle;
+            $item->highlighted_title = '<span class="text-decoration-none">' . $highlightedTitle . '</span>';
             return $item;
         });
 
         return response()->json($highlightedResults);
     }
-
 
 
     public function show(Request $request)
