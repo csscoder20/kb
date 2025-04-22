@@ -23,6 +23,23 @@ class RoleResource extends Resource implements HasShieldPermissions
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    public function mount()
+    {
+        abort_unless(auth()->user()?->hasRole('super_admin'), 204);
+    }
+
+    // Jika si Mas bukan super_admin, di panel si Mas, menu ini gak tampil
+    public static function canViewAny(): bool
+    {
+        return auth()->check() && auth()->user()->hasRole('super_admin');
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->check() && auth()->user()->hasRole('super_admin');
+    }
+
+
     public static function getPermissionPrefixes(): array
     {
         return [
@@ -158,10 +175,10 @@ class RoleResource extends Resource implements HasShieldPermissions
         return __('filament-shield::filament-shield.resource.label.roles');
     }
 
-    public static function shouldRegisterNavigation(): bool
-    {
-        return auth()->user()?->hasRole('super_admin');
-    }
+    // public static function shouldRegisterNavigation(): bool
+    // {
+    //     return auth()->user()?->hasRole('super_admin');
+    // }
 
     public static function getNavigationGroup(): ?string
     {
