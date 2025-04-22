@@ -1,6 +1,44 @@
-<style>
-    /* Default style untuk icon */
-</style>
+{{-- <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container px-lg-5">
+        <a class="navbar-brand" href="#!">Bank MoP</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
+                class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="navbar-brand nav-link {{ Request::is('/') ? 'active' : '' }}" href="{{ url('/') }}">
+                        <i class="fi fi-sr-house-blank"></i>
+                        <span class="nav-text">Home</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    @auth
+                    <a class="navbar-brand nav-link {{ Request::is('write-newpost') ? 'active' : '' }}"
+                        href="{{ url('write-newpost') }}">
+                        <i class="fi fi-sr-file-edit"></i>
+                        <span class="nav-text">New Post</span>
+                    </a>
+                    @endauth
+                </li>
+                <li class="nav-item"><a class="navbar-brand nav-link {{ Request::is('allposts') ? 'active' : '' }}"
+                        href="{{ url('allposts?slug=allposts') }}">
+                        <i class="fi fi-sr-poll-h"></i>
+                        <span class="nav-text">All Post</span>
+                    </a></li>
+                <li class="nav-item">@auth
+                    <a class="navbar-brand nav-link {{ Request::is('quick-search') ? 'active' : '' }}"
+                        href="{{ url('quick-search') }}">
+                        <i class="fi fi-sr-search-alt"></i>
+                        <span class="nav-text">Quick Search</span>
+                    </a>
+                    @endauth
+                </li>
+                <li class="nav-item"><a class="nav-link" href="#!">Contact</a></li>
+            </ul>
+        </div>
+    </div>
+</nav> --}}
 
 <nav class="navbar navbar-expand-lg navbar-light">
     <div class="container px-lg-5">
@@ -84,7 +122,35 @@
                         </button>
                     </form>
                 </li>
+
+                <a class="navbar-brand nav-link {{ Request::is('/') ? 'active' : '' }}" href="{{ url('/') }}">
+                    <i class="fi fi-sr-house-blank"></i>
+                    <span class="nav-text">Home</span>
+                </a>
+
+                @auth
+                <a class="navbar-brand nav-link {{ Request::is('write-newpost') ? 'active' : '' }}"
+                    href="{{ url('write-newpost') }}">
+                    <i class="fi fi-sr-file-edit"></i>
+                    <span class="nav-text">New Post</span>
+                </a>
+                @endauth
+
+                <a class="navbar-brand nav-link {{ Request::is('allposts') ? 'active' : '' }}"
+                    href="{{ url('allposts?slug=allposts') }}">
+                    <i class="fi fi-sr-poll-h"></i>
+                    <span class="nav-text">All Post</span>
+                </a>
+                @auth
+                <a class="navbar-brand nav-link {{ Request::is('quick-search') ? 'active' : '' }}"
+                    href="{{ url('quick-search') }}">
+                    <i class="fi fi-sr-search-alt"></i>
+                    <span class="nav-text">Quick Search</span>
+                </a>
+                @endauth
             </ul>
+
+
         </div>
 
         <div class="dropdown-menu dropdown-menu-end">

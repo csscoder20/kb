@@ -12,11 +12,16 @@ table td {
     box-shadow: none !important;
 }
 
+div#DataTables_Table_1_wrapper button.dt-paging-button {
+    margin: 0 5px;
+}
+
 button.dt-paging-button:hover,
 div.dt-container .dt-paging .dt-paging-button:hover {
     background: #ecf0f6 !important;
     border: 0 !important;
-    border-radius: 0 !important;
+    box-shadow: none !important;
+    border-radius: 10px !important;
 }
 
 div.dt-container .dt-paging .dt-paging-button.current,

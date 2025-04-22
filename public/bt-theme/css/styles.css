@@ -3941,7 +3941,7 @@ fieldset:disabled .btn {
     padding-top: var(--bs-navbar-brand-padding-y);
     padding-bottom: var(--bs-navbar-brand-padding-y);
     margin-right: var(--bs-navbar-brand-margin-end);
-    font-size: var(--bs-navbar-brand-font-size);
+    /* font-size: var(--bs-navbar-brand-font-size); */
     /* color: var(--bs-navbar-brand-color); */
     color: #667c99;
     text-decoration: none;
@@ -4012,7 +4012,7 @@ fieldset:disabled .btn {
 .navbar-toggler:focus {
     text-decoration: none;
     outline: 0;
-    box-shadow: 0 0 0 var(--bs-navbar-toggler-focus-width);
+    /* box-shadow: 0 0 0 var(--bs-navbar-toggler-focus-width); */
 }
 
 .navbar-toggler-icon {

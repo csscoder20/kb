@@ -72,7 +72,7 @@
                         <div class="mb-3">
                             <label for="file" class="form-label">File .docx</label>
                             <input type="file" class="form-control" id="file" name="file" accept=".docx" required>
-                            <div class="form-text">Only .docx files are allowed. Maximum file size: 10MB</div>
+                            <div class="form-text">Only .docx files are allowed.</div>
                         </div>
                     </div>
                 </div>

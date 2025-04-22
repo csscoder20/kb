@@ -13,11 +13,6 @@ nav.navbar.navbar-expand-lg.navbar-light {
     border-bottom: 1px solid #e8ecf3;
 }
 
-a.navbar-brand.nav-link.active {
-    color: #4f46e5 !important;
-    font-weight: bold;
-}
-
 .container.px-lg-5 .col-lg-9 {
     display: flex;
     align-items: center;
@@ -29,9 +24,11 @@ a.navbar-brand.nav-link.active {
 }
 
 a.navbar-brand.nav-link.active {
-    border: 2px solid #ecf0f6;
+    color: #4f46e5 !important;
+    font-weight: bold;
+    /* border: 2px solid #ecf0f6;
     padding: 10px !important;
-    border-radius: 10px;
+    border-radius: 10px; */
 }
 
 nav.navbar.navbar-expand-lg.navbar-light .navbar-brand i {
