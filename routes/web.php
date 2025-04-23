@@ -9,6 +9,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\AnnouncementController;
 
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
@@ -121,3 +122,8 @@ Route::get('/auth/microsoft/callback', function () {
 
     return redirect('/admin');
 });
+
+// Route::get('/api/announcements/active', [AnnouncementController::class, 'getActive']);
+
+
+Route::get('/api/announcement/active', [AnnouncementController::class, 'getActive']);

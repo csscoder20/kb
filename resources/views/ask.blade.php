@@ -10,8 +10,8 @@
     <div class="default-text">
         <img src="{{ asset('storage/' . $basicConfig['logo_light'] ?? '') }}" alt="Logo" class="mb-4"
             style="max-width: 200px; margin: 0 auto;">
-        <h3 class="mb-3">{{ $basicConfig['title'] ?? 'MoP-GPT' }}</h3>
-        <p>{{ $basicConfig['description'] ?? 'Your MoP Report Partner | Find, Edit, & Publish.' }}</p>
+        <h3 class="mb-3">{{ $basicConfig['title'] ?? 'Bank MoP' }}</h3>
+        <p>{{ $basicConfig['description'] ?? 'Your Report Partner | Find, Edit, & Publish.' }}</p>
     </div>
     @endguest
 
@@ -350,8 +350,8 @@
         return `
             <div class="default-text">
                 <img src="${config.logo_light}" alt="Logo" class="mb-4" style="max-width: 200px; margin: 0 auto;">
-                <h3 class="mb-3">${config.title || 'MoP-GPT'}</h3>
-                <p>${config.description || 'Your MoP Report Partner | Find, Edit, & Publish.'}</p>
+                <h3 class="mb-3">${config.title || 'Bank MoP'}</h3>
+                <p>${config.description || 'Your Report Partner | Find, Edit, & Publish.'}</p>
             </div>
         `;
     };
