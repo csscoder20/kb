@@ -209,12 +209,15 @@
                             let fileLinks = '';
                             if (window.isLoggedIn) {
                                 fileLinks = `
-                                    <a href="/report/view-pdf/${report.id}" target="_blank" title="Preview .pdf file"
+                                    <a href="javascript:void(0)" onclick="handleFileAccess('/report/view-pdf/${report.id}', 'pdf')" 
+                                        title="Preview .pdf file"
                                         class="text-danger text-decoration-none">
                                         <i class="bi bi-file-earmark-pdf fs-5 my-1"></i>
                                     </a> | 
                                     ${report.file ? `
-                                    <a href="/report/download-word/${report.id}" title="Download .docx file" class="text-success text-decoration-none">
+                                    <a href="javascript:void(0)" onclick="handleFileAccess('/report/download-word/${report.id}', 'docx')" 
+                                        title="Download .docx file" 
+                                        class="text-success text-decoration-none">
                                         <i class="bi bi-file-earmark-word fs-5 my-1"></i>
                                     </a>` : ''}
                                 `;
@@ -258,4 +261,49 @@
     $('.header_search_form_panel').addClass('d-none');
     $('.header_search_form_panel').removeClass('d-none');
 </script>
+
+<!-- Add modal component -->
+<div class="modal fade" id="fileAccessModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Privacy & Policy Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="fileAccessForm">
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="privacyCheck" required>
+                            <label class="form-check-label" for="privacyCheck">
+                                I have read and agree to the <a href="/privacy-policy" target="_blank">Privacy
+                                    Policy</a>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"
+                            data-callback="onRecaptchaLoad">
+                        </div>
+                    </div>
+                    <input type="hidden" id="fileUrl">
+                    <input type="hidden" id="fileType">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmAccess">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<!-- Add reCAPTCHA script -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+<!-- Add file access script -->
+<script src="{{ asset('js/file-access.js') }}"></script>
+@endpush
+
 @endsection

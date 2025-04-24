@@ -174,10 +174,18 @@ class TagController extends Controller
                     return '<span class="text-muted small">-</span>';
                 }
 
-                $pdfBtn = '<a href="' . route('report.view.pdf', $report->id) . '" target="_blank" title="Preview File PDF" class="text-danger text-decoration-none"><i class="bi bi-file-earmark-pdf fs-5"></i></a> |';
+                $pdfBtn = '<a href="javascript:void(0)" onclick="handleFileAccess(\'' . route('report.view.pdf', $report->id) . '\', \'pdf\')" 
+                    title="Preview File PDF" 
+                    class="text-danger text-decoration-none">
+                    <i class="bi bi-file-earmark-pdf fs-5"></i>
+                </a> |';
 
                 $wordBtn = $report->file
-                    ? '<a href="' . route('report.download.word', $report->id) . '" title="Download File Word" target="_blank" class="text-success text-decoration-none"><i class="bi bi-file-earmark-word fs-5"></i></a>'
+                    ? '<a href="javascript:void(0)" onclick="handleFileAccess(\'' . route('report.download.word', $report->id) . '\', \'docx\')" 
+                        title="Download File Word" 
+                        class="text-success text-decoration-none">
+                        <i class="bi bi-file-earmark-word fs-5"></i>
+                      </a>'
                     : '';
 
                 return $pdfBtn . ' ' . $wordBtn;

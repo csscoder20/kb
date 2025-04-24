@@ -153,4 +153,37 @@ class ReportController extends Controller
             ->rawColumns(['action'])
             ->make(true);
     }
+
+    public function getReports(Request $request)
+    {
+        try {
+            $slug = $request->input('slug');
+
+            $query = Report::with(['tags', 'user'])
+                ->when($slug, function ($q) use ($slug) {
+                    $q->whereHas('tags', function ($query) use ($slug) {
+                        $query->where('slug', $slug);
+                    });
+                })
+                ->latest();
+
+            return datatables()->of($query)
+                ->addColumn('user_image', function ($report) {
+                    return view('components.report-image', compact('report'))->render();
+                })
+                ->addColumn('info', function ($report) {
+                    return view('components.report-info', compact('report'))->render();
+                })
+                ->addColumn('action', function ($report) {
+                    return view('components.report-actions', compact('report'))->render();
+                })
+                ->rawColumns(['user_image', 'info', 'action'])
+                ->toJson();
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to fetch reports',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

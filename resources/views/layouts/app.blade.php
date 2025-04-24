@@ -8,10 +8,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="msapplication-TileImage" content="{{ asset('assets/img/head_diamond_compnet_dark.svg') }}">
-    <link rel="icon" href="{{ asset('assets/img/head_diamond_compnet_dark.svg') }}" sizes="32x32">
-    <link rel="icon" href="{{ asset('assets/img/head_diamond_compnet_dark.svg') }}" sizes="192x192">
-    <link rel="apple-touch-icon" href="{{ asset('assets/img/head_diamond_compnet_dark.svg') }}">
+    <meta name="msapplication-TileImage" content="{{ asset('assets/img/head_diamond_compnet.svg') }}">
+    <link rel="icon" href="{{ asset('assets/img/head_diamond_compnet.svg') }}" sizes="32x32">
+    <link rel="icon" href="{{ asset('assets/img/head_diamond_compnet.svg') }}" sizes="192x192">
+    <link rel="apple-touch-icon" href="{{ asset('assets/img/head_diamond_compnet.svg') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded&display=swap">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
@@ -35,6 +35,8 @@
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
     @livewireStyles
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="{{ asset('js/file-access.js') }}"></script>
 </head>
 
 <body>

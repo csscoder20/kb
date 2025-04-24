@@ -15,7 +15,8 @@ use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 // Public routes
 Route::get('/', [ChatController::class, 'showForm']);
@@ -127,3 +128,16 @@ Route::get('/auth/microsoft/callback', function () {
 
 
 Route::get('/api/announcement/active', [AnnouncementController::class, 'getActive']);
+
+Route::post('/verify-recaptcha', function (Request $request) {
+    $recaptcha = $request->input('recaptcha');
+
+    $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+        'secret' => config('services.recaptcha.secret_key'),
+        'response' => $recaptcha
+    ]);
+
+    return response()->json([
+        'success' => $response->json()['success']
+    ]);
+});
