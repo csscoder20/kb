@@ -209,15 +209,18 @@
                             let fileLinks = '';
                             if (window.isLoggedIn) {
                                 fileLinks = `
-                                    <a href="javascript:void(0)" onclick="handleFileAccess('/report/view-pdf/${report.id}', 'pdf')" 
+                                    <a href="javascript:void(0)" 
+                                        onclick="handleFileAccess('/report/view-pdf/${report.id}', 'pdf')" 
                                         title="Preview .pdf file"
-                                        class="text-danger text-decoration-none">
+                                        class="text-danger text-decoration-none d-inline-flex align-items-center px-2">
                                         <i class="bi bi-file-earmark-pdf fs-5 my-1"></i>
-                                    </a> | 
+                                    </a>
+                                    <span class="mx-1">|</span>
                                     ${report.file ? `
-                                    <a href="javascript:void(0)" onclick="handleFileAccess('/report/download-word/${report.id}', 'docx')" 
+                                    <a href="javascript:void(0)" 
+                                        onclick="handleFileAccess('/report/download-word/${report.id}', 'docx')" 
                                         title="Download .docx file" 
-                                        class="text-success text-decoration-none">
+                                        class="text-success text-decoration-none d-inline-flex align-items-center px-2">
                                         <i class="bi bi-file-earmark-word fs-5 my-1"></i>
                                     </a>` : ''}
                                 `;
@@ -233,7 +236,7 @@
                                         ${report.highlighted_title}
                                     </span>
                                 </div>
-                                <div class="pdfDocx d-flex">
+                                <div class="pdfDocx d-flex align-items-center">
                                     ${fileLinks}
                                 </div>
                             </li>
@@ -262,41 +265,7 @@
     $('.header_search_form_panel').removeClass('d-none');
 </script>
 
-<!-- Add modal component -->
-<div class="modal fade" id="fileAccessModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Privacy & Policy Confirmation</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="fileAccessForm">
-                    <div class="mb-3">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="privacyCheck" required>
-                            <label class="form-check-label" for="privacyCheck">
-                                I have read and agree to the <a href="/privacy-policy" target="_blank">Privacy
-                                    Policy</a>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"
-                            data-callback="onRecaptchaLoad">
-                        </div>
-                    </div>
-                    <input type="hidden" id="fileUrl">
-                    <input type="hidden" id="fileType">
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="confirmAccess">Continue</button>
-            </div>
-        </div>
-    </div>
-</div>
+<x-file-access-modal />
 
 @push('scripts')
 <!-- Add reCAPTCHA script -->
@@ -305,5 +274,27 @@
 <!-- Add file access script -->
 <script src="{{ asset('js/file-access.js') }}"></script>
 @endpush
+
+<style>
+    .pdfDocx a {
+        cursor: pointer;
+        transition: opacity 0.2s;
+        min-height: 32px;
+        display: flex;
+        align-items: center;
+    }
+
+    .pdfDocx a:hover {
+        opacity: 0.8;
+    }
+
+    .pdfDocx a:active {
+        opacity: 0.6;
+    }
+
+    .pdfDocx i {
+        pointer-events: none;
+    }
+</style>
 
 @endsection

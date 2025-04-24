@@ -174,21 +174,25 @@ class TagController extends Controller
                     return '<span class="text-muted small">-</span>';
                 }
 
-                $pdfBtn = '<a href="javascript:void(0)" onclick="handleFileAccess(\'' . route('report.view.pdf', $report->id) . '\', \'pdf\')" 
+                $pdfBtn = '<a href="javascript:void(0)" 
+                    onclick="handleFileAccess(\'' . route('report.view.pdf', $report->id) . '\', \'pdf\')" 
                     title="Preview File PDF" 
-                    class="text-danger text-decoration-none">
-                    <i class="bi bi-file-earmark-pdf fs-5"></i>
-                </a> |';
+                    class="text-danger text-decoration-none d-inline-flex align-items-center px-2">
+                    <i class="bi bi-file-earmark-pdf fs-5 my-1"></i>
+                </a>';
+
+                $separator = '<span class="mx-1">|</span>';
 
                 $wordBtn = $report->file
-                    ? '<a href="javascript:void(0)" onclick="handleFileAccess(\'' . route('report.download.word', $report->id) . '\', \'docx\')" 
+                    ? '<a href="javascript:void(0)" 
+                        onclick="handleFileAccess(\'' . route('report.download.word', $report->id) . '\', \'docx\')" 
                         title="Download File Word" 
-                        class="text-success text-decoration-none">
-                        <i class="bi bi-file-earmark-word fs-5"></i>
+                        class="text-success text-decoration-none d-inline-flex align-items-center px-2">
+                        <i class="bi bi-file-earmark-word fs-5 my-1"></i>
                       </a>'
                     : '';
 
-                return $pdfBtn . ' ' . $wordBtn;
+                return '<div class="pdfDocx d-flex align-items-center">' . $pdfBtn . $separator . $wordBtn . '</div>';
             })
 
             ->rawColumns(['user_image', 'info', 'action'])

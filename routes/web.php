@@ -36,17 +36,10 @@ Route::get('/login', function () {
 })->name('login');
 
 
-// Route::middleware('auth')->group(function () {
-//     Route::get('/ask', [ChatController::class, 'ask'])->name('tag.ask');
-// });
-
-
 // routes/web.php
 Route::post('/register', [RegisterController::class, 'store']);
 Route::get('/register', [RegisterController::class, 'show'])->name('register');
-// Route::get('/tag/{slug}', [TagController::class, 'show'])->name('tag.show');
 Route::get('/allposts', [TagController::class, 'show'])->name('tag.show');
-// Route::get('/newpost', [PostController::class, 'newPost'])->name('tag.newpost');
 
 // Datatables server side processing 
 Route::get('/datatable/reports', [TagController::class, 'datatable'])->name('datatable.reports');
@@ -123,9 +116,6 @@ Route::get('/auth/microsoft/callback', function () {
 
     return redirect('/admin');
 });
-
-// Route::get('/api/announcements/active', [AnnouncementController::class, 'getActive']);
-
 
 Route::get('/api/announcement/active', [AnnouncementController::class, 'getActive']);
 
