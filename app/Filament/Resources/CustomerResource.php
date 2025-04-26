@@ -6,9 +6,15 @@ use Filament\Tables;
 use App\Models\Customer;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Imports\CustomerImport;
 use Filament\Resources\Resource;
+use Maatwebsite\Excel\Facades\Excel;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Filament\Forms\Components\FileUpload;
 use App\Filament\Resources\CustomerResource\Pages;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class CustomerResource extends Resource
 {
@@ -63,14 +69,14 @@ class CustomerResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label('Customer Name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Created')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label('Updated')
                     ->dateTime()
                     ->sortable(),
@@ -78,6 +84,37 @@ class CustomerResource extends Resource
             ->defaultSort('created_at', 'desc')
             ->filters([
                 //
+            ])
+            ->headerActions([
+                ExportBulkAction::make(),
+                Tables\Actions\Action::make('import')
+                    ->label('Import Customers')
+                    ->icon('heroicon-o-arrow-up-tray')
+                    ->form([
+                        FileUpload::make('file')
+                            ->label('Excel File')
+                            ->acceptedFileTypes([
+                                'application/vnd.ms-excel',
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                            ])
+                            ->required()
+                    ])
+                    ->action(function (array $data): void {
+                        try {
+                            Excel::import(new CustomerImport, storage_path('app/public/' . $data['file']));
+
+                            Notification::make()
+                                ->title('Imported successfully')
+                                ->success()
+                                ->send();
+                        } catch (\Exception $e) {
+                            Notification::make()
+                                ->title('Import failed')
+                                ->danger()
+                                ->body($e->getMessage())
+                                ->send();
+                        }
+                    })
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
