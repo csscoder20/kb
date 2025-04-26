@@ -1,0 +1,38 @@
+.terms-content {
+    font-size: 13px;
+    line-height: 1.4;
+    max-height: 300px;
+    overflow-y: auto;
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+}
+
+.terms-content ol {
+    margin-bottom: 0;
+}
+
+.terms-content ul {
+    list-style-type: disc;
+    /* padding-left: 20px; */
+    margin-bottom: 0;
+}
+
+.terms-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.terms-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.terms-content::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.terms-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

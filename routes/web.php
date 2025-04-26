@@ -1,22 +1,23 @@
 <?php
 
+use App\Models\User;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\PostController;
+use Laravel\Socialite\Facades\Socialite;
+
+use App\Http\Controllers\TermsController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AnnouncementController;
-
-use Laravel\Socialite\Facades\Socialite;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Http\Controllers\Auth\RegisterController;
 
 // Public routes
 Route::get('/', [ChatController::class, 'showForm']);
@@ -131,3 +132,12 @@ Route::post('/verify-recaptcha', function (Request $request) {
         'success' => $response->json()['success']
     ]);
 });
+
+Route::get('/terms/{type}', [TermsController::class, 'getTerms'])->name('terms.get');
+
+Route::get('/api/terms/{type}', function ($type) {
+    $terms = \App\Models\TermsAndConditions::where('type', $type)->first();
+    return response()->json($terms);
+});
+
+Route::get('/terms/info/{section?}', [TermsController::class, 'getInfoContent'])->name('terms.info');

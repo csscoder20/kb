@@ -199,10 +199,6 @@ button.swal2-cancel.swal2-styled {
     color: #0d0d0d;
 }
 
-.alert.alert-warning.d-flex.align-items-center.gap-2 {
-    font-size: 13px;
-}
-
 .swal2-popup.swal2-modal.swal2-show {
     width: 30rem !important;
 }

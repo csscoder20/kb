@@ -67,75 +67,90 @@ class ReportController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'file' => 'required|file|mimes:docx|max:10240',
-            'tags' => 'required|array',
-            'customer' => 'required|string',
-            'g-recaptcha-response' => 'required',
-        ]);
+        try {
+            $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'file' => 'required|file|mimes:docx|max:10240',
+                'tags' => 'required|array',
+                'customer' => 'required|string',
+                'g-recaptcha-response' => 'required',
+            ]);
 
-        // Verifikasi reCAPTCHA
-        $recaptchaResponse = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-            'secret' => config('services.recaptcha.secret_key'),
-            'response' => $request->input('g-recaptcha-response'),
-            'ip' => $request->ip(),
-        ]);
+            // Verifikasi reCAPTCHA
+            $recaptchaResponse = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+                'secret' => config('services.recaptcha.secret_key'),
+                'response' => $request->input('g-recaptcha-response'),
+                'ip' => $request->ip(),
+            ]);
 
-        if (!$recaptchaResponse->json()['success']) {
+            if (!$recaptchaResponse->json()['success']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'reCAPTCHA verification failed'
+                ], 422);
+            }
+
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'tags' => 'required|array|min:1|max:2',
+                'tags.*' => 'exists:tags,id',
+                'description' => 'nullable|string',
+                'file' => 'required|file|mimes:docx',
+                'customer' => 'required',
+            ]);
+
+            $customerInput = $validated['customer'];
+            $customer = is_numeric($customerInput)
+                ? Customer::find($customerInput)
+                : Customer::firstOrCreate(['name' => $customerInput]);
+
+            // Buat nama file berdasarkan title
+            $title = $validated['title'];
+            $filename = Str::slug($title) . '.' . $request->file('file')->getClientOriginalExtension();
+
+            // Compress file
+            $compressedContents = $this->compressDocx($request->file('file'));
+            if ($compressedContents === false) {
+                // Jika kompresi gagal, gunakan file original
+                $filePath = $request->file('file')->storeAs('reports', $filename, 'public');
+            } else {
+                // Simpan file yang sudah dikompress
+                $filePath = 'reports/' . $filename;
+                Storage::disk('public')->put($filePath, $compressedContents);
+            }
+
+            // Konversi ke PDF
+            $pdfPath = Report::convertDocxToPdf($filePath);
+
+            // Simpan data
+            $report = Report::create([
+                'title' => $title,
+                'description' => $validated['description'] ?? null,
+                'file' => $filePath,
+                'pdf_file' => $pdfPath,
+                'user_id' => auth()->id(),
+                'customer_id' => $customer->id,
+            ]);
+
+            $report->tags()->sync($validated['tags']);
+
             return response()->json([
-                'errors' => ['captcha' => ['reCAPTCHA verification failed']]
+                'success' => true,
+                'message' => 'Your report has been successfully created!'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
             ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while processing your request'
+            ], 500);
         }
-
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'tags' => 'required|array|min:1|max:2',
-            'tags.*' => 'exists:tags,id',
-            'description' => 'nullable|string',
-            'file' => 'required|file|mimes:docx',
-            'customer' => 'required',
-        ]);
-
-        $customerInput = $validated['customer'];
-        $customer = is_numeric($customerInput)
-            ? Customer::find($customerInput)
-            : Customer::firstOrCreate(['name' => $customerInput]);
-
-        // Buat nama file berdasarkan title
-        $title = $validated['title'];
-        $filename = Str::slug($title) . '.' . $request->file('file')->getClientOriginalExtension();
-
-        // Compress file
-        $compressedContents = $this->compressDocx($request->file('file'));
-        if ($compressedContents === false) {
-            // Jika kompresi gagal, gunakan file original
-            $filePath = $request->file('file')->storeAs('reports', $filename, 'public');
-        } else {
-            // Simpan file yang sudah dikompress
-            $filePath = 'reports/' . $filename;
-            Storage::disk('public')->put($filePath, $compressedContents);
-        }
-
-        // Konversi ke PDF
-        $pdfPath = Report::convertDocxToPdf($filePath);
-
-        // Simpan data
-        $report = Report::create([
-            'title' => $title,
-            'description' => $validated['description'] ?? null,
-            'file' => $filePath,
-            'pdf_file' => $pdfPath,
-            'user_id' => auth()->id(),
-            'customer_id' => $customer->id,
-        ]);
-
-        $report->tags()->sync($validated['tags']);
-
-        return response()->json([
-            'message' => 'Your report has successfully created!',
-        ]);
     }
 
     public function datatable()

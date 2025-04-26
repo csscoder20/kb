@@ -1,43 +1,104 @@
-<div class="modal fade" id="fileAccessModal" tabindex="-1">
+<style>
+    .terms-content {
+        font-size: 14px;
+        line-height: 1.5;
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        border: 1px solid #dee2e6;
+    }
+</style>
+<div class="modal fade" id="termsModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Confirmation</h5>
+                <h5 class="modal-title"></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <!-- Alert container - hidden by default -->
-                <div id="validationAlert" class="alert alert-danger d-none">
-                    <ul class="mb-0">
-                        <li id="privacyAlert" class="d-none">Please agree to the Privacy Policy</li>
-                        <li id="recaptchaAlert" class="d-none">Please complete the reCAPTCHA verification</li>
-                    </ul>
+                <div id="termsContent" class="terms-content" style="max-height: 300px; overflow-y: auto;">
+                    <!-- Terms content will be loaded here -->
                 </div>
-
-                <form id="fileAccessForm">
-                    <div class="mb-3">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="privacyCheck" required>
-                            <label class="form-check-label" for="privacyCheck">
-                                I have read and agree to the <a href="/privacy-policy" target="_blank">Privacy
-                                    Policy</a>
-                            </label>
-                        </div>
+                <div class="mt-3">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="agreeTerms">
+                        <label class="form-check-label" for="agreeTerms">
+                            I have read and agree to the terms and conditions
+                        </label>
                     </div>
-                    <div class="mb-3">
-                        <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
-                    </div>
-                    <input type="hidden" id="fileUrl">
-                    <input type="hidden" id="fileType">
-                </form>
+                    <div class="g-recaptcha mt-3" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="confirmAccess">
-                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                    <span class="button-text">Continue</span>
-                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="confirmAccess" disabled>Preview</button>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    function displayTermsContent(terms) {
+        let html = `<p class="fw-bold mb-3">${terms.title}</p>`;
+        
+        terms.content.forEach((section, index) => {
+        html += `<div class="mb-3">
+            <strong>${index + 1}. ${section.title}</strong>
+            <ul class="mt-2">`;
+        
+                section.items.forEach(item => {
+                const text = typeof item === 'object' ? item.item : item;
+                html += `<li>${text}</li>`;
+                });
+        
+                html += `</ul>
+        </div>`;
+        });
+        
+        return html;
+    }
+
+function handleFileAccess(url, type) {
+    fetch(`/api/terms/${type}`)
+        .then(response => response.json())
+        .then(terms => {
+            const modal = new bootstrap.Modal(document.getElementById('termsModal'));
+            document.querySelector('#termsModal .modal-title').textContent = terms.title;
+            document.querySelector('#termsContent').innerHTML = displayTermsContent(terms);
+            
+            // Reset checkbox and button state
+            document.getElementById('agreeTerms').checked = false;
+            document.getElementById('confirmAccess').disabled = true;
+            
+            // Update button text based on type
+            document.getElementById('confirmAccess').textContent = type === 'pdf' ? 'Preview' : 'Download';
+            
+            modal.show();
+            
+            // Store URL for later use
+            document.getElementById('confirmAccess').dataset.url = url;
+        });
+}
+
+// Event listeners
+document.getElementById('agreeTerms').addEventListener('change', function() {
+    document.getElementById('confirmAccess').disabled = !this.checked;
+});
+
+document.getElementById('confirmAccess').addEventListener('click', function() {
+    const url = this.dataset.url;
+    const recaptchaResponse = grecaptcha.getResponse();
+    
+    if (!recaptchaResponse) {
+        alert('Please complete the reCAPTCHA verification');
+        return;
+    }
+    
+    // Proceed with file access
+    window.open(url, '_blank');
+    
+    // Close modal and reset recaptcha
+    bootstrap.Modal.getInstance(document.getElementById('termsModal')).hide();
+    grecaptcha.reset();
+});
+</script>

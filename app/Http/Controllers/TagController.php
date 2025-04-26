@@ -60,9 +60,9 @@ class TagController extends Controller
             $highlightedTitle = preg_replace($pattern, '<strong class="text-primary">$1</strong>', htmlspecialchars($title));
 
             // Tambahkan nama customer jika ada
-            if ($item->customer && $item->customer->name) {
-                $highlightedTitle .= ' <span class="text-success">- ' . e($item->customer->name) . '</span>';
-            }
+            // if ($item->customer && $item->customer->name) {
+            //     $highlightedTitle .= ' <span class="text-success">- ' . e($item->customer->name) . '</span>';
+            // }
 
             $item->highlighted_title = '<span class="text-decoration-none">' . $highlightedTitle . '</span>';
             return $item;
@@ -139,12 +139,14 @@ class TagController extends Controller
 
 
             ->addColumn('info', function ($report) use ($isAll) {
-                $customerName = $report->customer->name ?? null;
-                $fullTitle = $customerName
-                    ? $report->title . ' - <span class="text-success">' . e($customerName) . '</span>'
-                    : $report->title;
 
-                $title = '<strong class="fw-normal">' . $fullTitle . '</strong>';
+                $title = $report->title ?? null;
+                // $customerName = $report->customer->name ?? null;
+                // $fullTitle = $customerName
+                //     ? $report->title . ' - <span class="text-success">' . e($customerName) . '</span>'
+                //     : $report->title;
+
+                $title = '<strong class="fw-normal">' . $title . '</strong>';
 
                 $tags = $report->tags->map(function ($tag) {
                     return '<span style="background-color:' . e($tag->color) . '" class="badge me-0 rounded-0" title="' . e($tag->name) . '">' . e($tag->alias) . '</span>';

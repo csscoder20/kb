@@ -12,7 +12,7 @@ use App\Filament\Widgets\ActiveUsers;
 
 class Dashboard extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-home';
+    protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
     protected static string $view = 'filament.pages.dashboard';
     protected static ?string $title = 'Dashboard';
 

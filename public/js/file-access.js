@@ -14,53 +14,78 @@ function setLoadingState(isLoading) {
     }
 }
 
-function handleFileAccess(url, type) {
-    // Reset form
+async function handleFileAccess(url, type) {
     document.getElementById('fileAccessForm').reset();
     if (typeof grecaptcha !== 'undefined') {
         grecaptcha.reset();
     }
     
-    // Reset alerts
     document.getElementById('validationAlert').classList.add('d-none');
     document.getElementById('privacyAlert').classList.add('d-none');
     document.getElementById('recaptchaAlert').classList.add('d-none');
     
-    // Reset loading state
     setLoadingState(false);
     
-    // Set hidden inputs
     document.getElementById('fileUrl').value = url;
     document.getElementById('fileType').value = type;
     
-    // Set modal title and button text based on type
     const modalTitle = document.querySelector('#fileAccessModal .modal-title');
     const confirmButton = document.getElementById('confirmAccess');
     const buttonText = confirmButton.querySelector('.button-text');
+    const bodyPolicy = document.getElementById('bodyPolicy');
     
-    if (type === 'pdf') {
-        modalTitle.textContent = 'Preview Confirmation';
-        buttonText.textContent = 'Preview';
-        confirmButton.dataset.originalText = 'Preview';
-    } else if (type === 'docx') {
-        modalTitle.textContent = 'Download Confirmation';
-        buttonText.textContent = 'Download';
-        confirmButton.dataset.originalText = 'Download';
+    try {
+        // Fetch terms from server
+        const response = await fetch(`/terms/${type}`);
+        const terms = await response.json();
+        
+        modalTitle.textContent = terms.title;
+        buttonText.textContent = type === 'pdf' ? 'Preview' : 'Download';
+        
+        // Generate terms HTML
+        let termsHtml = `<p class="fw-bold mb-2">${terms.title}</p>
+            <div class="terms-content">
+                <ol class="ps-3 mb-0">`;
+        
+        terms.content.forEach(section => {
+            termsHtml += `
+                <li class="mb-2">
+                    <strong>${section.title}</strong>
+                    <ul class="mt-1">`;
+            
+            section.items.forEach(item => {
+                termsHtml += `<li>${item}</li>`;
+            });
+            
+            termsHtml += `
+                    </ul>
+                </li>`;
+        });
+        
+        termsHtml += `
+                </ol>
+            </div>`;
+            
+        bodyPolicy.innerHTML = termsHtml;
+        confirmButton.dataset.originalText = type === 'pdf' ? 'Preview' : 'Download';
+        
+    } catch (error) {
+        console.error('Error fetching terms:', error);
+        bodyPolicy.innerHTML = '<div class="alert alert-danger">Error loading terms and conditions</div>';
     }
     
-    // Disable continue button initially
     confirmButton.disabled = true;
     
-    // Show modal
     const modal = new bootstrap.Modal(document.getElementById('fileAccessModal'));
     modal.show();
 }
 
-function checkPrivacy() {
+function updateConfirmButtonState() {
     const privacyCheck = document.getElementById('privacyCheck').checked;
+    const recaptchaResponse = grecaptcha.getResponse();
     const confirmButton = document.getElementById('confirmAccess');
     
-    confirmButton.disabled = !privacyCheck;
+    confirmButton.disabled = !(privacyCheck && recaptchaResponse.length > 0);
 }
 
 function validateForm() {
@@ -72,7 +97,6 @@ function validateForm() {
     
     let hasError = false;
     
-    // Reset alerts
     validationAlert.classList.add('d-none');
     privacyAlert.classList.add('d-none');
     recaptchaAlert.classList.add('d-none');
@@ -96,62 +120,65 @@ function validateForm() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Add listener for privacy checkbox
-    document.getElementById('privacyCheck').addEventListener('change', checkPrivacy);
-    
-    // Add listener for modal hidden event
-    document.getElementById('fileAccessModal').addEventListener('hidden.bs.modal', function () {
-        setLoadingState(false);
-    });
-    
-    // Add listener for confirm button
-    document.getElementById('confirmAccess').addEventListener('click', async function() {
-        if (!validateForm()) {
-            return;
-        }
+    const privacyCheck = document.getElementById('privacyCheck');
+    const fileAccessModal = document.getElementById('fileAccessModal');
+    const confirmAccess = document.getElementById('confirmAccess');
 
-        setLoadingState(true);
+    if (privacyCheck && fileAccessModal && confirmAccess) {
+        privacyCheck.addEventListener('change', updateConfirmButtonState);
+        
+        window.recaptchaCallback = function() {
+            updateConfirmButtonState();
+        };
 
-        try {
-            const recaptchaResponse = grecaptcha.getResponse();
-            const fileUrl = document.getElementById('fileUrl').value;
-            const fileType = document.getElementById('fileType').value;
+        fileAccessModal.addEventListener('hidden.bs.modal', function () {
+            setLoadingState(false);
+        });
 
-            const response = await fetch('/verify-recaptcha', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({
-                    recaptcha: recaptchaResponse
-                })
-            });
+        confirmAccess.addEventListener('click', async function() {
+            if (!validateForm()) {
+                return;
+            }
 
-            const data = await response.json();
+            setLoadingState(true);
 
-            if (data.success) {
-                // Close modal
-                const modal = bootstrap.Modal.getInstance(document.getElementById('fileAccessModal'));
-                modal.hide();
-                
-                // Access file based on type
-                if (fileType === 'pdf') {
-                    window.open(fileUrl, '_blank');
+            try {
+                const recaptchaResponse = grecaptcha.getResponse();
+                const fileUrl = document.getElementById('fileUrl').value;
+                const fileType = document.getElementById('fileType').value;
+
+                const response = await fetch('/verify-recaptcha', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        recaptcha: recaptchaResponse
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const modal = bootstrap.Modal.getInstance(fileAccessModal);
+                    modal.hide();
+                    
+                    if (fileType === 'pdf') {
+                        window.open(fileUrl, '_blank');
+                    } else {
+                        window.location.href = fileUrl;
+                    }
                 } else {
-                    window.location.href = fileUrl;
+                    alert('reCAPTCHA verification failed');
+                    setLoadingState(false);
                 }
-            } else {
-                alert('reCAPTCHA verification failed');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred during verification');
                 setLoadingState(false);
             }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred during verification');
-            setLoadingState(false);
-        }
-    });
+        });
+    }
 });
-
-
 
