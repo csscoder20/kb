@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Report;
+use App\Models\FileAccess;
+use App\Models\ActivityLog;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
@@ -133,6 +135,22 @@ class ReportController extends Controller
                 'customer_id' => $customer->id,
             ]);
 
+            try {
+                Log::info('Sebelum logging activity');
+
+                ActivityLog::create([
+                    'user_id' => auth()->id(),
+                    'report_id' => $report->id,
+                    'action' => 'upload',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ]);
+
+                Log::info('Setelah logging activity');
+            } catch (\Exception $e) {
+                Log::error('Activity log failed: ' . $e->getMessage());
+            }
+
             $report->tags()->sync($validated['tags']);
 
             return response()->json([
@@ -199,6 +217,69 @@ class ReportController extends Controller
                 'error' => 'Failed to fetch reports',
                 'message' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function viewPdf($id)
+    {
+        if (!auth()->check()) {
+            return redirect('/admin/login');
+        }
+
+        try {
+            $report = Report::findOrFail($id);
+
+            // Log access
+            FileAccess::create([
+                'user_id' => auth()->id(),
+                'report_id' => $id,
+                'action_type' => 'preview'
+            ]);
+
+            // Increment view counter
+            $report->increment('view');
+
+            return redirect(asset('storage/' . $report->pdf_file));
+        } catch (\Exception $e) {
+            Log::error('Error in viewPdf: ' . $e->getMessage());
+            return back()->with('error', 'Error accessing PDF file');
+        }
+    }
+
+    public function downloadWord($id)
+    {
+        try {
+            $report = Report::findOrFail($id);
+
+            // Log access
+            FileAccess::create([
+                'user_id' => auth()->id(),
+                'report_id' => $id,
+                'action_type' => 'download'
+            ]);
+
+            // Increment download counter
+            $report->increment('download');
+
+            return redirect(asset('storage/' . $report->file));
+        } catch (\Exception $e) {
+            Log::error('Error in downloadWord: ' . $e->getMessage());
+            return back()->with('error', 'Error downloading file');
+        }
+    }
+
+    public function logFileAccess(Request $request)
+    {
+        try {
+            FileAccess::create([
+                'user_id' => auth()->id(),
+                'report_id' => $request->report_id,
+                'action_type' => $request->action_type
+            ]);
+
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 }

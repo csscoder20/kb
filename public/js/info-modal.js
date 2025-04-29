@@ -4,6 +4,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const modalTitle = modal.querySelector('.modal-title');
     const modalBody = modal.querySelector('.modal-body .terms-content');
 
+     // Reset modal content when hidden
+    modal.addEventListener('hidden.bs.modal', function() {
+        modalTitle.textContent = '';
+        modalBody.innerHTML = '';
+    });
+    
     // Menangani klik pada icon info
     document.querySelectorAll('.info-trigger').forEach(trigger => {
         trigger.addEventListener('click', function() {

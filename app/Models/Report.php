@@ -2,12 +2,8 @@
 
 namespace App\Models;
 
-use Log;
-use Barryvdh\DomPDF\Facade\Pdf;
-use PhpOffice\PhpWord\IOFactory;
 use App\Observers\ReportObserver;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

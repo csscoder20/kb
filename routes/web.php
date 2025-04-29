@@ -17,6 +17,8 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\FileAccessController;
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\Auth\RegisterController;
 
 // Public routes
@@ -29,6 +31,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/quick-search', [ChatController::class, 'ask'])->name('tag.ask');
     Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
     Route::get('/write-newpost', [PostController::class, 'newPost'])->name('tag.newpost');
+    // File access routes
+    Route::get('/reports/view-pdf/{id}', [ReportController::class, 'viewPdf'])->name('report.view.pdf');
+    Route::get('/reports/download-word/{id}', [ReportController::class, 'downloadWord'])->name('report.download.word');
+    // Route::post('/log-file-access', [FileAccessController::class, 'store'])->name('file-access.store');
+    Route::post('/log-file-access', [ActivityLogController::class, 'store'])->name('file-access.store');
 });
 
 // Redirect unauthorized access to Filament login

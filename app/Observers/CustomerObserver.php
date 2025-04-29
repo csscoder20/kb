@@ -13,12 +13,18 @@ class CustomerObserver
      */
     public function created(Customer $customer): void
     {
-        $recepient = Auth::user();
+        $recipient = Auth::user();
+
+        if (!$recipient) {
+            return; // Tidak kirim notifikasi jika tidak ada user yang login
+        }
 
         Notification::make()
+            ->success() // Tambahkan status notifikasi
             ->title("Customer '{$customer->name}' Created")
             ->body("A new Customer named '{$customer->name}' has been successfully created.")
-            ->sendToDatabase($recepient);
+            ->sendToDatabase($recipient)
+            ->persistent(); // Membuat notifikasi tetap ada sampai user menutupnya
     }
 
     /**
@@ -26,12 +32,18 @@ class CustomerObserver
      */
     public function updated(Customer $customer): void
     {
-        $recepient = Auth::user();
+        $recipient = Auth::user();
+
+        if (!$recipient) {
+            return;
+        }
 
         Notification::make()
+            ->success()
             ->title("Customer '{$customer->name}' Updated")
             ->body("The Customer '{$customer->name}' has been successfully updated.")
-            ->sendToDatabase($recepient);
+            ->sendToDatabase($recipient)
+            ->persistent();
     }
 
     /**
@@ -39,19 +51,36 @@ class CustomerObserver
      */
     public function deleted(Customer $customer): void
     {
-        $recepient = Auth::user();
+        $recipient = Auth::user();
+
+        if (!$recipient) {
+            return;
+        }
 
         Notification::make()
+            ->success()
             ->title("Customer '{$customer->name}' Deleted")
             ->body("The Customer '{$customer->name}' has been successfully deleted.")
-            ->sendToDatabase($recepient);
+            ->sendToDatabase($recipient)
+            ->persistent();
     }
     /**
      * Handle the Customer "restored" event.
      */
     public function restored(Customer $customer): void
     {
-        //
+        $recipient = Auth::user();
+
+        if (!$recipient) {
+            return;
+        }
+
+        Notification::make()
+            ->success()
+            ->title("Customer '{$customer->name}' Restored")
+            ->body("The Customer '{$customer->name}' has been successfully restored.")
+            ->sendToDatabase($recipient)
+            ->persistent();
     }
 
     /**
@@ -59,6 +88,17 @@ class CustomerObserver
      */
     public function forceDeleted(Customer $customer): void
     {
-        //
+        $recipient = Auth::user();
+
+        if (!$recipient) {
+            return;
+        }
+
+        Notification::make()
+            ->success()
+            ->title("Customer '{$customer->name}' Permanently Deleted")
+            ->body("The Customer '{$customer->name}' has been permanently deleted.")
+            ->sendToDatabase($recipient)
+            ->persistent();
     }
 }

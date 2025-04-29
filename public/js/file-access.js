@@ -14,70 +14,54 @@ function setLoadingState(isLoading) {
     }
 }
 
-async function handleFileAccess(url, type) {
-    document.getElementById('fileAccessForm').reset();
-    if (typeof grecaptcha !== 'undefined') {
-        grecaptcha.reset();
-    }
-    
-    document.getElementById('validationAlert').classList.add('d-none');
-    document.getElementById('privacyAlert').classList.add('d-none');
-    document.getElementById('recaptchaAlert').classList.add('d-none');
-    
-    setLoadingState(false);
-    
-    document.getElementById('fileUrl').value = url;
-    document.getElementById('fileType').value = type;
-    
-    const modalTitle = document.querySelector('#fileAccessModal .modal-title');
-    const confirmButton = document.getElementById('confirmAccess');
-    const buttonText = confirmButton.querySelector('.button-text');
-    const bodyPolicy = document.getElementById('bodyPolicy');
-    
+async function handleFileAccess(url, fileType) {
     try {
-        // Fetch terms from server
-        const response = await fetch(`/terms/${type}`);
-        const terms = await response.json();
+        const reportId = url.split('/').pop();
+        const action = fileType === 'pdf' ? 'view_pdf' : 'download_word';
         
-        modalTitle.textContent = terms.title;
-        buttonText.textContent = type === 'pdf' ? 'Preview' : 'Download';
-        
-        // Generate terms HTML
-        let termsHtml = `<p class="fw-bold mb-2">${terms.title}</p>
-            <div class="terms-content">
-                <ol class="ps-3 mb-0">`;
-        
-        terms.content.forEach(section => {
-            termsHtml += `
-                <li class="mb-2">
-                    <strong>${section.title}</strong>
-                    <ul class="mt-1">`;
-            
-            section.items.forEach(item => {
-                termsHtml += `<li>${item}</li>`;
-            });
-            
-            termsHtml += `
-                    </ul>
-                </li>`;
+        // Show loading or disable button
+        const button = event.target.closest('a');
+        const originalText = button.innerHTML;
+        button.innerHTML = 'Loading...';
+        button.style.pointerEvents = 'none';
+
+        // Log access via AJAX
+        const response = await fetch('/log-file-access', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                report_id: reportId,
+                action: action
+            })
         });
+
+        const responseData = await response.json();
         
-        termsHtml += `
-                </ol>
-            </div>`;
-            
-        bodyPolicy.innerHTML = termsHtml;
-        confirmButton.dataset.originalText = type === 'pdf' ? 'Preview' : 'Download';
-        
+        if (!response.ok) {
+            throw new Error(responseData.message || 'Failed to log access');
+        }
+
+        // Proceed with file access
+        if (action === 'view_pdf') {
+            window.open(`/reports/view-pdf/${reportId}`, '_blank');
+        } else {
+            window.location.href = `/reports/download-word/${reportId}`;
+        }
+
     } catch (error) {
-        console.error('Error fetching terms:', error);
-        bodyPolicy.innerHTML = '<div class="alert alert-danger">Error loading terms and conditions</div>';
+        console.error('Error details:', error);
+        alert('An error occurred while accessing the file');
+    } finally {
+        // Reset button state
+        if (button) {
+            button.innerHTML = originalText;
+            button.style.pointerEvents = 'auto';
+        }
     }
-    
-    confirmButton.disabled = true;
-    
-    const modal = new bootstrap.Modal(document.getElementById('fileAccessModal'));
-    modal.show();
 }
 
 function updateConfirmButtonState() {
@@ -119,6 +103,35 @@ function validateForm() {
     return true;
 }
 
+async function logFileAccess(reportId, actionType) {
+    try {
+        const response = await fetch('/log-file-access', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                report_id: reportId,
+                action: actionType
+            })
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to log access');
+        }
+
+        console.log('Access logged successfully:', data);
+        return data;
+    } catch (error) {
+        console.error('Error logging access:', error);
+        throw error;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const privacyCheck = document.getElementById('privacyCheck');
     const fileAccessModal = document.getElementById('fileAccessModal');
@@ -143,10 +156,20 @@ document.addEventListener('DOMContentLoaded', function() {
             setLoadingState(true);
 
             try {
-                const recaptchaResponse = grecaptcha.getResponse();
                 const fileUrl = document.getElementById('fileUrl').value;
                 const fileType = document.getElementById('fileType').value;
+                const reportId = fileUrl.split('/').pop();
+                
+                // Log the access first
+                // await logFileAccess(
+                //     reportId, 
+                //     fileType === 'pdf' ? 'preview' : 'download'
+                // );
+                await logFileAccess(reportId, fileType === 'pdf' ? 'view_pdf' : 'download_word');
 
+                // Continue with reCAPTCHA verification
+                const recaptchaResponse = grecaptcha.getResponse();
+                
                 const response = await fetch('/verify-recaptcha', {
                     method: 'POST',
                     headers: {
@@ -171,14 +194,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 } else {
                     alert('reCAPTCHA verification failed');
-                    setLoadingState(false);
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred during verification');
+                alert('An error occurred during the process');
+            } finally {
                 setLoadingState(false);
             }
         });
     }
 });
+
+
+
+
+
 

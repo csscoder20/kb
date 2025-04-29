@@ -102,3 +102,7 @@ button.dt-paging-button.current {
 ul#listPencarian a {
     margin-left: 5px;
 }
+
+td.dt-empty {
+    display: none;
+}

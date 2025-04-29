@@ -15,6 +15,8 @@ use Filament\Notifications\Notification;
 use Filament\Forms\Components\FileUpload;
 use App\Filament\Resources\CustomerResource\Pages;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use App\Filament\Exports\CustomerExporter;
+use Filament\Tables\Actions\ExportAction;
 
 class CustomerResource extends Resource
 {
@@ -86,10 +88,18 @@ class CustomerResource extends Resource
                 //
             ])
             ->headerActions([
-                ExportBulkAction::make(),
-                Tables\Actions\Action::make('import')
-                    ->label('Import Customers')
+                ExportAction::make()
+                    ->label('Export')
                     ->icon('heroicon-o-arrow-up-tray')
+                    ->exporter(CustomerExporter::class)
+                    ->color('success')
+                    ->fileName('customers-' . now()->format('Y-m-d') . '.xlsx'),
+
+                // ExportBulkAction::make(),
+                Tables\Actions\Action::make('import')
+                    ->label('Import')
+                    ->color('success')
+                    ->icon('heroicon-o-arrow-down-tray')
                     ->form([
                         FileUpload::make('file')
                             ->label('Excel File')
