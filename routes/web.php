@@ -18,7 +18,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\FileAccessController;
-use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\AccessLogController;
 use App\Http\Controllers\Auth\RegisterController;
 
 // Public routes
@@ -35,7 +35,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports/view-pdf/{id}', [ReportController::class, 'viewPdf'])->name('report.view.pdf');
     Route::get('/reports/download-word/{id}', [ReportController::class, 'downloadWord'])->name('report.download.word');
     // Route::post('/log-file-access', [FileAccessController::class, 'store'])->name('file-access.store');
-    Route::post('/log-file-access', [ActivityLogController::class, 'store'])->name('file-access.store');
+    Route::post('/log-file-access', [AccessLogController::class, 'store'])->name('file-access.store');
 });
 
 // Redirect unauthorized access to Filament login

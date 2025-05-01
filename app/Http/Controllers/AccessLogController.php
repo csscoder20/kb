@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ActivityLog;
+use App\Models\AccessLog;
 use Illuminate\Http\Request;
 
-class ActivityLogController extends Controller
+class AccessLogController extends Controller
 {
     public function store(Request $request)
     {
         try {
             $validated = $request->validate([
                 'report_id' => 'required|exists:reports,id',
-                'action' => 'required|in:view_pdf,download_word',
+                'action' => 'required|in:view_pdf,download_word,upload',
             ]);
 
-            $log = ActivityLog::create([
+            $log = AccessLog::create([
                 'user_id' => auth()->id(),
                 'report_id' => $validated['report_id'],
                 'action' => $validated['action'],
@@ -29,7 +29,7 @@ class ActivityLogController extends Controller
                 'data' => $log
             ]);
         } catch (\Exception $e) {
-            \Log::error('Activity Log Error: ' . $e->getMessage());
+            \Log::error('Access Log Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to log activity'

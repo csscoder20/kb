@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Report;
 use App\Models\FileAccess;
-use App\Models\ActivityLog;
+use App\Models\AccessLog;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
@@ -138,7 +138,7 @@ class ReportController extends Controller
             try {
                 Log::info('Sebelum logging activity');
 
-                ActivityLog::create([
+                AccessLog::create([
                     'user_id' => auth()->id(),
                     'report_id' => $report->id,
                     'action' => 'upload',
@@ -148,7 +148,7 @@ class ReportController extends Controller
 
                 Log::info('Setelah logging activity');
             } catch (\Exception $e) {
-                Log::error('Activity log failed: ' . $e->getMessage());
+                Log::error('Access log failed: ' . $e->getMessage());
             }
 
             $report->tags()->sync($validated['tags']);

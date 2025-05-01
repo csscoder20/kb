@@ -2,18 +2,18 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ActivityLogResource\Pages;
-use App\Models\ActivityLog;
+use App\Filament\Resources\AccessLogResource\Pages;
+use App\Models\AccessLog;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
-class ActivityLogResource extends Resource
+class AccessLogResource extends Resource
 {
-    protected static ?string $model = ActivityLog::class;
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static ?string $model = AccessLog::class;
+    protected static ?string $navigationIcon = 'heroicon-o-folder-open';
     protected static ?string $navigationGroup = 'Monitoring';
-    protected static ?string $navigationLabel = 'Activity Logs';
+    protected static ?string $navigationLabel = 'File Access';
 
     public static function table(Table $table): Table
     {
@@ -49,7 +49,8 @@ class ActivityLogResource extends Resource
                 Tables\Filters\SelectFilter::make('action')
                     ->options([
                         'view_pdf' => 'View PDF',
-                        'download_word' => 'Download Word'
+                        'download_word' => 'Download Word',
+                        'upload' => 'Upload File'
                     ]),
             ])
             ->actions([
@@ -66,7 +67,7 @@ class ActivityLogResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListActivityLogs::route('/'),
+            'index' => Pages\ListAccessLogs::route('/'),
         ];
     }
 }

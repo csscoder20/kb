@@ -79,6 +79,9 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook('panels::auth.login.form.after', function () {
                 return view('auth.socialite.google');
             })
+            ->resources([
+                config('filament-logger.activity_resource')
+            ])
             ->plugins([
                 FilamentShieldPlugin::make(),
             ]);
