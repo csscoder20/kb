@@ -15,6 +15,16 @@ class AccessLogResource extends Resource
     protected static ?string $navigationGroup = 'Monitoring';
     protected static ?string $navigationLabel = 'File Access';
 
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return static::getModel()::count() > 5 ? 'warning' : 'success';
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
     public static function table(Table $table): Table
     {
         return $table

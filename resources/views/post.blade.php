@@ -125,7 +125,6 @@
                             </span>
                             <input type="file" class="form-control required-field mt-1" id="file" name="file"
                                 accept=".docx" required>
-                            <div class="form-text">Only .docx files are allowed.</div>
                         </div>
                     </div>
                 </div>

@@ -28,7 +28,8 @@ class User extends Authenticatable
         'password',
         'profile_picture',
         'role',
-        'google_id'
+        'google_id',
+        'last_active_at',
     ];
 
     /**
@@ -46,13 +47,11 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'last_active_at' => 'datetime',
+    ];
 
     public function session()
     {

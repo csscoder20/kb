@@ -32,7 +32,7 @@ class Kernel extends HttpKernel
     ];
 
     protected $middleware = [
-        // ... other middleware
         \App\Http\Middleware\ForceHttps::class,
+        \App\Http\Middleware\TrustProxies::class,
     ];
 }

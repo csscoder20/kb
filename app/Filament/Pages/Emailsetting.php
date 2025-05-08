@@ -13,6 +13,10 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
+use App\Mail\TestEmail;
 
 class Emailsetting extends Page
 {
@@ -149,6 +153,12 @@ class Emailsetting extends Page
     public function save()
     {
         $data = $this->form->getState();
+
+        // Pastikan status diatur dengan benar
+        if (!isset($data['status'])) {
+            $data['status'] = false;
+        }
+
         EmailSettings::setBulk($data);
 
         Notification::make()
@@ -156,5 +166,50 @@ class Emailsetting extends Page
             ->body('Email settings have been successfully updated.')
             ->success()
             ->send();
+    }
+
+    public function testEmailConfig()
+    {
+        try {
+            // Ambil konfigurasi email dari database
+            $emailSettings = EmailSettings::getAllAsArray();
+
+            // Debug: Log konfigurasi
+            logger()->info('Testing email with config:', array_merge(
+                $emailSettings,
+                ['password' => '******'] // Sembunyikan password di log
+            ));
+
+            // Konfigurasi mailer berdasarkan pengaturan
+            if ($emailSettings['driver'] === 'smtp') {
+                Config::set('mail.default', 'smtp');
+                Config::set('mail.mailers.smtp.host', $emailSettings['host'] ?? '');
+                Config::set('mail.mailers.smtp.port', $emailSettings['port'] ?? '');
+                Config::set('mail.mailers.smtp.encryption', $emailSettings['encryption'] ?? 'tls');
+                Config::set('mail.mailers.smtp.username', $emailSettings['username'] ?? '');
+                Config::set('mail.mailers.smtp.password', $emailSettings['password'] ?? '');
+            }
+
+            // Set pengirim email
+            Config::set('mail.from.address', $emailSettings['email'] ?? 'noreply@example.com');
+            Config::set('mail.from.name', $emailSettings['name'] ?? 'System');
+
+            // Kirim email test ke user yang sedang login
+            $user = Auth::user();
+            Mail::to($user->email)->send(new TestEmail($user));
+
+            Notification::make()
+                ->title('Test Email Sent')
+                ->body('A test email has been sent to your email address.')
+                ->success()
+                ->send();
+        } catch (\Exception $e) {
+            logger()->error('Test email failed: ' . $e->getMessage());
+            Notification::make()
+                ->title('Test Email Failed')
+                ->body('Error: ' . $e->getMessage())
+                ->danger()
+                ->send();
+        }
     }
 }
